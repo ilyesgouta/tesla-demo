@@ -1,5 +1,5 @@
 
-lib_LTLIBRARIES = tesla-demo.la
+bin_PROGRAMS = tesla-demo
 
 include_HEADERS = \
     OpenGL/Dyngl.h \
@@ -15,12 +15,12 @@ include_HEADERS = \
     Demo/Smasher/resource.h \
     Demo/Smasher/base.h
 
-tesla_demo_la_CFLAGS = $(GL_CFLAGS) $(X11_CFLAGS)
-tesla_demo_la_CXXFLAGS = $(GL_CFLAGS) $(X11_CFLAGS)
+tesla_demo_CFLAGS = $(GL_CFLAGS) $(X11_CFLAGS)
+tesla_demo_CXXFLAGS = $(GL_CFLAGS) $(X11_CFLAGS)
 
-tesla_demo_la_LIBADD = $(GL_LIBS) $(X11_LIBS)
+tesla_demo_LDFLAGS = $(GL_LIBS) $(X11_LIBS)
 
-tesla_demo_la_SOURCES = \
+tesla_demo_SOURCES = \
     load3ds/Misc.c \
     load3ds/Mesh.c \
     load3ds/Material.c \
