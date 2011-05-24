@@ -1,0 +1,119 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "3dlib"=..\3dlib\3dlib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Base3d"=..\OpenGL\Base3d\Base3d.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ImageLib"=..\ImageLib\ImageLib\ImageLib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "MainFrame"=..\OpenGL\MainFrame\MainFrame.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "OpenGL"=..\OpenGL\OpenGL.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Smasher"=.\Smasher\Smasher.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Base3d
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ImageLib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name MainFrame
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name OpenGL
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name 3dlib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name load3ds
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "load3ds"=..\load3ds\load3ds.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

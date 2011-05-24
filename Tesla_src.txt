@@ -1,0 +1,30 @@
+
+!copyrights!
+
+let it be public domain.. uff..
+i dont take any responsibility for use of these sources..
+USE IT AT YOUR OWN RISK
+
+
+how to compile tesla demo:
+
+1) create "Project" in your main directory on any hard disk
+
+2) uncompress tesla_src.zip into "Project" directory
+
+3) start vc6.0 with \Project\Demo\Demo.dsw
+
+4) you will need some additional libraries to link the exe file:
+
+- zlib.lib ( http://www.info-zip.org/pub/infozip/zlib/ )
+- pnglib.lib ( http://www.libpng.org/pub/png/ )
+- jpeglib.lib ( http://www.ijg.org/ )
+- bass sound system ( http://www.un4seen.com/music/ )
+
+5) compile additional libraries and link with demo project
+   probably you will have to change smasher/link settings, and maybe ImageLib sources 
+
+6) have fun...
+
+
+ konrad "yoghurt" zagorowicz
