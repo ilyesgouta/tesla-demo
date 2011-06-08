@@ -20,7 +20,7 @@ typedef struct
 	float	eto,efrom;
 	quat_t	quat;
 	quat_t	ds,dd;
-} key_t;
+} track_key_t;
 
 typedef struct
 {
@@ -34,7 +34,7 @@ typedef struct
 typedef struct
 {
 	int		keys;
-	key_t		*track;
+    track_key_t		*track;
 } track_t;
 
 typedef struct

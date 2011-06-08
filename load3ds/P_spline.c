@@ -15,7 +15,7 @@ static void CompElementDeriv(float pp,float p,float pn,float *ds,float *dd,float
 	*dd  = kdm*delm + kdp*delp;
 }
 //***************************************************************************
-static void CompDeriv( key_t *keyp,key_t *key,key_t *keyn )
+static void CompDeriv( track_key_t *keyp,track_key_t *key,track_key_t *keyn )
 {
 	float tm,cm,cp,bm,bp,tmcm,tmcp,ksm,ksp,kdm,kdp,delm,delp,c;
 	float dt,fp,fn;
@@ -47,7 +47,7 @@ static void CompDeriv( key_t *keyp,key_t *key,key_t *keyn )
 			&key->ds.z, &key->dd.z, ksm, ksp, kdm, kdp );
 }
 //***************************************************************************
-static void CompDerivFirst( key_t *key,key_t *keyn,key_t *keynn )
+static void CompDerivFirst( track_key_t *key,track_key_t *keyn,track_key_t *keynn )
 {
 	float	f20,f10,v20,v10;
 	f20 = keynn->frame - key->frame;
@@ -70,7 +70,7 @@ static void CompDerivFirst( key_t *key,key_t *keyn,key_t *keynn )
 	key->dd.z = (1-key->t)*(v20*(0.25 - f10/(2*f20)) + (v10 - v20/2)*3/2 + v20/2);
 }
 //***************************************************************************
-static void CompDerivLast( key_t *keypp,key_t *keyp,key_t *key )
+static void CompDerivLast( track_key_t *keypp,track_key_t *keyp,track_key_t *key )
 {
 	float	f20,f10,v20,v10;
 	f20 = key->frame - keypp->frame;
@@ -93,7 +93,7 @@ static void CompDerivLast( key_t *keypp,key_t *keyp,key_t *key )
 	key->ds.z = (1-key->t)*(v20*(0.25 - f10/(2*f20)) + (v10 - v20/2)*3/2 + v20/2);
 }
 //***************************************************************************
-static void CompDerivFirst2( key_t *key,key_t *keyn )
+static void CompDerivFirst2( track_key_t *key,track_key_t *keyn )
 {
 	float	v;
 
@@ -110,7 +110,7 @@ static void CompDerivFirst2( key_t *key,key_t *keyn )
 	key->dd.z = v*(1-key->t);
 }
 //***************************************************************************
-static void CompDerivLast2( key_t *keyp,key_t *key )
+static void CompDerivLast2( track_key_t *keyp,track_key_t *key )
 {
 	float	v;
 	v = key->quat.w - keyp->quat.w;
@@ -126,7 +126,7 @@ static void CompDerivLast2( key_t *keyp,key_t *key )
 	key->ds.z = v*(1-key->t);
 }
 //***************************************************************************
-void PrepareSpline(key_t keys[],int keycnt)
+void PrepareSpline(track_key_t keys[],int keycnt)
 {
 	int	n;
 

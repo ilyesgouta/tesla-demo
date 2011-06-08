@@ -21,7 +21,7 @@ extern object_t *FindObject(object_t *list,char *name);
 extern object_t *FindDummy(object_t *list,char *name);
 extern camera_t *FindCamera(camera_t *list,char *name);
 extern light_t *FindLight(light_t *list,char *name);
-extern void PrepareSpline(key_t keys[],int keycnt);
+extern void PrepareSpline(track_key_t keys[],int keycnt);
 
 	static	struct{
 		float	T,C,B,ET,EF;
@@ -55,11 +55,11 @@ static void Read_1_Track(header_t *chunk,track_t *valtrack,float DATA)
 {
 	int	Q;
 	word	*data=(word*)(chunk+1),flags;
-	key_t	*key;
+    track_key_t	*key;
 	char	*kfpos;
 
 	valtrack->keys=data[5];
-	key=valtrack->track= malloc(data[5]*sizeof(key_t));
+    key=valtrack->track= malloc(data[5]*sizeof(track_key_t));
 	kfpos=(char*)&data[7];
 
 	for(Q=0; Q!=data[5]; Q++)
@@ -84,11 +84,11 @@ static void Read_3_Track(header_t *chunk,track_t *postrack)
 {
 	int	Q;
 	word	*data=(word*)(chunk+1),flags;
-	key_t	*key;
+    track_key_t	*key;
 	char	*kfpos;
 
 	postrack->keys=data[5];
-	key=postrack->track=malloc(data[5]*sizeof(key_t));
+    key=postrack->track=malloc(data[5]*sizeof(track_key_t));
 	kfpos=(char*)&data[7];
 
 	for(Q=0; Q!=data[5]; Q++)
@@ -115,13 +115,13 @@ static void Read_4_Track(header_t *chunk,track_t *rottrack)
 {
 	int	Q,flag=0;
 	word	*data=(word*)(chunk+1),flags;
-	key_t	*key;
+    track_key_t	*key;
 	char	*kfpos;
 	quat_t	quat,old,tmp;
 	float	d;
 
 	rottrack->keys=data[5];
-	key=rottrack->track=malloc(data[5]*sizeof(key_t));
+    key=rottrack->track=malloc(data[5]*sizeof(track_key_t));
 	kfpos=(char*)&data[7];
 
 	for(Q=0; Q!=data[5]; Q++)
@@ -155,11 +155,11 @@ static void ReadMorphTrack(header_t *chunk,morphtrack_t *mtrack,object_t *list)
 {
 	int		Q;
 	word		*data=(word*)(chunk+1),flags;
-	morphkey_t	*mkey;
+    morphkey_t	*mkey;
 	char		*kfpos;
 
 	mtrack->keys=data[5];
-	mkey=mtrack->track=malloc(data[5]*sizeof(morphkey_t));
+    mkey=mtrack->track=malloc(data[5]*sizeof(morphkey_t));
 	kfpos=(char*)&data[7];
 
 	for(Q=0; Q!=data[5]; Q++)
@@ -182,12 +182,12 @@ static void ReadHideTrack(header_t *chunk,track_t *track)
 {
 	int	Q;
 	word	*data=(word*)(chunk+1),flags;
-	key_t	*key;
+    track_key_t	*key;
 	char	*kfpos;
 	int	FLAG=1;
 
 	track->keys=data[5];
-	key=track->track=malloc(data[5]*sizeof(key_t));
+    key=track->track=malloc(data[5]*sizeof(track_key_t));
 	kfpos=(char*)&data[7];
 
 	for(Q=0; Q!=data[5]; Q++)
