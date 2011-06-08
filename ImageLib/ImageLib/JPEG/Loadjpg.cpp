@@ -5,9 +5,8 @@
 
 extern "C" {
 
-#include "../../../JpegLib/jpeglib.h"
-#include "../../../JpegLib/jinclude.h"
-#include "../../../JpegLib/jerror.h"
+#include <jpeglib.h>
+#include <jerror.h>
 
 }
 
@@ -77,9 +76,9 @@ CImage* ReadJPG( FILE* hFile, unsigned int dwFileLen ) {
 
 	if ( cinfo.src == 0 )
 	{
-	  cinfo.src=(struct jpeg_source_mgr*)(*cinfo.mem->alloc_small)((j_common_ptr)&cinfo,JPOOL_PERMANENT,SIZEOF(my_source_mgr));
+      cinfo.src=(struct jpeg_source_mgr*)(*cinfo.mem->alloc_small)((j_common_ptr)&cinfo,JPOOL_PERMANENT,sizeof(my_source_mgr));
 	  src = (my_source_mgr*)cinfo.src;
-	  src->buffer=(JOCTET *)(*cinfo.mem->alloc_small)((j_common_ptr)&cinfo,JPOOL_PERMANENT,dwFileLen*SIZEOF(JOCTET));
+      src->buffer=(JOCTET *)(*cinfo.mem->alloc_small)((j_common_ptr)&cinfo,JPOOL_PERMANENT,dwFileLen*sizeof(JOCTET));
 	}
 
         fseek( hFile, 0, SEEK_SET );

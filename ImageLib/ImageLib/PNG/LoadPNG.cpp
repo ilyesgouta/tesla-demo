@@ -2,7 +2,8 @@
 
 #include "../../ImageLib.hpp"
 #include "LoadPNG.hpp"
-#include "../../../PNGLib/png.h"
+
+#include <png.h>
 
 CImage* ReadPNG( FILE* hFile, unsigned int dwFileLen ) {
 
