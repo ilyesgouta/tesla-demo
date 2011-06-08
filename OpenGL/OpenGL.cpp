@@ -1,5 +1,7 @@
 
-#include "stdafx.h"
+#include <stdio.h>
+#include <string.h>
+
 #include "OpenGL.hpp"
 
 OpenGL_c g_cOpenGL;
@@ -13,6 +15,9 @@ OpenGL_c::OpenGL_c() {
         m_bGLContextCreated = false;
         m_bGLLibLoaded = false;
         m_hGLRC = 0;
+#ifndef WIN32
+        m_display = 0;
+#endif
 
 }
 /*******************************************************************************************/
@@ -23,31 +28,38 @@ OpenGL_c::~OpenGL_c() {
 }
 /*******************************************************************************************/
 bool OpenGL_c::LoadLib( char* pszGLLibraryName ) {
+#ifdef WIN32
+        if ( !pszGLLibraryName )
+            return false;
 
-        if ( !pszGLLibraryName ) return false;
-        if ( dynglLoad(pszGLLibraryName) != 0 ) return false;
-
+        if ( dynglLoad(pszGLLibraryName) != 0 )
+            return false;
+#endif
         m_bGLLibLoaded = true;
         return true;
 }
 /*******************************************************************************************/
 bool OpenGL_c::UnloadLib() {
 
-        if ( m_bGLContextCreated ) 
-        {
-          DestroyGLContext();
-        }
+    if ( m_bGLContextCreated )
+    {
+        DestroyGLContext();
+    }
 
-        if ( m_bGLLibLoaded ) 
-        {
-          if ( dynglUnload() != 0 ) return false;
-          m_bGLLibLoaded = false;
-          return true;
-        }
-        else
-          return false;
+    if ( m_bGLLibLoaded )
+    {
+#ifdef WIN32
+        if ( dynglUnload() != 0 )
+            return false;
+#endif
+        m_bGLLibLoaded = false;
+        return true;
+    }
+    else
+        return false;
 }
 /*******************************************************************************************/
+#ifdef WIN32
 bool OpenGL_c::CreateGLContext( HWND hWindow, int iBitsPerPixel, int iZDepthBits ) {
 
         if ( !m_bGLLibLoaded ) return false;
@@ -97,6 +109,49 @@ bool OpenGL_c::CreateGLContext( HWND hWindow, int iBitsPerPixel, int iZDepthBits
 
         return iResult;
 }
+#else
+#include <X11/Xutil.h>
+
+bool OpenGL_c::CreateGLContext( Display* display, int iBitsPerPixel, int iZDepthBits )
+{
+    if ( !m_bGLLibLoaded )
+        return false;
+
+    if ( m_bGLContextCreated )
+        return false;
+
+    XVisualInfo visual_template, *visuals = NULL;
+    int iResult = 0, count = 0;
+
+    memset(&visual_template, 0, sizeof(visual_template));
+
+    visual_template.bits_per_rgb = iBitsPerPixel;
+    visual_template.depth = iZDepthBits;
+
+    visuals = XGetVisualInfo(display, VisualDepthMask | VisualBitsPerRGBMask, &visual_template, &count);
+
+    if (!count)
+        return 0;
+
+    m_hGLRC = glXCreateContext(display, &(visuals[0]), NULL, true);
+
+    if ( m_hGLRC )
+    {
+        iResult = (glXMakeCurrent(display, 0/*drawable*/, m_hGLRC) == true);
+        dynglCheckExtensions();
+    }
+
+    if (visuals)
+        XFree(visuals);
+
+    if ( iResult ) {
+        m_display = display;
+        m_bGLContextCreated = true;
+    }
+
+    return iResult;
+}
+#endif
 /*******************************************************************************************/
 void OpenGL_c::DestroyGLContext() {
 
@@ -105,8 +160,13 @@ void OpenGL_c::DestroyGLContext() {
 
         m_bGLContextCreated = false;
 
+#ifdef WIN32
 	dynwglMakeCurrent( 0, 0 );
 	dynwglDeleteContext( m_hGLRC );
+#else
+    glXMakeCurrent( m_display, 0, 0 );
+    glXDestroyContext( m_display, m_hGLRC );
+#endif
 }
 /*******************************************************************************************/
 int OpenGL_c::UploadTexture( void* pRawData, int iTWidth, int iTHeight, int iBPP, int iCreateMipMaps ) {

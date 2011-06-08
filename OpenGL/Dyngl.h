@@ -1132,6 +1132,10 @@ typedef void GLvoid;
 #define GL_LOGIC_OP GL_INDEX_LOGIC_OP
 #define GL_TEXTURE_COMPONENTS GL_TEXTURE_INTERNAL_FORMAT
 
+#ifndef WIN32
+#define APIENTRY
+#endif
+
 /*************************************************************/
 typedef   void        (APIENTRY* pfnglAccum)                    (GLenum op, GLfloat value);
 typedef   void        (APIENTRY* pfnglAlphaFunc)                (GLenum func, GLclampf ref);
@@ -1470,6 +1474,7 @@ typedef   void        (APIENTRY* pfnglVertex4sv)                (const GLshort *
 typedef   void        (APIENTRY* pfnglVertexPointer)            (GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
 typedef   void        (APIENTRY* pfnglViewport)                 (GLint x, GLint y, GLsizei width, GLsizei height);
 
+#ifdef WIN32
 typedef   BOOL        (WINAPI*   pfnwglCopyContext)             (HGLRC, HGLRC, UINT);
 typedef   HGLRC       (WINAPI*   pfnwglCreateContext)           (HDC);
 typedef   HGLRC       (WINAPI*   pfnwglCreateLayerContext)      (HDC, int);
@@ -1482,6 +1487,7 @@ typedef   BOOL        (WINAPI*   pfnwglShareLists)              (HGLRC, HGLRC);
 typedef   BOOL        (WINAPI*   pfnwglUseFontBitmapsA)         (HDC, DWORD, DWORD, DWORD);
 typedef   BOOL        (WINAPI*   pfnwglUseFontBitmapsW)         (HDC, DWORD, DWORD, DWORD);
 typedef   BOOL        (WINAPI*   pfnwglSwapBuffers)             (HDC);
+#endif
 
 /*******************************************************************************/
 /* extensions */
@@ -1517,10 +1523,12 @@ typedef void (APIENTRY * PFNGLGETCOLORTABLEPARAMETERIVEXTPROC)
 typedef void (APIENTRY * PFNGLGETCOLORTABLEPARAMETERFVEXTPROC)
     (GLenum target, GLenum pname, GLfloat *params);
 
+#if WIN32
 typedef int   (WINAPI * pfnwglGetPixelFormat)(HDC);
 typedef BOOL  (WINAPI * pfnwglSetPixelFormat)(HDC, int, CONST PIXELFORMATDESCRIPTOR *);
 typedef int   (WINAPI * pfnwglDescribePixelFormat)(HDC, int, UINT, LPPIXELFORMATDESCRIPTOR);
 typedef int   (WINAPI * pfnwglChoosePixelFormat)(HDC, CONST PIXELFORMATDESCRIPTOR *);
+#endif
 
 extern pfnglAccum glAccum;
 extern pfnglAlphaFunc glAlphaFunc;
@@ -1859,6 +1867,7 @@ extern pfnglVertex4sv glVertex4sv;
 extern pfnglVertexPointer glVertexPointer;
 extern pfnglViewport glViewport;
 
+#ifdef WIN32
 extern pfnwglCopyContext dynwglCopyContext;
 extern pfnwglCreateContext dynwglCreateContext;
 extern pfnwglCreateLayerContext dynwglCreateLayerContext;
@@ -1876,7 +1885,7 @@ extern pfnwglGetPixelFormat dynwglGetPixelFormat;
 extern pfnwglSetPixelFormat dynwglSetPixelFormat;
 extern pfnwglDescribePixelFormat dynwglDescribePixelFormat;
 extern pfnwglChoosePixelFormat dynwglChoosePixelFormat;
-
+#endif
 
 /* extra fns */
 int

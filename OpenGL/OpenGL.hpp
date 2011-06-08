@@ -3,7 +3,20 @@
 #if !defined (_OPEN_GL_HPP_)
 #define _OPEN_GL_HPP_
 
-#include "dyngl.h"
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <X11/X.h>
+#include <GL/glx.h>
+#endif
+
+#ifdef WIN32
+#include "Dyngl.h"
+#else
+int dynglLoad(char *pszDllName);
+int dynglUnload(void);
+void dynglCheckExtensions(void);
+#endif
 
 class OpenGL_c {
 
@@ -13,7 +26,11 @@ public:
 
         /* default: 'opengl32.dll' */
         bool LoadLib( char* pszGLLibraryName );
+#ifdef WIN32
         bool CreateGLContext( HWND hWindow, int iBitsPerPixel, int iZDepthBits );
+#else
+        bool CreateGLContext( Display* display, int iBitsPerPixel, int iZDepthBits );
+#endif
         void DestroyGLContext();
 
         /* dont call this on window messages with gl context created!
@@ -31,7 +48,12 @@ protected:
         bool m_bGLContextCreated;
         bool m_bGLLibLoaded;
 
+#if WIN32
         HGLRC m_hGLRC;
+#else
+        GLXContext m_hGLRC;
+        Display *m_display;
+#endif
 };
 
 extern OpenGL_c g_cOpenGL;

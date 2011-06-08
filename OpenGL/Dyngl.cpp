@@ -1,6 +1,13 @@
-
+#ifdef WIN32
 #include "stdafx.h"
+#endif
 
+#ifndef WIN32
+#include <GL/gl.h>
+#include <string.h>
+#endif
+
+#ifdef WIN32
 extern "C" {
 
 static HMODULE hOpenGLDLL = 0;
@@ -781,6 +788,7 @@ dynglUnload(void)
  hOpenGLDLL = 0;
  return 0;
 }
+#endif
 
 int dyngl_GL_EXT_clip_volume_hint = 0;
 int dyngl_GL_EXT_texture_env_add = 0;
@@ -788,6 +796,7 @@ int dyngl_GL_EXT_texture_env_combine = 0;
 int dyngl_GL_NV_texture_env_combine4 = 0;
 int dyngl_GL_ARB_multitexture = 0;
 
+#ifdef WIN32
 PFNGLMULTITEXCOORD1DARBPROC glMultiTexCoord1dARB;
 PFNGLMULTITEXCOORD1DVARBPROC glMultiTexCoord1dvARB;
 PFNGLMULTITEXCOORD1FARBPROC glMultiTexCoord1fARB;
@@ -822,7 +831,7 @@ PFNGLMULTITEXCOORD4SARBPROC glMultiTexCoord4sARB;
 PFNGLMULTITEXCOORD4SVARBPROC glMultiTexCoord4svARB;
 PFNGLACTIVETEXTUREARBPROC glActiveTextureARB;
 PFNGLCLIENTACTIVETEXTUREARBPROC glClientActiveTextureARB;
-
+#endif
 
 void
 dynglCheckExtensions(void)
@@ -850,6 +859,7 @@ dynglCheckExtensions(void)
  if (strstr((char*)glGetString(GL_EXTENSIONS), "GL_ARB_multitexture"))
     {
      dyngl_GL_ARB_multitexture = 1;
+#ifdef WIN32
      GETEXADDR(PFNGLMULTITEXCOORD1DARBPROC, glMultiTexCoord1dARB, "glMultiTexCoord1dARB");
      GETEXADDR(PFNGLMULTITEXCOORD1DVARBPROC, glMultiTexCoord1dvARB, "glMultiTexCoord1dvARB");
      GETEXADDR(PFNGLMULTITEXCOORD1FARBPROC, glMultiTexCoord1fARB, "glMultiTexCoord1fARB");
@@ -884,10 +894,13 @@ dynglCheckExtensions(void)
      GETEXADDR(PFNGLMULTITEXCOORD4SVARBPROC, glMultiTexCoord4svARB, "glMultiTexCoord4svARB");
      GETEXADDR(PFNGLACTIVETEXTUREARBPROC, glActiveTextureARB, "glActiveTextureARB");
      GETEXADDR(PFNGLCLIENTACTIVETEXTUREARBPROC, glClientActiveTextureARB, "glClientActiveTextureARB");
+#endif
     }
  else
     dyngl_GL_ARB_multitexture = 0;
 
 }
 
+#ifdef WIN32
 }
+#endif
