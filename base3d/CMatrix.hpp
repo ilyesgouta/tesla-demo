@@ -4,6 +4,8 @@
 #if !defined(_CMatrix_hpp_)
 #define _CMatrix_hpp_
 
+#include <string.h>
+
 #include  "CVector.hpp"
 
 #define M_00             0
@@ -23,123 +25,117 @@
 #define M_32            14
 #define M_33            15
 
-//************************************************************************************
 class CBase : public CVector {
 public:
-        CBase() : CVector() {}
-        CBase(float X, float Y, float Z, float W) : CVector(X, Y, Z) {
-          fW = W;
-        }
+    CBase() : CVector() {}
 
-	CBase(CVector& cV) {
-	  *this = cV;
-	}
+    CBase(float X, float Y, float Z, float W) : CVector(X, Y, Z) {
+        fW = W;
+    }
 
-        float fW;
+    CBase(CVector& cV) {
+        *this = cV;
+    }
 
-        CBase operator = (CVector& cV) {
-          fX = cV.fX;
-          fY = cV.fY;
-          fZ = cV.fZ;
-          return *this;
-        }
+    float fW;
 
-        float Dot( CVector& cV ) {
-          return fX*cV.fX + fY*cV.fY + fZ*cV.fZ + fW;
-        }
+    CBase operator = (const CVector& cV) {
+        fX = cV.fX;
+        fY = cV.fY;
+        fZ = cV.fZ;
+        return *this;
+    }
 
-        float Dot( CBase& cV ) {
-          return fX*cV.fX + fY*cV.fY + fZ*cV.fZ + fW*cV.fW;
-        }
+    float Dot( CVector& cV ) {
+        return fX * cV.fX + fY * cV.fY + fZ * cV.fZ + fW;
+    }
+
+    float Dot( CBase& cV ) {
+        return fX * cV.fX + fY * cV.fY + fZ * cV.fZ + fW * cV.fW;
+    }
 };
-//************************************************************************************
+
 class CMatrix
 {
 public:
-        union {
-
-          struct {
+    union m__ {
+        m__() { memset(aMatrix, 0, sizeof(aMatrix)); }
+        struct sMatrix {
             CBase stBaseX;
             CBase stBaseY;
             CBase stBaseZ;
             CBase stBaseW;
-          };
+        } sMatrix;
+        float aMatrix[16];
+    } m_;
 
-          float aMatrix[16];
-        };
+    CMatrix() { }
 
 	void Identity() {
-
-	  stBaseX = CBase(1, 0, 0, 0);
-	  stBaseY = CBase(0, 1, 0, 0);
-	  stBaseZ = CBase(0, 0, 1, 0);
-	  stBaseW = CBase(0, 0, 0, 1);
+        m_.sMatrix.stBaseX = CBase(1, 0, 0, 0);
+        m_.sMatrix.stBaseY = CBase(0, 1, 0, 0);
+        m_.sMatrix.stBaseZ = CBase(0, 0, 1, 0);
+        m_.sMatrix.stBaseW = CBase(0, 0, 0, 1);
 	}
 
-	CMatrix& operator *= (CMatrix& cM) {
-	  CMatrix cT;
-	  for (int i = 0; i != 4; i++)
-	    for (int j = 0; j != 4; j++) {
-	      cT.aMatrix[j*4 + i] = aMatrix[i + 0*4]*cM.aMatrix[j*4 + 0] +
-				    aMatrix[i + 1*4]*cM.aMatrix[j*4 + 1] +
-				    aMatrix[i + 2*4]*cM.aMatrix[j*4 + 2] +
-				    aMatrix[i + 3*4]*cM.aMatrix[j*4 + 3];
+    CMatrix& operator *= (CMatrix& cM) {
+        CMatrix cT;
+        for (int i = 0; i != 4; i++)
+            for (int j = 0; j != 4; j++) {
+                cT.m_.aMatrix[j * 4 + i] = m_.aMatrix[i + 0 * 4] * cM.m_.aMatrix[j * 4 + 0] +
+                                           m_.aMatrix[i + 1 * 4] * cM.m_.aMatrix[j * 4 + 1] +
+                                           m_.aMatrix[i + 2 * 4] * cM.m_.aMatrix[j * 4 + 2] +
+                                           m_.aMatrix[i + 3 * 4] * cM.m_.aMatrix[j * 4 + 3];
+            }
 
-	    }
-
-	    *this = cT;
-	    return *this;
-	}
+        *this = cT;
+        return *this;
+    }
 
 	CMatrix operator * (CMatrix& cM2) const {
-	  CMatrix cT;
-	
-	  for (int i = 0; i != 4; i++)
-	    for (int j = 0; j != 4; j++) {
-	      cT.aMatrix[j*4 + i] = aMatrix[i + 0*4]*cM2.aMatrix[j*4 + 0] +
-				    aMatrix[i + 1*4]*cM2.aMatrix[j*4 + 1] +
-				    aMatrix[i + 2*4]*cM2.aMatrix[j*4 + 2] +
-				    aMatrix[i + 3*4]*cM2.aMatrix[j*4 + 3];
+        CMatrix cT;
 
-	    }
-	
+        for (int i = 0; i != 4; i++)
+            for (int j = 0; j != 4; j++) {
+                cT.m_.aMatrix[j * 4 + i] = m_.aMatrix[i + 0 * 4] * cM2.m_.aMatrix[j * 4 + 0] +
+                                           m_.aMatrix[i + 1 * 4] * cM2.m_.aMatrix[j * 4 + 1] +
+                                           m_.aMatrix[i + 2 * 4] * cM2.m_.aMatrix[j * 4 + 2] +
+                                           m_.aMatrix[i + 3 * 4] * cM2.m_.aMatrix[j * 4 + 3];
+            }
 
-	  return cT;
-	}
+        return cT;
+    }
 
-        void Inverse();
-        void Inverse( CMatrix& cSrc ) {
-          *this = cSrc;
-          Inverse();
-        }
+    void Inverse();
 
-        void Transpose();
+    void Inverse( CMatrix& cSrc ) {
+        *this = cSrc;
+        Inverse();
+    }
 
-        /* adds translate to result */
-        void MulVertices( CVector* pDestVertices, CVector* pSrcVertices, int iCount );
+    void Transpose();
 
-        CVector operator * ( CVector& cV ) {
-          
-          CVector cRes;
-          cRes.fX = cV.fX*stBaseX.fX + cV.fY*stBaseY.fX + cV.fZ*stBaseZ.fX + stBaseW.fX;
-          cRes.fY = cV.fX*stBaseX.fY + cV.fY*stBaseY.fY + cV.fZ*stBaseZ.fY + stBaseW.fY;
-          cRes.fZ = cV.fX*stBaseX.fZ + cV.fY*stBaseY.fZ + cV.fZ*stBaseZ.fZ + stBaseW.fZ;
-          return cRes;
-        };
+    /* adds translate to result */
+    void MulVertices( CVector* pDestVertices, CVector* pSrcVertices, int iCount );
 
-        /* doesnt add translate to result */
-        void MulVectors( CVector* pDestVectors, CVector* pSrcVectors, int iCount );
+    CVector operator * ( CVector& cV ) {
+        CVector cRes;
+        cRes.fX = cV.fX * m_.sMatrix.stBaseX.fX + cV.fY * m_.sMatrix.stBaseY.fX + cV.fZ * m_.sMatrix.stBaseZ.fX + m_.sMatrix.stBaseW.fX;
+        cRes.fY = cV.fX * m_.sMatrix.stBaseX.fY + cV.fY * m_.sMatrix.stBaseY.fY + cV.fZ * m_.sMatrix.stBaseZ.fY + m_.sMatrix.stBaseW.fY;
+        cRes.fZ = cV.fX * m_.sMatrix.stBaseX.fZ + cV.fY * m_.sMatrix.stBaseY.fZ + cV.fZ * m_.sMatrix.stBaseZ.fZ + m_.sMatrix.stBaseW.fZ;
+        return cRes;
+    }
 
-        CVector operator << ( CVector& cV ) {
+    /* doesnt add translate to result */
+    void MulVectors( CVector* pDestVectors, CVector* pSrcVectors, int iCount );
 
-          CVector cRes;
-          cRes.fX = cV.fX*stBaseX.fX + cV.fY*stBaseY.fX + cV.fZ*stBaseZ.fX;
-          cRes.fY = cV.fX*stBaseX.fY + cV.fY*stBaseY.fY + cV.fZ*stBaseZ.fY;
-          cRes.fZ = cV.fX*stBaseX.fZ + cV.fY*stBaseY.fZ + cV.fZ*stBaseZ.fZ;
-          return cRes;
-
-        }
+    CVector operator << ( CVector& cV ) {
+        CVector cRes;
+        cRes.fX = cV.fX * m_.sMatrix.stBaseX.fX + cV.fY * m_.sMatrix.stBaseY.fX + cV.fZ * m_.sMatrix.stBaseZ.fX;
+        cRes.fY = cV.fX * m_.sMatrix.stBaseX.fY + cV.fY * m_.sMatrix.stBaseY.fY + cV.fZ * m_.sMatrix.stBaseZ.fY;
+        cRes.fZ = cV.fX * m_.sMatrix.stBaseX.fZ + cV.fY * m_.sMatrix.stBaseY.fZ + cV.fZ * m_.sMatrix.stBaseZ.fZ;
+        return cRes;
+    }
 };
-//************************************************************************************
 
 #endif	

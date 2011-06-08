@@ -23,12 +23,12 @@ public:
           cV.fX = x; cV.fY = y; cV.fZ = z; fScalar = w;
         }
 
-        CQuaternion( CVector& cVector, float fS ) {
+        CQuaternion( const CVector& cVector, float fS ) {
           cV = cVector;
           fScalar = fS;
         }
 
-        CQuaternion( CQuaternion& cQ ) {
+        CQuaternion( const CQuaternion& cQ ) {
           *this = cQ;
         }
 
@@ -45,7 +45,7 @@ public:
           return *this;
         }
 
-        CQuaternion operator + ( CQuaternion& cQ1 ) const {
+        CQuaternion operator + ( const CQuaternion& cQ1 ) const {
           return CQuaternion( cV.fX + cQ1.cV.fX, cV.fY + cQ1.cV.fY, cV.fZ + cQ1.cV.fZ, fScalar + cQ1.fScalar );
         }
 

@@ -116,32 +116,32 @@ public:
           return *this;
         }
 
-        CVector operator + (CVector& cV1) const
+        CVector operator + (const CVector& cV1) const
         {
           return CVector(cV1.fX + fX, cV1.fY + fY, cV1.fZ + fZ);
         }
 
-        CVector operator - (CVector& cV2) const
+        CVector operator - (const CVector& cV2) const
         {
           return CVector(fX - cV2.fX, fY - cV2.fY, fZ - cV2.fZ);
         }
 
-        CVector operator * (CVector& cV2) const
+        CVector operator * (const CVector& cV2) const
         {
           return CVector(fX*cV2.fX, fY*cV2.fY, fZ*cV2.fZ);
         }
 
-        friend CVector operator * (CVector& cV1, float fVal)
+        friend CVector operator * (const CVector& cV1, float fVal)
         {
           return CVector(cV1.fX*fVal, cV1.fY*fVal, cV1.fZ*fVal);
         }
 
-        float operator | (CVector& cV2) const
+        float operator | (const CVector& cV2) const
         {
           return (fX*cV2.fX + fY*cV2.fY + fZ*cV2.fZ);
         }
 
-        CVector operator ^ (CVector& cV2) const
+        CVector operator ^ (const CVector& cV2) const
         {
           return CVector(fY*cV2.fZ + fZ*cV2.fY, fZ*cV2.fX + fX*cV2.fZ, fX*cV2.fY + fY*cV2.fX);
         }
