@@ -2,7 +2,6 @@
 bin_PROGRAMS = tesla-demo
 
 include_HEADERS = \
-    OpenGL/Dyngl.h \
     load3ds/3ds.h \
     load3ds/Load3ds.h \
     3dlib/Motion.h \
@@ -35,7 +34,6 @@ tesla_demo_SOURCES = \
     base3d/Camera.cpp \
     base3d/CMatrix.cpp \
     base3d/Quaternion.cpp \
-    ImageLib/TestLib/TestLib.cpp \
     ImageLib/ImageLib/Tga/LoadTGA.cpp \
     ImageLib/ImageLib/PNG/LoadPNG.cpp \
     ImageLib/ImageLib/JPEG/Loadjpg.cpp \
