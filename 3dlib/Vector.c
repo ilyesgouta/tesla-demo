@@ -5,7 +5,7 @@
 // float math / vectors
 
 #include	<math.h>
-#include	"vector.h"
+#include	"Vector.h"
 
 /******************************************************************** CODE */
 

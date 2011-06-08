@@ -7,7 +7,7 @@
 #define MaxValue	268435456.0
 
 #include	"../3dlib/3dlib.h"
-#include        "../3dlib/matrix.h"
+#include        "../3dlib/Matrix.h"
 #include	"3ds.h"
 
 extern void mtrxVecMulMatrix_(vector_t *v,const matrix_t *m);

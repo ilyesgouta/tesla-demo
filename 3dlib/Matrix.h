@@ -6,10 +6,10 @@
 #ifndef _MATRIX_H_INCLUDED_
 #define _MATRIX_H_INCLUDED_
 
-#pragma warning(disable: 4201)
+//#pragma warning(disable: 4201)
 
 #include	<math.h>
-#include	"vector.h"
+#include	"Vector.h"
 
 #ifdef __cplusplus
 extern "C" {

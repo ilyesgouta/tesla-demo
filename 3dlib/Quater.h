@@ -8,10 +8,10 @@
 
 #include	<math.h>
 
-#pragma warning(disable : 4201)
+//#pragma warning(disable : 4201)
 
-#include	"vector.h"
-#include	"matrix.h"
+#include	"Vector.h"
+#include	"Matrix.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -6,8 +6,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include	"vector.h"
-#include	"matrix.h"
+#include	"Vector.h"
+#include	"Matrix.h"
 
 /******************************************************************** CODE */
 

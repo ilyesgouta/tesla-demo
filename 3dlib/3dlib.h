@@ -34,11 +34,11 @@ enum
 	_DUMMY		=	0x06,
 };
 
-#include	"vector.h"
-#include	"matrix.h"
-#include	"quater.h"
-#include	"map.h"
-#include	"motion.h"
+#include	"Vector.h"
+#include	"Matrix.h"
+#include	"Quater.h"
+#include	"Map.h"
+#include	"Motion.h"
 
 
 #ifdef	__cplusplus

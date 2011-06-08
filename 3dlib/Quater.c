@@ -5,8 +5,8 @@
 // float math / quaternions
 
 #include	<math.h>
-#include	"matrix.h"
-#include	"quater.h"
+#include	"Matrix.h"
+#include	"Quater.h"
 
 /******************************************************************** CODE */
 

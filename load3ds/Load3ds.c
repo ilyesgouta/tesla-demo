@@ -9,7 +9,7 @@
 #include	<string.h>
 
 #include	"../3dlib/3dlib.h"
-#include	"load3ds.h"
+#include	"Load3ds.h"
 
 extern ReadMaterials(scene_t *scene,void *data3ds);
 extern ReadMeshData(scene_t *scene,void *data3ds);

@@ -1,7 +1,7 @@
 
 #include "ImageLib.hpp"
-#include "ImageLib/JPEG/LoadJPG.hpp"
-#include "ImageLib/TGA/LoadTGA.hpp"
+#include "ImageLib/JPEG/Loadjpg.hpp"
+#include "ImageLib/Tga/LoadTGA.hpp"
 #include "ImageLib/PNG/LoadPNG.hpp"
 
 
