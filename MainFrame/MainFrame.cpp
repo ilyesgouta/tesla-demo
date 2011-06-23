@@ -1,20 +1,32 @@
 
+#ifdef WIN32
 #include "stdafx.h"
+#endif
+
+#include "MainFrame.hpp"
+
+#include <stdarg.h>
 
 MainFrame_c* g_pMainFrame = 0;
 
 /************************************************************************************/
 static void ErrorMessage( char* pszErrorMessage ) {
-
+#ifdef WIN32
       MessageBox( 0, pszErrorMessage, "Error...", MB_ICONERROR );  
+#else
+    printf("%s\n", pszErrorMessage);
+#endif
 }
 
 /************************************************************************************/
+#ifdef WIN32
 LRESULT CALLBACK MainWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
   
         return g_pMainFrame->WindowProc( hWnd, uMsg, wParam, lParam );
 }
+#endif
 /************************************************************************************/
+#ifdef WIN32
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int iShowCmd ) {
 
         MSG stMsg;
@@ -71,6 +83,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
         return 0;
 }
+#endif
 /************************************************************************************/
 
 
@@ -80,8 +93,9 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 // MAIN FRAME
 /************************************************************************************/
 MainFrame_c::MainFrame_c() {
-
+#ifdef WIN32
         m_hWnd = 0;
+#endif
         m_iError = 0;
         m_szErrorMessage[0] = 0;  
         m_bWindowActive = true;
@@ -105,15 +119,19 @@ MainFrame_c::~MainFrame_c() {
         if ( m_iError ) ErrorMessage( m_szErrorMessage );
 }
 /************************************************************************************/
+#ifdef WIN32
 void MainFrame_c::SetWindowHandle( HWND hWnd ) {
         
         m_hWnd = hWnd;
 }
+#endif
 /************************************************************************************/
+#ifdef WIN32
 HWND MainFrame_c::GetWindowHandle() const {
   
         return m_hWnd;
 }
+#endif
 /************************************************************************************/
 void MainFrame_c::ErrorQuit( char* pszErrMsg, ... ) {
 
@@ -126,6 +144,7 @@ void MainFrame_c::ErrorQuit( char* pszErrMsg, ... ) {
         m_iError = 1;
 }
 /************************************************************************************/
+#ifdef WIN32
 bool MainFrame_c::InitWindow( HINSTANCE hInstance ) {
 
         WNDCLASS    stWndClass;
@@ -221,7 +240,14 @@ bool MainFrame_c::InitWindow( HINSTANCE hInstance ) {
 
         return true;  
 }
+#else
+bool MainFrame_c::InitWindow()
+{
+    return true;
+}
+#endif
 /************************************************************************************/
+#ifdef WIN32
 LRESULT MainFrame_c::WindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
   
         switch ( uMsg )
@@ -296,6 +322,7 @@ LRESULT MainFrame_c::WindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
         return DefWindowProc( hWnd, uMsg, wParam, lParam );
 }
+#endif
 /************************************************************************************/
 
 
@@ -324,10 +351,12 @@ Timer_c::Timer_c() {
         m_fTimeAppStart = 0;
         m_fTimeDelta = 0;
 
+#ifdef WIN32
         if ( !QueryPerformanceFrequency((LARGE_INTEGER*)&m_liTimeFreq) )
         {
           // fix: exit app and tell the user that he doesnt have requested hardware;
         }
+#endif
 }
 /************************************************************************************/
 Timer_c::~Timer_c() {
@@ -335,14 +364,15 @@ Timer_c::~Timer_c() {
 }
 /************************************************************************************/
 bool Timer_c::InitTimer() {
-
+#ifdef WIN32
         QueryPerformanceCounter( (LARGE_INTEGER*)&m_liTimeStart );
         m_fTimeAppStart = (float)m_liTimeStart/m_liTimeFreq;
+#endif
         return true;
 }
 /************************************************************************************/
 void Timer_c::Update() {
-
+#ifdef WIN32
         m_liTimePrev = m_liTimeCurrent;
         QueryPerformanceCounter( (LARGE_INTEGER*)&m_liTimeCurrent );
         m_liTimeCurrent -= m_liTimeStart;
@@ -351,17 +381,6 @@ void Timer_c::Update() {
         m_fTimeCurrent = (float)m_liTimeCurrent/m_liTimeFreq;
 
         m_fTimeDelta = m_fTimeCurrent - m_fTimePrev;
+#endif
 }
 /************************************************************************************/
-
-
-
-
-
-
-
-
-
-
-
-

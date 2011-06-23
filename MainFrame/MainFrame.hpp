@@ -3,7 +3,15 @@
 #if !defined (__MAIN_FRAME_HPP__)
 #define __MAIN_FRAME_HPP__
 
+#ifdef WIN32
 #include <windows.h>
+#else
+#include <X11/X.h>
+#endif
+
+#include <EGL/egl.h>
+#include <EGL/eglplatform.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -57,10 +65,17 @@ protected:
         float m_fTimeAppStart;
 
 private:
+#ifdef WIN32
         _int64 m_liTimeFreq;
         _int64 m_liTimePrev;
         _int64 m_liTimeCurrent;
         _int64 m_liTimeStart;
+#else
+        long long m_liTimeFreq;
+        long long m_liTimePrev;
+        long long m_liTimeCurrent;
+        long long m_liTimeStart;
+#endif
 
 };
 
@@ -77,9 +92,11 @@ public:
         virtual bool OnPaint();
         virtual bool OnDestroy();
 
+#ifdef WIN32
         /* main frame states */
         virtual void SetWindowHandle( HWND hWnd );
         virtual HWND GetWindowHandle() const;
+#endif
 
         void SetWindowName( char* pszWindowName ) {
           if ( pszWindowName )
@@ -99,12 +116,14 @@ public:
         }
         bool GetFullScreen() { return m_bFullScreen; }
 
+#ifdef WIN32
         /* create window */
         virtual bool InitWindow( HINSTANCE hInstance );
-
-        /* message callback */        
+        /* message callback */
         virtual LRESULT WindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
-
+#else
+        virtual bool InitWindow();
+#endif
 
         int GetLastError() {
           return m_iError;
@@ -122,8 +141,13 @@ public:
 
 protected:
         /* windows crap */
+#ifdef WIN32
         HINSTANCE m_hInstance; // app instance
         HWND m_hWnd; // main window handle
+#else
+        Display *xdisplay;
+        Window xwindow;
+#endif
         bool m_bWindowActive;
         bool m_bFullScreen;
         bool m_bMessageBased;
