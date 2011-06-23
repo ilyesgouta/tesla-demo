@@ -5,6 +5,7 @@
 #define _INLINE_3D_HPP_
 
 static inline void clamp(float* pData) {
+#ifdef WIN32
         __asm  {
           mov eax, [pData]
           cmp dword ptr [eax], 0x3f800000
@@ -16,6 +17,17 @@ static inline void clamp(float* pData) {
 __setone: mov dword ptr [eax], 0x3f800000
 __skip:
         }
+#else
+    float f = *pData;
+
+    if (f > 1.0f)
+        f = 1.0f;
+
+    if (f < 0.0f)
+        f = 0.0f;
+
+    *pData = f;
+#endif
 }
 
 #endif
