@@ -1,6 +1,13 @@
-
+#ifdef WIN32
 #include "stdafx.h"
+#endif
+
+#include <GLES/gl.h>
+
 #include "Tree.hpp"
+
+extern CTextureManager g_cTexManager;
+extern MainFrame_c* g_pMainFrame;
 
 #define SCENE_NAME "data/3d/kbuu2.3ds"
 //#define SCENE_NAME "data/3d/testobj.3ds"
@@ -27,7 +34,7 @@ CTree::CTree() {
         m_pVertices = new CVector[m_pScene->objects[0].nvertices];
         m_pUVMap = new CTexel[m_pScene->objects[0].nvertices];
         m_iVertices = m_pScene->objects[0].nvertices;
-        m_pFaces = new int[3*m_pScene->objects[0].nfaces];
+        m_pFaces = new unsigned short[3*m_pScene->objects[0].nfaces];
         m_iFaces = m_pScene->objects[0].nfaces;
 
         face_t* pFace = m_pScene->objects[0].faces;
@@ -43,9 +50,9 @@ CTree::CTree() {
 
         for ( i = 0; i != m_pScene->objects[0].nfaces; i++ )
         {
-          m_pFaces[3*i + 0] = ((int)pFace->vertices[0] - (int)pVertex)/sizeof(vertex_t);
-          m_pFaces[3*i + 1] = ((int)pFace->vertices[1] - (int)pVertex)/sizeof(vertex_t);
-          m_pFaces[3*i + 2] = ((int)pFace->vertices[2] - (int)pVertex)/sizeof(vertex_t);
+          m_pFaces[3*i + 0] = ((long)pFace->vertices[0] - (long)pVertex)/sizeof(vertex_t);
+          m_pFaces[3*i + 1] = ((long)pFace->vertices[1] - (long)pVertex)/sizeof(vertex_t);
+          m_pFaces[3*i + 2] = ((long)pFace->vertices[2] - (long)pVertex)/sizeof(vertex_t);
           pFace++;
         }
 
@@ -72,7 +79,7 @@ void CTree::Do( float fTime, float fTimeStart ) {
 
         glMatrixMode( GL_PROJECTION );
         glLoadIdentity();
-        glFrustum( -.6f, .6f, -.45f, .45f, 1, 1000 );
+        glFrustumf( -.6f, .6f, -.45f, .45f, 1, 1000 );
 
         glMatrixMode( GL_TEXTURE );
         glLoadIdentity();
@@ -150,7 +157,7 @@ void CTree::Do( float fTime, float fTimeStart ) {
         glTranslatef( fTime*.1, fTime*.5, 0 );
 
         glBindTexture( GL_TEXTURE_2D, m_iGLTex1 );
-        glDrawElements( GL_TRIANGLES, m_iFaces*3, GL_UNSIGNED_INT, m_pFaces );
+        glDrawElements( GL_TRIANGLES, m_iFaces*3, GL_UNSIGNED_SHORT, m_pFaces );
 
         glLoadIdentity();
         glMatrixMode( GL_MODELVIEW );

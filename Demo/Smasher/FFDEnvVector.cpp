@@ -1,16 +1,19 @@
-
+#ifdef WIN32
 #include "stdafx.h"
+#endif
+
 #include "FFDEnvVector.hpp"
 
 #include "Stuff.hpp"
 
+#include <GLES/gl.h>
 
 #define SCENE_OBJ_START 0
 
 
 static float l_fChangeTime3 = 18.3;
 
-
+extern CTextureManager g_cTexManager;
 
 /******************************************************************************************/
 static inline CVector LerpVertex( vertex_t& cV1, vertex_t& cV2, float t ) {
@@ -38,7 +41,7 @@ CFFDEnv::CFFDEnv() {
 
         face_t* pFace = m_pScene->objects[SCENE_OBJ_START].faces;
         m_iFaces = m_pScene->objects[SCENE_OBJ_START].nfaces;
-        m_pFaces = new int[3*m_iFaces];
+        m_pFaces = new unsigned short[3*m_iFaces];
 
         m_iVertices = m_pScene->objects[SCENE_OBJ_START].nvertices;
         m_pVertices = new CVector[m_iVertices];
@@ -49,17 +52,17 @@ CFFDEnv::CFFDEnv() {
         vertex_t* pVertices = m_pScene->objects[SCENE_OBJ_START].vertices;
 
 
-        for ( int i = 0; i != m_iFaces; i++ )
+        for ( long i = 0; i != m_iFaces; i++ )
         {
-          m_pFaces[3*i + 0] = ((int)pFace[i].vertices[0] - (int)pVertices)/sizeof(vertex_t);
+          m_pFaces[3*i + 0] = ((long)pFace[i].vertices[0] - (long)pVertices)/sizeof(vertex_t);
           m_pUV[m_pFaces[3*i + 0]].fU = pFace[i].maptexel[0]->u;
           m_pUV[m_pFaces[3*i + 0]].fV = pFace[i].maptexel[0]->v;
 
-          m_pFaces[3*i + 1] = ((int)pFace[i].vertices[1] - (int)pVertices)/sizeof(vertex_t);
+          m_pFaces[3*i + 1] = ((long)pFace[i].vertices[1] - (long)pVertices)/sizeof(vertex_t);
           m_pUV[m_pFaces[3*i + 1]].fU = pFace[i].maptexel[1]->u;
           m_pUV[m_pFaces[3*i + 1]].fV = pFace[i].maptexel[1]->v;
 
-          m_pFaces[3*i + 2] = ((int)pFace[i].vertices[2] - (int)pVertices)/sizeof(vertex_t);
+          m_pFaces[3*i + 2] = ((long)pFace[i].vertices[2] - (long)pVertices)/sizeof(vertex_t);
           m_pUV[m_pFaces[3*i + 2]].fU = pFace[i].maptexel[2]->u;
           m_pUV[m_pFaces[3*i + 2]].fV = pFace[i].maptexel[2]->v;
         }
@@ -68,7 +71,7 @@ CFFDEnv::CFFDEnv() {
 
         pVertices = m_pScene->objects[u].vertices;
         
-        for ( i = 0; (uint)i != m_pScene->objects[u].nvertices; i++ )
+        for (long i = 0; i != m_pScene->objects[u].nvertices; i++ )
         {
           m_pVertices[i] = (CVector&)pVertices[i].vlocal;
           m_pNormals[i] = ((CVector&)pVertices[i].wlocal);
@@ -95,7 +98,7 @@ void CFFDEnv::Do( float fTime, float fTimeStart ) {
 
         glMatrixMode( GL_PROJECTION );
         glLoadIdentity();
-        glFrustum( -.6f, .6f, -.45f, .45f, 1, 1000 );
+        glFrustumf( -.6f, .6f, -.45f, .45f, 1, 1000 );
 
         glMatrixMode( GL_MODELVIEW );
         glLoadIdentity();
@@ -123,8 +126,8 @@ void CFFDEnv::Do( float fTime, float fTimeStart ) {
         glRotatef( fTime*45, 0, 0, 1 );
         glRotatef( 90, 1, 0, 0 );
 
-        glGetFloatv( GL_MODELVIEW_MATRIX, cCamRot.aMatrix );
-        cCamRot.stBaseW = CBase(0, 0, 0, 1);
+        glGetFloatv( GL_MODELVIEW_MATRIX, cCamRot.m_.aMatrix );
+        cCamRot.m_.sMatrix.stBaseW = CBase(0, 0, 0, 1);
 
         /* calc morphing */
         float fT = fmod(fTime*.5, 1);
@@ -159,18 +162,18 @@ void CFFDEnv::Do( float fTime, float fTimeStart ) {
         glTexCoordPointer( 2, GL_FLOAT, 0, m_pUV );
         glColor4f( 1, 1, 1, 1*fAlpha );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-        glDrawElements( GL_TRIANGLES, m_iFaces*3, GL_UNSIGNED_INT, m_pFaces );
+        glDrawElements( GL_TRIANGLES, m_iFaces*3, GL_UNSIGNED_SHORT, m_pFaces );
 
         /* env */
         glBindTexture( GL_TEXTURE_2D, m_iGLTex1 );
         glTexCoordPointer( 2, GL_FLOAT, 0, m_pEnvUV );
         glColor4f( 1, 1, 1, 1*fAlpha );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE );
-        glDrawElements( GL_TRIANGLES, m_iFaces*3, GL_UNSIGNED_INT, m_pFaces );
+        glDrawElements( GL_TRIANGLES, m_iFaces*3, GL_UNSIGNED_SHORT, m_pFaces );
 
         glMatrixMode( GL_PROJECTION );
         glLoadIdentity();
-        glOrtho( 0, 1, 0, 1, -1, 1 );
+        glOrthof( 0, 1, 0, 1, -1, 1 );
 
         glMatrixMode( GL_MODELVIEW );
         glLoadIdentity();
@@ -180,6 +183,9 @@ void CFFDEnv::Do( float fTime, float fTimeStart ) {
         glBindTexture( GL_TEXTURE_2D, m_iGLTexBlend );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glColor4f( 1, 1, 1, 1*fAlpha );
+
+        // TODO: GLES 1.1 doesn't have glBegin(), glEnd(), glTexCoord2f() and glVertex3f(). Also only vertex buffers are supported.
+#if 0
         glBegin( GL_QUADS );
 
         glTexCoord2f( 0, 0 );
@@ -192,7 +198,7 @@ void CFFDEnv::Do( float fTime, float fTimeStart ) {
         glVertex3f( 0, 1, 0 );
 
         glEnd();
-
+#endif
 
         CDarkQuads cQ;
 

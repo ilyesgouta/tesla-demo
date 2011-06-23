@@ -2,6 +2,15 @@
 #if !defined (_FFD_ENV_VECTOR_HPP_)
 #define _FFD_ENV_VECTOR_HPP_
 
+#include "3dlib/3dlib.h"
+#include "base3d/CVector.hpp"
+#include "base3d/CTexel.hpp"
+#include "base3d/CColor.hpp"
+#include "base3d/CMatrix.hpp"
+#include "load3ds/Load3ds.h"
+
+#include "TexManager.hpp"
+
 #include "Effect.hpp"
 
 class CFFDEnv : public CEffect {
@@ -26,8 +35,8 @@ protected:
         CTexel* m_pEnvUV;
         int m_iVertices;
 
-        int* m_pFaces;
+        unsigned short* m_pFaces; // TODO: should this be signed?
         int m_iFaces;
 };
 
-#endif /* _FACE_MORPH_HPP_ */s
+#endif /* _FACE_MORPH_HPP_ */

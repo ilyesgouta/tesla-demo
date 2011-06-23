@@ -1,7 +1,12 @@
+#ifdef WIN32
 #include "stdafx.h"
+#endif
+
+#include <stdlib.h>
+
 #include "Bands.hpp"
 
-
+#include <GLES/gl.h>
 
 static float frand(void)
 {
@@ -201,7 +206,7 @@ CBands::Do(float fTime, float fTimeStart)
 
  glMatrixMode(GL_PROJECTION);
  glLoadIdentity();
- glFrustum(-0.5, 0.5, 
+ glFrustumf(-0.5, 0.5,
            -0.375, 0.375, 
            -BAND_NEAR_PLANE, -BAND_FAR_PLANE);
  glMatrixMode(GL_MODELVIEW);

@@ -3,6 +3,8 @@
 #if !defined (_TEXTURE_MANAGER_HPP_)
 #define _TEXTURE_MANAGER_HPP_
 
+#include <stdlib.h>
+#include <strings.h>
 
 class CTextureManager {
 
@@ -20,7 +22,8 @@ public:
         }
 
         ~CTexture() {
-          if ( m_pszFileName ) free( m_pszFileName );
+          if ( m_pszFileName )
+              free( m_pszFileName );
         }
 
 protected:
@@ -67,7 +70,11 @@ protected:
 
           while ( pTexture )
           {
+#ifdef WIN32
             if ( !stricmp(pTexture->m_pszFileName, pszName) ) return pTexture;
+#else
+            if ( !strcasecmp(pTexture->m_pszFileName, pszName) ) return pTexture;
+#endif
             pTexture = pTexture->m_pNext;
           }
 

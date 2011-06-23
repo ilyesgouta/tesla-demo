@@ -1,6 +1,16 @@
 #ifndef __BANDS_HPP
 #define __BANDS_HPP
 
+#include "3dlib/3dlib.h"
+#include "base3d/CVector.hpp"
+#include "base3d/CTexel.hpp"
+#include "base3d/CColor.hpp"
+#include "base3d/CMatrix.hpp"
+#include "load3ds/Load3ds.h"
+
+#include "TexManager.hpp"
+#include "MainFrame/MainFrame.hpp"
+
 #include "Effect.hpp"
 
 
