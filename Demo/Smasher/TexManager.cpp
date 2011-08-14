@@ -1,59 +1,64 @@
 
+#ifdef WIN32
 #include "stdafx.h"
+#endif
+
+#include "OpenGL/OpenGL.hpp"
+#include "MainFrame/MainFrame.hpp"
+
 #include "TexManager.hpp"
 #include "../../ImageLib/ImageLib.hpp"
 
 CTextureManager g_cTexManager;
 
-/*******************************************************************************************/
-int CTextureManager::LoadTexture( char* pszFileName, int iCreateMipMaps ) {
+int CTextureManager::LoadTexture( char* pszFileName, int iCreateMipMaps )
+{
+    CTexture* pLoaded = FindTexture( pszFileName );
 
-        CTexture* pLoaded = FindTexture( pszFileName );
+    if ( pLoaded )
+    {
+        pLoaded->m_iRefCount++;
+        return pLoaded->m_iGLTexName;
+    }
 
-        if ( pLoaded )
-        {
-          pLoaded->m_iRefCount++;
-          return pLoaded->m_iGLTexName;
-        }
+    CImage* pImage = g_cImageLib.LoadFile( pszFileName );
 
-        CImage* pImage = g_cImageLib.LoadFile( pszFileName );
+    if ( !pImage )
+    {
+        g_pMainFrame->ErrorQuit( "[CTextureManager::LoadTexture] Cant load file : %s", pszFileName );
+        return -1;
+    }
 
-        if ( !pImage )
-        {
-          g_pMainFrame->ErrorQuit( "[CTextureManager::LoadTexture] Cant load file : %s", pszFileName );
-          return -1;
-        }
+    int iResult = g_cOpenGL.UploadTexture( pImage->GetRawData(), pImage->GetWidth(), pImage->GetHeight(), pImage->GetBitsPerPixel(), iCreateMipMaps );
+    delete pImage;
 
-        int iResult = g_cOpenGL.UploadTexture( pImage->GetRawData(), pImage->GetWidth(), pImage->GetHeight(), pImage->GetBitsPerPixel(), iCreateMipMaps );
-        delete pImage;
+    if ( iResult != -1 )
+    {
+        CTexture* pTexture = new CTexture;
 
-        if ( iResult != -1 )
-        {
-          CTexture* pTexture = new CTexture;
+        pTexture->m_pszFileName = strdup( pszFileName );
+        pTexture->m_iGLTexName = iResult;
+        pTexture->m_iRefCount++;
+        pTexture->m_bCreateMipMaps = iCreateMipMaps;
 
-          pTexture->m_pszFileName = strdup( pszFileName );
-          pTexture->m_iGLTexName = iResult;
-          pTexture->m_iRefCount++;
-          pTexture->m_bCreateMipMaps = iCreateMipMaps;
+        pTexture->m_pNext = m_pTextures;
+        m_pTextures = pTexture;
+        m_iTextures++;
+    }
 
-          pTexture->m_pNext = m_pTextures;
-          m_pTextures = pTexture;
-          m_iTextures++;
-        }
-
-        return iResult;
+    return iResult;
 }
-/*******************************************************************************************/
-void CTextureManager::ReleaseTexture( int iTexName ) {
 
-        CTexture* pUnload = FindTexture( iTexName );
+void CTextureManager::ReleaseTexture( int iTexName )
+{
+    CTexture* pUnload = FindTexture( iTexName );
 
-        if ( pUnload )
+    if ( pUnload )
+    {
+        pUnload->m_iRefCount--;
+
+        if ( pUnload->m_iRefCount == 0 )
         {
-          pUnload->m_iRefCount--;
-
-          if ( pUnload->m_iRefCount == 0 )
-          {
             glDeleteTextures( 1, (unsigned int*)&iTexName );
 
             CTexture* pPrev = 0;
@@ -61,30 +66,25 @@ void CTextureManager::ReleaseTexture( int iTexName ) {
 
             while ( pTexture )
             {
-              if ( pTexture == pUnload )
-              {
-                if ( pPrev )
+                if ( pTexture == pUnload )
                 {
-                  pPrev->m_pNext = pTexture->m_pNext;
+                    if ( pPrev )
+                        pPrev->m_pNext = pTexture->m_pNext;
+                    else
+                        m_pTextures = pTexture->m_pNext;
+
+                    delete pTexture;
+                    break;
                 }
-                else
-                  m_pTextures = pTexture->m_pNext;
 
-                delete pTexture;
-                break;
-              }
-
-              pPrev = pTexture;
-              pTexture = pTexture->m_pNext;
+                pPrev = pTexture;
+                pTexture = pTexture->m_pNext;
             }
-          }
         }
+    }
 }
-/*******************************************************************************************/
-bool CTextureManager::ReloadAllTextures() {
 
-        return true;
+bool CTextureManager::ReloadAllTextures()
+{
+    return true;
 }
-/*******************************************************************************************/
-
-
