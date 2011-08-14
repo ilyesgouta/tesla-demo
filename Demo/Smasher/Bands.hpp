@@ -13,6 +13,7 @@
 
 #include "Effect.hpp"
 
+#include <GLES/gl.h>
 
 #define BAND_SEGMENTS 32
 #define BAND_NEAR_PLANE -1.0f
@@ -20,33 +21,50 @@
 
 
 class CBand {
+
+typedef struct __attribute__ ((packed)) CBandVertex {
+    float x, y, z;
+    float r, g, b, a;
+    float s0, t0;
+} CBandVertex;
+
 public:
- CVector aPts[BAND_SEGMENTS+1][2];
- float aAngles[BAND_SEGMENTS+1];
- int aDraw[BAND_SEGMENTS+1];
- float fBandWidth;
- float fSpeedFactor;
+    CVector aPts[BAND_SEGMENTS+1][2];
+
+    float aAngles[BAND_SEGMENTS+1];
+    int aDraw[BAND_SEGMENTS+1];
+
+    float fBandWidth;
+    float fSpeedFactor;
  
- CBand(float fNewBandWidth,
-       float fNewSF);
- void Render(float fAlpha = 1.0f);
- void Move(float fMove);
+    CBand(float fNewBandWidth, float fNewSF);
+
+    ~CBand();
+
+    void Render(float fAlpha = 1.0f);
+    void Move(float fMove);
+
+#ifdef GL_VERSION_ES_CM_1_1
+private:
+    GLuint vertexBuffer;
+    CBandVertex m_Vertex[4];
+#endif
 };
 
 class CBands : public CEffect {
 public:
- int nBands;
- CBand **aBands;
- unsigned int nTex;
- float fLastTime;
+    int nBands;
+    CBand **aBands;
+    unsigned int nTex;
+    float fLastTime;
  
- CBands(int nNewBands = 40);
- ~CBands();
- void Render(void);
- void Move(float fMove);
+    CBands(int nNewBands = 40);
+    ~CBands();
 
- void Do(float fTime, float fTimeStart);
+    void Render(void);
+    void Move(float fMove);
+
+    void Do(float fTime, float fTimeStart);
 };
 
 #endif /* __BANDS_HPP */
-
