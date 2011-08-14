@@ -51,17 +51,17 @@ CBand::Render(float fAlpha)
 #ifdef GL_VERSION_ES_CM_1_1
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(CBandVertex) * 4, m_Vertex, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(m_Vertex), m_Vertex, GL_STATIC_DRAW);
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, sizeof(CBandVertex), offsetof(m_Vertex, 0));
+    glVertexPointer(3, GL_FLOAT, sizeof(CBandVertex), &m_Vertex[0] + offsetof(CBandVertex, x));
 
     glEnableClientState(GL_COLOR_ARRAY);
-    glColorPointer(GL_FLOAT, sizeof(CBandVertex), offsetof(m_Vertex, 12));
+    glColorPointer(4, GL_FLOAT, sizeof(CBandVertex), &m_Vertex[0] + offsetof(CBandVertex, r));
 
     glClientActiveTexture(GL_TEXTURE0);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(CBandVertex), offsetof(m_Vertex, 28));
+    glTexCoordPointer(2, GL_FLOAT, sizeof(CBandVertex), &m_Vertex[0] + offsetof(CBandVertex, s0));
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 #else
@@ -182,7 +182,7 @@ CBands::Render(void)
     glBindTexture(GL_TEXTURE_2D, nTex);
     glEnable(GL_TEXTURE_2D);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glColor3f(1.0, 1.0, 1.0);
+    glColor4f(1.0, 1.0, 1.0, 1.0);
     //glColor3f(0.1, 0.1, 0.5);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
