@@ -22,28 +22,39 @@ AC_HEADER_STDC
 
 CXXFLAGS=-std=c++0x
 
-PKG_CHECK_EXISTS([gl],
-               [BACKEND_PC_FILES="$BACKEND_PC_FILES gl"],
-               # if a pkg-config file isn't found just add -lGL
-               # and hope for the best.
-               [FLAVOUR_LIBS="$FLAVOUR_LIBS -lGL"])
+PKG_CHECK_MODULES(GLESV1_CM, glesv1_cm, [have_gles11=yes], [have_gles11=no])
+AC_SUBST([GLESV1_CM_CFLAGS])
+AC_SUBST([GLESV1_CM_LIBS])
 
-AC_SUBST([GL_CFLAGS])
-AC_SUBST([GL_LIBS])
-
-AC_CHECK_HEADERS([GL/glx.h],
-                 [],
-                 [AC_MSG_ERROR([Unable to locate required GLX headers])])
-
-AC_CHECK_LIB(GL, [glXCreateContext],
-             [HAVE_LIBGLX=yes],
-             [AC_MSG_ERROR([Required GLX library not found])])
-
-AC_MSG_CHECKING([for X11])
-PKG_CHECK_EXISTS([x11], [have_x11=yes], [have_x11=no])
-
+PKG_CHECK_MODULES(X11, x11, [have_x11=yes], [have_x11=no])
 AC_SUBST([X11_CFLAGS])
 AC_SUBST([X11_LIBS])
+
+PKG_CHECK_MODULES(LIBPNG, libpng, [have_libpng=yes], [have_libpng=no])
+AC_SUBST([LIBPNG_CFLAGS])
+AC_SUBST([LIBPNG_LIBS])
+
+AC_CHECK_LIB(jpeg, jpeg_destroy_decompress,
+                   have_libjpeg=yes, have_libjpeg=no
+                   AC_MSG_ERROR([JPEG library (libjpeg) not found]))
+if test "$have_libjpeg" = yes; then
+   AC_MSG_CHECKING([for jpeglib])
+   AC_TRY_CPP(
+[#include <stdio.h>
+#undef PACKAGE
+#undef VERSION
+#undef HAVE_STDLIB_H
+#include <jpeglib.h>],
+         have_libjpeg=yes,
+         have_libjpeg=no)
+   AC_MSG_RESULT($jpeg_ok)
+   if test "$have_libjpeg" = yes; then
+      JPEG_LIBS="-ljpeg"
+   else
+      AC_MSG_ERROR([JPEG library (libjpeg) not found])
+   fi
+fi
+AC_SUBST([JPEG_LIBS])
 
 AC_CONFIG_FILES([
 	Makefile

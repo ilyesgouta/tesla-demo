@@ -14,10 +14,10 @@ include_HEADERS = \
     Demo/Smasher/resource.h \
     Demo/Smasher/base.h
 
-tesla_demo_CFLAGS = $(GL_CFLAGS) $(X11_CFLAGS)
-tesla_demo_CXXFLAGS = $(GL_CFLAGS) $(X11_CFLAGS)
+tesla_demo_CFLAGS = $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(LIBPNG_CFLAGS)
+tesla_demo_CXXFLAGS = $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(LIBPNG_CFLAGS)
 
-tesla_demo_LDFLAGS = $(GL_LIBS) $(X11_LIBS)
+tesla_demo_LDADD = $(GLESV1_CM_LIBS) $(X11_LIBS) $(LIBPNG_LIBS) $(JPEG_LIBS)
 
 tesla_demo_SOURCES = \
     load3ds/Misc.c \
