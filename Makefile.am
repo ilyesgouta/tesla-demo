@@ -39,29 +39,30 @@ tesla_demo_SOURCES = \
     ImageLib/ImageLib/JPEG/Loadjpg.cpp \
     ImageLib/ImageLib.cpp \
     MainFrame/MainFrame.cpp \
+    Demo/Smasher/EffManage.cpp \
     Demo/Smasher/FFDEnvVector.cpp \
-    Demo/Smasher/Tree.cpp \
-    Demo/Smasher/Bands.cpp \
-    Demo/Smasher/LinePlane.cpp \
-    Demo/Smasher/ffd.cpp \
-    Demo/Smasher/SpinZoom.cpp \
-    Demo/Smasher/tubes.cpp \
-    Demo/Smasher/TerrainGen.cpp \
-    Demo/Smasher/Smasher.cpp \
-    Demo/Smasher/Dragon.cpp \
-    Demo/Smasher/Splines.cpp \
-    Demo/Smasher/FaceMorph.cpp \
     Demo/Smasher/TexManager.cpp \
-    Demo/Smasher/ShadeBall.cpp \
-    Demo/Smasher/Scape.cpp \
-    Demo/Smasher/tessellator.cpp \
-    Demo/Smasher/BassPlay.cpp \
-    Demo/Smasher/ScrewBolt.cpp \
-    Demo/Smasher/Rotator.cpp \
-    Demo/Smasher/EnergyStream.cpp \
-    Demo/Smasher/PolkaLike.cpp \
     Demo/Smasher/Stuff.cpp \
-    Demo/Smasher/GridNode.cpp \
-    Demo/Smasher/EffManage.cpp
+    Demo/Smasher/Bands.cpp
+
+#    Demo/Smasher/GridNode.cpp \
+#    Demo/Smasher/Tree.cpp \
+#    Demo/Smasher/LinePlane.cpp \
+#    Demo/Smasher/ffd.cpp \
+#    Demo/Smasher/SpinZoom.cpp \
+#    Demo/Smasher/tubes.cpp \
+#    Demo/Smasher/TerrainGen.cpp \
+#    Demo/Smasher/Smasher.cpp \
+#    Demo/Smasher/Dragon.cpp \
+#    Demo/Smasher/Splines.cpp \
+#    Demo/Smasher/FaceMorph.cpp \
+#    Demo/Smasher/ShadeBall.cpp \
+#    Demo/Smasher/Scape.cpp \
+#    Demo/Smasher/tessellator.cpp \
+#    Demo/Smasher/BassPlay.cpp \
+#    Demo/Smasher/ScrewBolt.cpp \
+#    Demo/Smasher/Rotator.cpp \
+#    Demo/Smasher/EnergyStream.cpp \
+#    Demo/Smasher/PolkaLike.cpp
 
 CLEANFILES = $(BUILT_SOURCES)

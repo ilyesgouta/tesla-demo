@@ -31,16 +31,6 @@ PKG_CHECK_EXISTS([gl],
 AC_SUBST([GL_CFLAGS])
 AC_SUBST([GL_LIBS])
 
-PKG_CHECK_EXISTS([libdrm],
-               [
-                 AC_DEFINE([HAVE_DRM], [1], [Have libdrm support])
-                 BACKEND_PC_FILES="$BACKEND_PC_FILES libdrm"
-               ],
-               [])
-
-AC_SUBST([LIBDRM_CFLAGS])
-AC_SUBST([LIBDRM_LIBS])
-
 AC_CHECK_HEADERS([GL/glx.h],
                  [],
                  [AC_MSG_ERROR([Unable to locate required GLX headers])])
@@ -50,7 +40,6 @@ AC_CHECK_LIB(GL, [glXCreateContext],
              [AC_MSG_ERROR([Required GLX library not found])])
 
 AC_MSG_CHECKING([for X11])
-
 PKG_CHECK_EXISTS([x11], [have_x11=yes], [have_x11=no])
 
 AC_SUBST([X11_CFLAGS])
