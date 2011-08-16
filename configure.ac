@@ -22,6 +22,10 @@ AC_HEADER_STDC
 
 CXXFLAGS=-std=c++0x
 
+PKG_CHECK_MODULES(EGL, egl, [have_egl=yes], [have_egl=no])
+AC_SUBST([EGL_CFLAGS])
+AC_SUBST([EGL_LIBS])
+
 PKG_CHECK_MODULES(GLESV1_CM, glesv1_cm, [have_gles11=yes], [have_gles11=no])
 AC_SUBST([GLESV1_CM_CFLAGS])
 AC_SUBST([GLESV1_CM_LIBS])

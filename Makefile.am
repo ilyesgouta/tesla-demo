@@ -14,10 +14,10 @@ include_HEADERS = \
     Demo/Smasher/resource.h \
     Demo/Smasher/base.h
 
-tesla_demo_CFLAGS = $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(LIBPNG_CFLAGS)
-tesla_demo_CXXFLAGS = $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(LIBPNG_CFLAGS)
+tesla_demo_CFLAGS = $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(LIBPNG_CFLAGS)
+tesla_demo_CXXFLAGS = $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(LIBPNG_CFLAGS)
 
-tesla_demo_LDADD = $(GLESV1_CM_LIBS) $(X11_LIBS) $(LIBPNG_LIBS) $(JPEG_LIBS)
+tesla_demo_LDADD = $(EGL_LIBS) $(GLESV1_CM_LIBS) $(X11_LIBS) $(LIBPNG_LIBS) $(JPEG_LIBS)
 
 tesla_demo_SOURCES = \
     load3ds/Misc.c \
@@ -43,7 +43,8 @@ tesla_demo_SOURCES = \
     Demo/Smasher/FFDEnvVector.cpp \
     Demo/Smasher/TexManager.cpp \
     Demo/Smasher/Stuff.cpp \
-    Demo/Smasher/Bands.cpp
+    Demo/Smasher/Bands.cpp \
+    Demo/Smasher/Smasher.cpp
 
 #    Demo/Smasher/GridNode.cpp \
 #    Demo/Smasher/Tree.cpp \
@@ -52,7 +53,6 @@ tesla_demo_SOURCES = \
 #    Demo/Smasher/SpinZoom.cpp \
 #    Demo/Smasher/tubes.cpp \
 #    Demo/Smasher/TerrainGen.cpp \
-#    Demo/Smasher/Smasher.cpp \
 #    Demo/Smasher/Dragon.cpp \
 #    Demo/Smasher/Splines.cpp \
 #    Demo/Smasher/FaceMorph.cpp \
