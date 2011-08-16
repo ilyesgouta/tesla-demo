@@ -9,7 +9,6 @@
 
 MainFrame_c* g_pMainFrame = 0;
 
-/************************************************************************************/
 static void ErrorMessage( char* pszErrorMessage ) {
 #ifdef WIN32
       MessageBox( 0, pszErrorMessage, "Error...", MB_ICONERROR );  
@@ -18,14 +17,13 @@ static void ErrorMessage( char* pszErrorMessage ) {
 #endif
 }
 
-/************************************************************************************/
 #ifdef WIN32
 LRESULT CALLBACK MainWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
   
         return g_pMainFrame->WindowProc( hWnd, uMsg, wParam, lParam );
 }
 #endif
-/************************************************************************************/
+
 #ifdef WIN32
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int iShowCmd ) {
 
@@ -83,15 +81,43 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
         return 0;
 }
+#else
+int main(int argc, char** argv)
+{
+    Start();
+
+    if ( !g_pMainFrame )
+    {
+      ErrorMessage( "WinMain: Can't create MainFramce_c" );
+      return -1;
+    }
+
+    if ( g_pMainFrame->GetLastError() )
+    {
+      ErrorMessage( g_pMainFrame->GetLastErrorMsg() );
+      return -1;
+    }
+
+    if ( !g_pMainFrame->InitWindow() )
+    {
+      ErrorMessage( "WinMain: Can't create window" );
+      return -1;
+    }
+
+    while (true) {
+        // Render loop
+    }
+
+    delete g_pMainFrame;
+    g_pMainFrame = 0;
+
+    End();
+
+    return 0;
+}
 #endif
-/************************************************************************************/
-
-
-
-
 
 // MAIN FRAME
-/************************************************************************************/
 MainFrame_c::MainFrame_c() {
 #ifdef WIN32
         m_hWnd = 0;
@@ -112,27 +138,27 @@ MainFrame_c::MainFrame_c() {
         m_pTimer = new Timer_c;
         if ( !m_pTimer->InitTimer() ) ErrorQuit( "MainFrame_c::MainFrame_c: Can't init default timer!" );
 }
-/************************************************************************************/
+
 MainFrame_c::~MainFrame_c() {
 
         if ( m_pTimer ) delete m_pTimer;
         if ( m_iError ) ErrorMessage( m_szErrorMessage );
 }
-/************************************************************************************/
+
 #ifdef WIN32
 void MainFrame_c::SetWindowHandle( HWND hWnd ) {
         
         m_hWnd = hWnd;
 }
 #endif
-/************************************************************************************/
+
 #ifdef WIN32
 HWND MainFrame_c::GetWindowHandle() const {
   
         return m_hWnd;
 }
 #endif
-/************************************************************************************/
+
 void MainFrame_c::ErrorQuit( char* pszErrMsg, ... ) {
 
         va_list        pArgs;
@@ -143,7 +169,7 @@ void MainFrame_c::ErrorQuit( char* pszErrMsg, ... ) {
 
         m_iError = 1;
 }
-/************************************************************************************/
+
 #ifdef WIN32
 bool MainFrame_c::InitWindow( HINSTANCE hInstance ) {
 
@@ -246,7 +272,7 @@ bool MainFrame_c::InitWindow()
     return true;
 }
 #endif
-/************************************************************************************/
+
 #ifdef WIN32
 LRESULT MainFrame_c::WindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
   
@@ -323,22 +349,16 @@ LRESULT MainFrame_c::WindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         return DefWindowProc( hWnd, uMsg, wParam, lParam );
 }
 #endif
-/************************************************************************************/
-
-
-
-
 
 // timer
-/************************************************************************************/
 TimerBase_c::TimerBase_c() {
 
 }
-/************************************************************************************/
+
 TimerBase_c::~TimerBase_c() {
 
 }
-/************************************************************************************/
+
 Timer_c::Timer_c() {
   
         m_liTimeCurrent = 0;
@@ -358,11 +378,11 @@ Timer_c::Timer_c() {
         }
 #endif
 }
-/************************************************************************************/
+
 Timer_c::~Timer_c() {
 
 }
-/************************************************************************************/
+
 bool Timer_c::InitTimer() {
 #ifdef WIN32
         QueryPerformanceCounter( (LARGE_INTEGER*)&m_liTimeStart );
@@ -370,7 +390,7 @@ bool Timer_c::InitTimer() {
 #endif
         return true;
 }
-/************************************************************************************/
+
 void Timer_c::Update() {
 #ifdef WIN32
         m_liTimePrev = m_liTimeCurrent;
@@ -383,4 +403,3 @@ void Timer_c::Update() {
         m_fTimeDelta = m_fTimeCurrent - m_fTimePrev;
 #endif
 }
-/************************************************************************************/
