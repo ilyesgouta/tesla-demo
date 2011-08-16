@@ -1,14 +1,21 @@
 
+#ifdef WIN32
 #include "stdafx.h"
+#endif
+
 #include "resource.h"
 
+#ifdef WIN32
 #include "Vfw.h"
 #pragma comment( lib, "Vfw32.lib" )
+#endif
 
-#include "BassPlay.hpp"
+//#include "BassPlay.hpp"
 
+#include "OpenGL/OpenGL.hpp"
 #include "EffManage.hpp"
 
+#if 0
 #include "Tubes.hpp"
 #include "PolkaLike.hpp"
 #include "LinePlane.hpp"
@@ -21,13 +28,11 @@
 #include "Splines.hpp"
 #include "FaceMorph.hpp"
 #include "FFDEnvVector.hpp"
+#endif
+
 #include "Bands.hpp"
 
-
-
-
 CEffManager* g_pEffManage = 0;
-
 
 static bool l_bFirstRenderFrame = true;
 static float l_fFirstFrameTime = 0;
@@ -51,7 +56,7 @@ static CResolution l_aResolutions[256];
 static int l_iCurResSelection = 0;
 static int l_bFullScreen = true;
 
-
+#if 0
 static int l_bMakeAVI = true;
 static float l_fAVITime = 0;
 
@@ -77,17 +82,19 @@ HIC hic;
 COMPVARS stCompVars;
 static ICINFO l_aCodecs[64];
 static int l_iCodecs = 0;
+#endif
 
-/*******************************************************************************************/
 class CDemoFrame : public MainFrame_c {
 
 public:
         CDemoFrame() {}
         virtual ~CDemoFrame() {}
-
+#ifdef WIN32
         virtual LRESULT WindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+#endif
 };
-/*******************************************************************************************/
+
+#ifdef WIN32
 void EnumVideoModes()
 {
         int iDevMode, iRes;
@@ -132,7 +139,7 @@ void EnumVideoModes()
           }
         }
 }
-/*******************************************************************************************/
+
 int CALLBACK DemoDialogProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
 
         switch ( uMsg )
@@ -181,236 +188,253 @@ int CALLBACK DemoDialogProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam 
             return 0;        
         }
 }
-/*******************************************************************************************/
-void Start() {
+#endif
 
-        if ( !DialogBox(0, MAKEINTRESOURCE(IDD_DIALOG1), 0, DemoDialogProc) ) ExitProcess(0);
+void Start()
+{
+#ifdef WIN32
+    if ( !DialogBox(0, MAKEINTRESOURCE(IDD_DIALOG1), 0, DemoDialogProc) ) ExitProcess(0);
 
-        if ( l_bMakeAVI )
-        {
-          AVIFileInit();
+    if ( l_bMakeAVI )
+    {
+      AVIFileInit();
 
-          if ( AVIFileOpen( &pAVIFile, "tesla.avi", OF_WRITE | OF_CREATE, 0 ) != 0 )
-          {
-            MessageBox( 0, "[Start] Cant create tesla.avi file", "Error...", MB_ICONERROR );
-            return ;
-          }
+      if ( AVIFileOpen( &pAVIFile, "tesla.avi", OF_WRITE | OF_CREATE, 0 ) != 0 )
+      {
+        MessageBox( 0, "[Start] Cant create tesla.avi file", "Error...", MB_ICONERROR );
+        return ;
+      }
 
-          memset( &stBitmapIn, 0, sizeof(stBitmapIn) );
-          stBitmapIn.bmiHeader.biSize = sizeof(stBitmapIn.bmiHeader);
-          stBitmapIn.bmiHeader.biWidth = iAVIWidth;
-          stBitmapIn.bmiHeader.biHeight = iAVIHeight;
-          stBitmapIn.bmiHeader.biPlanes = 1;
-          stBitmapIn.bmiHeader.biBitCount = 24;
-          stBitmapIn.bmiHeader.biCompression = BI_RGB;
+      memset( &stBitmapIn, 0, sizeof(stBitmapIn) );
+      stBitmapIn.bmiHeader.biSize = sizeof(stBitmapIn.bmiHeader);
+      stBitmapIn.bmiHeader.biWidth = iAVIWidth;
+      stBitmapIn.bmiHeader.biHeight = iAVIHeight;
+      stBitmapIn.bmiHeader.biPlanes = 1;
+      stBitmapIn.bmiHeader.biBitCount = 24;
+      stBitmapIn.bmiHeader.biCompression = BI_RGB;
 
-          memset( &stCompVars, 0, sizeof(stCompVars) );
-          stCompVars.cbSize = sizeof(stCompVars);
+      memset( &stCompVars, 0, sizeof(stCompVars) );
+      stCompVars.cbSize = sizeof(stCompVars);
 
-          int res = ICCompressorChoose( 0, 0, &stBitmapIn, 0, &stCompVars, "select compressor" );
+      int res = ICCompressorChoose( 0, 0, &stBitmapIn, 0, &stCompVars, "select compressor" );
 
-          if ( !res ) ExitProcess( 0 );
+      if ( !res ) ExitProcess( 0 );
 
-          memset( &stBitmapOut, 0, sizeof(stBitmapOut) );
+      memset( &stBitmapOut, 0, sizeof(stBitmapOut) );
 
-          if ( ICERR_OK != ICCompressGetFormat(stCompVars.hic, &stBitmapIn.bmiHeader, &stBitmapOut.bmiHeader) )
-          {
-            MessageBox( 0, "[Start] ICCompressGetFormat failed!", "Error...", MB_ICONERROR );
-            return;
-          }
+      if ( ICERR_OK != ICCompressGetFormat(stCompVars.hic, &stBitmapIn.bmiHeader, &stBitmapOut.bmiHeader) )
+      {
+        MessageBox( 0, "[Start] ICCompressGetFormat failed!", "Error...", MB_ICONERROR );
+        return;
+      }
 
-          memset( &stAVIStreamInfo, 0, sizeof(stAVIStreamInfo) );
+      memset( &stAVIStreamInfo, 0, sizeof(stAVIStreamInfo) );
 
-          RECT stRect;
+      RECT stRect;
 
-          stRect.left = 0;
-          stRect.top = 0;
-          stRect.right = iAVIWidth;
-          stRect.bottom = iAVIHeight;
+      stRect.left = 0;
+      stRect.top = 0;
+      stRect.right = iAVIWidth;
+      stRect.bottom = iAVIHeight;
 
-          stAVIStreamInfo.fccType = streamtypeVIDEO;
-          stAVIStreamInfo.fccHandler = mmioFOURCC( 'M', 'S','V', 'C' );
-          stAVIStreamInfo.dwScale = 1;
-          stAVIStreamInfo.dwRate = 25;
-          stAVIStreamInfo.dwQuality = 10000;
-          stAVIStreamInfo.rcFrame = stRect;
-          strcpy( stAVIStreamInfo.szName, "Tesla by Sunflower..." );
+      stAVIStreamInfo.fccType = streamtypeVIDEO;
+      stAVIStreamInfo.fccHandler = mmioFOURCC( 'M', 'S','V', 'C' );
+      stAVIStreamInfo.dwScale = 1;
+      stAVIStreamInfo.dwRate = 25;
+      stAVIStreamInfo.dwQuality = 10000;
+      stAVIStreamInfo.rcFrame = stRect;
+      strcpy( stAVIStreamInfo.szName, "Tesla by Sunflower..." );
 
-          if ( AVIFileCreateStream(pAVIFile, &pAVIStream, &stAVIStreamInfo) != 0 )
-          {
-            MessageBox( 0, "[Start] Cant create AVI file stream!", "Error...", MB_ICONERROR );
-            return;
-          }
+      if ( AVIFileCreateStream(pAVIFile, &pAVIStream, &stAVIStreamInfo) != 0 )
+      {
+        MessageBox( 0, "[Start] Cant create AVI file stream!", "Error...", MB_ICONERROR );
+        return;
+      }
 
-          if ( AVIStreamSetFormat(pAVIStream, 0, &stBitmapOut, sizeof(stBitmapOut)) != 0 )
-          { 
-            MessageBox( 0, "[Start] Cant set AVI fromat", "Error...", MB_ICONERROR );
-            return; 
-          } 
+      if ( AVIStreamSetFormat(pAVIStream, 0, &stBitmapOut, sizeof(stBitmapOut)) != 0 )
+      {
+        MessageBox( 0, "[Start] Cant set AVI fromat", "Error...", MB_ICONERROR );
+        return;
+      }
 
-          if ( !ICSeqCompressFrameStart(&stCompVars, &stBitmapIn) )
-          {
-            MessageBox( 0, "[Start] Cant initialize compressor!", "Error...", MB_ICONERROR );
-            return;
-          }
-        }
+      if ( !ICSeqCompressFrameStart(&stCompVars, &stBitmapIn) )
+      {
+        MessageBox( 0, "[Start] Cant initialize compressor!", "Error...", MB_ICONERROR );
+        return;
+      }
+    }
+#endif
 
-        g_pMainFrame = new CDemoFrame;
-        g_pMainFrame->SetWindowName( "Tesla" );
-        g_pMainFrame->SetFullScreen( l_bFullScreen ? 1 : 0 ); 
+    g_pMainFrame = new CDemoFrame;
+    g_pMainFrame->SetWindowName( "Tesla" );
+    g_pMainFrame->SetFullScreen( l_bFullScreen ? 1 : 0 );
 
-        if ( !l_bMakeAVI )
-        {
-          g_pMainFrame->m_iWindowWidth = l_aResolutions[l_iCurResSelection].m_iWidth;
-          g_pMainFrame->m_iWindowHeight = l_aResolutions[l_iCurResSelection].m_iHeight;
-          g_pMainFrame->m_iBitsPerPixel = l_aResolutions[l_iCurResSelection].m_iBPP;
-        }
-        else
-        {
-          g_pMainFrame->m_iWindowWidth = iAVIWidth;
-          g_pMainFrame->m_iWindowHeight = iAVIHeight;
-          g_pMainFrame->m_iBitsPerPixel = 32;
-        }
+#ifdef WIN32
+    if ( !l_bMakeAVI )
+    {
+      g_pMainFrame->m_iWindowWidth = l_aResolutions[l_iCurResSelection].m_iWidth;
+      g_pMainFrame->m_iWindowHeight = l_aResolutions[l_iCurResSelection].m_iHeight;
+      g_pMainFrame->m_iBitsPerPixel = l_aResolutions[l_iCurResSelection].m_iBPP;
+    }
+    else
+    {
+      g_pMainFrame->m_iWindowWidth = iAVIWidth;
+      g_pMainFrame->m_iWindowHeight = iAVIHeight;
+      g_pMainFrame->m_iBitsPerPixel = 32;
+    }
+#else
+    g_pMainFrame->m_iWindowWidth = 640;
+    g_pMainFrame->m_iWindowHeight = 480;
+    g_pMainFrame->m_iBitsPerPixel = 32;
+#endif
 }
-/*******************************************************************************************/
+
 void End() {
 
         g_cOpenGL.UnloadLib();
 }
-/*******************************************************************************************/
-bool MainFrame_c::OnCreate() {
 
-        if ( !g_cOpenGL.LoadLib("opengl32.dll") )
-        {
-          ErrorQuit( "[MainFrame_c::OnCreate] Cant load opengl32.dll" );
-          return false;
-        }
+bool MainFrame_c::OnCreate()
+{
+    if ( !g_cOpenGL.LoadLib("opengl32.dll") )
+    {
+      ErrorQuit( "[MainFrame_c::OnCreate] Cant load opengl32.dll" );
+      return false;
+    }
 
-        int iResult = g_cOpenGL.CreateGLContext( m_hWnd, m_iBitsPerPixel, 32 );
+    Display* d = XOpenDisplay("0.0");
+    int iResult = g_cOpenGL.CreateGLContext( d, m_iBitsPerPixel, 32 );
 
-        if ( !iResult )
-        {
-          strcpy( m_szErrorMessage, "[MainFrame_c::OnCreate] Cant init OpenGL context!\n" );
-          m_iError = 1;
-          return false;
-        }
+    if ( !iResult )
+    {
+      strcpy( m_szErrorMessage, "[MainFrame_c::OnCreate] Cant init OpenGL context!\n" );
+      m_iError = 1;
+      return false;
+    }
 
 /*
-        if ( !FAOpenArchive("data.pak") )
-        {
-          ErrorQuit( "[MainFrame_c::OnCreate] Cant open data file!\n" );
-          return false;
-        }
+    if ( !FAOpenArchive("data.pak") )
+    {
+      ErrorQuit( "[MainFrame_c::OnCreate] Cant open data file!\n" );
+      return false;
+    }
 */
 
+#ifdef WIN32
+    if ( l_bMakeAVI )
+    {
+      HDC hDC = GetDC( m_hWnd );
+      hAVIDC = CreateCompatibleDC( hDC );
+      hAVIBitmap = CreateDIBSection( hAVIDC, &stBitmapIn, DIB_RGB_COLORS, (void**)&pAVIBuffer, 0, 0 );
+      ReleaseDC( m_hWnd, hDC );
+    }
+#endif
+    g_pEffManage = new CEffManager();
 
-        if ( l_bMakeAVI )
-        {
-          HDC hDC = GetDC( m_hWnd );
-          hAVIDC = CreateCompatibleDC( hDC );
-          hAVIBitmap = CreateDIBSection( hAVIDC, &stBitmapIn, DIB_RGB_COLORS, (void**)&pAVIBuffer, 0, 0 );
-          ReleaseDC( m_hWnd, hDC );
-        }
+#if 0
+    g_pEffManage->AddEffect( new CSpinZoom(), 0, 24.5 );
+    g_pEffManage->AddEffect( new CShadeBall(), 24.5, 48.5 );
+    g_pEffManage->AddEffect( new CSplines(), 48.5, 67.7 );
+    g_pEffManage->AddEffect( new CFFDEnv(), 67.7, 87 );
+    g_pEffManage->AddEffect( new CBands(), 69, 85 );
+    g_pEffManage->AddEffect( new CEnergyStream(), 87, 145 );
+    g_pEffManage->AddEffect( new CTubes(), 145, 165 );
+    g_pEffManage->AddEffect( new PolkaLike_c(), 165, 203 );
+    g_pEffManage->AddEffect( new CTree(), 165 + 21, 201 );
+    g_pEffManage->AddEffect( new CFaceMorph(), 203, 222.5 );
+    g_pEffManage->AddEffect( new CThing(), 222.5, 254 );
+#else
+    g_pEffManage->AddEffect( new CBands(), 0, 24.5 );
+#endif
+    //if ( !l_bMakeAVI ) g_cBass.LoadMP3( "tournesol.mp3" );
 
-        g_pEffManage = new CEffManager();
-
-        g_pEffManage->AddEffect( new CSpinZoom(), 0, 24.5 );
-        g_pEffManage->AddEffect( new CShadeBall(), 24.5, 48.5 );
-        g_pEffManage->AddEffect( new CSplines(), 48.5, 67.7 );
-        g_pEffManage->AddEffect( new CFFDEnv(), 67.7, 87 );
-        g_pEffManage->AddEffect( new CBands(), 69, 85 );
-        g_pEffManage->AddEffect( new CEnergyStream(), 87, 145 );
-        g_pEffManage->AddEffect( new CTubes(), 145, 165 );
-        g_pEffManage->AddEffect( new PolkaLike_c(), 165, 203 );
-        g_pEffManage->AddEffect( new CTree(), 165 + 21, 201 );
-        g_pEffManage->AddEffect( new CFaceMorph(), 203, 222.5 );
-        g_pEffManage->AddEffect( new CThing(), 222.5, 254 );
-
-        if ( !l_bMakeAVI ) g_cBass.LoadMP3( "tournesol.mp3" );
-
-        return true;
+    return true;
 }
-/*******************************************************************************************/
-bool MainFrame_c::OnDestroy() {
 
-        if ( !l_bMakeAVI ) g_cBass.StopMP3();
-        else
-        {
-          ICSeqCompressFrameEnd( &stCompVars );
+bool MainFrame_c::OnDestroy()
+{
+#ifdef WIN32
+    if ( !l_bMakeAVI ) g_cBass.StopMP3();
+    else
+    {
+      ICSeqCompressFrameEnd( &stCompVars );
 
-          if ( pAVIStream )
-            AVIStreamRelease( pAVIStream );
+      if ( pAVIStream )
+        AVIStreamRelease( pAVIStream );
 
-          if ( pAVIFile )
-            AVIFileRelease( pAVIFile );
+      if ( pAVIFile )
+        AVIFileRelease( pAVIFile );
 
-          AVIFileExit();
-        }
-
-        if ( g_pEffManage ) delete g_pEffManage;
-        g_cOpenGL.DestroyGLContext();
-        return true;
+      AVIFileExit();
+    }
+#endif
+    if ( g_pEffManage ) delete g_pEffManage;
+    g_cOpenGL.DestroyGLContext();
+    return true;
 }
-/*******************************************************************************************/
-bool MainFrame_c::OnPaint() {
 
-        PAINTSTRUCT stPaint;
+bool MainFrame_c::OnPaint()
+{
+#ifdef WIN32
+    PAINTSTRUCT stPaint;
 
-        if ( l_bFirstRenderFrame )
-        {
-          l_fFirstFrameTime = m_pTimer->GetCurTime();
-          l_bFirstRenderFrame = false;
-          if ( !l_bMakeAVI ) g_cBass.PlayMP3();
-        }
+    if ( l_bFirstRenderFrame )
+    {
+      l_fFirstFrameTime = m_pTimer->GetCurTime();
+      l_bFirstRenderFrame = false;
+      if ( !l_bMakeAVI ) g_cBass.PlayMP3();
+    }
 
-        HDC hDC = BeginPaint( m_hWnd, &stPaint );
-	glClearColor( 0, 0, 0, 0 );
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    HDC hDC = BeginPaint( m_hWnd, &stPaint );
+    glClearColor( 0, 0, 0, 0 );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-        if ( l_bMakeAVI )
-        {
-          g_pEffManage->PlayEffects( l_fAVITime );
+    if ( l_bMakeAVI )
+    {
+      g_pEffManage->PlayEffects( l_fAVITime );
 
-          l_fAVITime += 1/25.; // about 30 fps 
+      l_fAVITime += 1/25.; // about 30 fps
 
-          if ( l_fAVITime > 254 )
-            PostMessage( g_pMainFrame->GetWindowHandle(), WM_CLOSE, 0, 0 );
-        }
-        else
-          g_pEffManage->PlayEffects( m_pTimer->GetCurTime() - l_fFirstFrameTime );
+      if ( l_fAVITime > 254 )
+        PostMessage( g_pMainFrame->GetWindowHandle(), WM_CLOSE, 0, 0 );
+    }
+    else
+      g_pEffManage->PlayEffects( m_pTimer->GetCurTime() - l_fFirstFrameTime );
 
 
-        if ( l_bMakeAVI )
-        {
-          void* pCompressedData;
-          BOOL bKeyFrame;
-          LONG iMaxSize = iAVIWidth*iAVIHeight*3;
+    if ( l_bMakeAVI )
+    {
+      void* pCompressedData;
+      BOOL bKeyFrame;
+      LONG iMaxSize = iAVIWidth*iAVIHeight*3;
 
-          glReadBuffer( GL_BACK );
-          glReadPixels( 0, 0, iAVIWidth, iAVIHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, pAVIBuffer );
+      glReadBuffer( GL_BACK );
+      glReadPixels( 0, 0, iAVIWidth, iAVIHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, pAVIBuffer );
 
-          pCompressedData = ICSeqCompressFrame( &stCompVars, 0, pAVIBuffer, &bKeyFrame, &iMaxSize );
+      pCompressedData = ICSeqCompressFrame( &stCompVars, 0, pAVIBuffer, &bKeyFrame, &iMaxSize );
 
-          if ( !pCompressedData )
-          {
-            ErrorQuit( "[MainFrame_c::OnPaint] Cant compress frame!\n" );
-            return false;
-          }
+      if ( !pCompressedData )
+      {
+        ErrorQuit( "[MainFrame_c::OnPaint] Cant compress frame!\n" );
+        return false;
+      }
 
-          if ( AVIStreamWrite(pAVIStream, lAVIStreamSize, 1, pCompressedData, iMaxSize, AVIIF_KEYFRAME, NULL, NULL) != 0 )
-          {
-            ErrorQuit( "[MainFrame_c::OnPaint] Cant write to avi stream!\n" );
-            return false;
-          } 
+      if ( AVIStreamWrite(pAVIStream, lAVIStreamSize, 1, pCompressedData, iMaxSize, AVIIF_KEYFRAME, NULL, NULL) != 0 )
+      {
+        ErrorQuit( "[MainFrame_c::OnPaint] Cant write to avi stream!\n" );
+        return false;
+      }
 
-          lAVIStreamSize++;
-        }
+      lAVIStreamSize++;
+    }
 
-        SwapBuffers( hDC );
-        EndPaint( m_hWnd, &stPaint );
-        return true;
+    SwapBuffers( hDC );
+    EndPaint( m_hWnd, &stPaint );
+#endif
+    return true;
 }
-/*******************************************************************************************/
+
+#ifdef WIN32
 LRESULT CDemoFrame::WindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
 
         switch ( uMsg )
@@ -440,9 +464,4 @@ LRESULT CDemoFrame::WindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             return MainFrame_c::WindowProc( hWnd, uMsg, wParam, lParam );
         }
 }
-/*******************************************************************************************/
-
-
-
-
-
+#endif
