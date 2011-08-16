@@ -6,7 +6,6 @@
 
 OpenGL_c g_cOpenGL;
 
-/*******************************************************************************************/
 OpenGL_c::OpenGL_c() {
 
         m_iGLWindowWidth = 0;
@@ -20,13 +19,13 @@ OpenGL_c::OpenGL_c() {
 #endif
 
 }
-/*******************************************************************************************/
+
 OpenGL_c::~OpenGL_c() {
 
         DestroyGLContext();
         UnloadLib();
 }
-/*******************************************************************************************/
+
 bool OpenGL_c::LoadLib( char* pszGLLibraryName ) {
 #ifdef WIN32
         if ( !pszGLLibraryName )
@@ -38,7 +37,7 @@ bool OpenGL_c::LoadLib( char* pszGLLibraryName ) {
         m_bGLLibLoaded = true;
         return true;
 }
-/*******************************************************************************************/
+
 bool OpenGL_c::UnloadLib() {
 
     if ( m_bGLContextCreated )
@@ -58,7 +57,7 @@ bool OpenGL_c::UnloadLib() {
     else
         return false;
 }
-/*******************************************************************************************/
+
 #ifdef WIN32
 bool OpenGL_c::CreateGLContext( HWND hWindow, int iBitsPerPixel, int iZDepthBits ) {
 
@@ -112,51 +111,77 @@ bool OpenGL_c::CreateGLContext( HWND hWindow, int iBitsPerPixel, int iZDepthBits
 #else
 #include <X11/Xutil.h>
 
+static EGLConfig eglConfig[8];
+static EGLConfig eglWConfig[8];
+
+static int cIdx = 0, wIdx = 0;
+
 bool OpenGL_c::CreateGLContext( Display* display, int iBitsPerPixel, int iZDepthBits )
 {
+    int ret;
+
     if ( !m_bGLLibLoaded )
         return false;
 
     if ( m_bGLContextCreated )
         return false;
 
-    XVisualInfo visual_template, *visuals = NULL;
-    int iResult = 0, count = 0;
+    EGLint retConfigs;
 
-    memset(&visual_template, 0, sizeof(visual_template));
+    EGLint targetAttribList[] = {
+        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+        EGL_NATIVE_RENDERABLE, EGL_TRUE,
+        /*EGL_RED_SIZE, 8,
+        EGL_GREEN_SIZE, 8,
+        EGL_BLUE_SIZE, 8,
+        EGL_ALPHA_SIZE, 8,*/
+        EGL_NONE
+    };
 
-    visual_template.bits_per_rgb = iBitsPerPixel;
-    visual_template.depth = iZDepthBits;
+    if (!eglChooseConfig(display, targetAttribList, eglWConfig, sizeof(eglWConfig), &retConfigs))
+        return false;
 
-    visuals = XGetVisualInfo(display, VisualDepthMask | VisualBitsPerRGBMask, &visual_template, &count);
+    if (!retConfigs)
+        return false;
 
-    if (!count)
-        return 0;
+    m_window = XCreateSimpleWindow(display, 0, 0, 0, 640, 480, 1, 1, 0);
 
-    m_hGLRC = glXCreateContext(display, &(visuals[0]), NULL, true);
+    if (!m_window)
+        return false;
+
+    m_surface = eglCreateWindowSurface(display, &eglWConfig[wIdx], m_window, targetAttribList);
+
+    eglBindAPI(EGL_OPENGL_ES_API);
+
+    EGLint ctxAttribList[] = {
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
+        EGL_NONE
+    };
+
+    m_hGLRC = eglCreateContext(display, &eglConfig[cIdx], 0, ctxAttribList);
 
     if ( m_hGLRC )
     {
-        iResult = (glXMakeCurrent(display, 0/*drawable*/, m_hGLRC) == true);
+        ret = (eglMakeCurrent(display, m_surface, m_surface, m_hGLRC) == true);
         dynglCheckExtensions();
     }
 
-    if (visuals)
-        XFree(visuals);
-
-    if ( iResult ) {
+    if ( ret ) {
         m_display = display;
         m_bGLContextCreated = true;
     }
 
-    return iResult;
+    return ret;
 }
 #endif
-/*******************************************************************************************/
+
 void OpenGL_c::DestroyGLContext() {
 
-        if ( !m_bGLContextCreated ) return;
-        if ( !m_bGLLibLoaded ) return;
+        if ( !m_bGLContextCreated )
+            return;
+
+        if ( !m_bGLLibLoaded )
+            return;
 
         m_bGLContextCreated = false;
 
@@ -164,11 +189,11 @@ void OpenGL_c::DestroyGLContext() {
 	dynwglMakeCurrent( 0, 0 );
 	dynwglDeleteContext( m_hGLRC );
 #else
-    glXMakeCurrent( m_display, 0, 0 );
-    glXDestroyContext( m_display, m_hGLRC );
+    eglMakeCurrent( m_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
+    eglDestroyContext( m_display, m_hGLRC );
 #endif
 }
-/*******************************************************************************************/
+
 int OpenGL_c::UploadTexture( void* pRawData, int iTWidth, int iTHeight, int iBPP, int iCreateMipMaps ) {
 
 
@@ -319,6 +344,3 @@ int OpenGL_c::UploadTexture( void* pRawData, int iTWidth, int iTHeight, int iBPP
 
         return iGLTexName;
 }
-/*******************************************************************************************/
-
-

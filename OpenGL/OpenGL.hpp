@@ -7,7 +7,9 @@
 #include <windows.h>
 #else
 #include <X11/X.h>
-#include <GL/glx.h>
+#include <EGL/egl.h>
+
+#include <GLES/gl.h>
 #endif
 
 #ifdef WIN32
@@ -51,8 +53,10 @@ protected:
 #if WIN32
         HGLRC m_hGLRC;
 #else
-        GLXContext m_hGLRC;
+        EGLContext m_hGLRC;
         Display *m_display;
+        Window m_window;
+        EGLSurface m_surface;
 #endif
 };
 
