@@ -144,10 +144,13 @@ bool OpenGL_c::CreateGLContext( Display* display, int iBitsPerPixel, int iZDepth
     if (!retConfigs)
         return false;
 
-    m_window = XCreateSimpleWindow(display, 0, 0, 0, 640, 480, 1, 1, 0);
+    m_window = XCreateSimpleWindow(display, DefaultRootWindow(display), 0, 0, 640, 480, 1, 1, 0);
 
     if (!m_window)
         return false;
+
+    XSelectInput(display, m_window, ButtonPressMask | StructureNotifyMask );
+    XMapWindow(display, m_window);
 
     m_surface = eglCreateWindowSurface(display, &eglWConfig[wIdx], m_window, targetAttribList);
 
