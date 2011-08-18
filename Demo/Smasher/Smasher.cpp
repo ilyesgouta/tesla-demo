@@ -302,8 +302,8 @@ bool MainFrame_c::OnCreate()
       return false;
     }
 
-    Display* d = XOpenDisplay("0.0");
-    int iResult = g_cOpenGL.CreateGLContext( d, m_iBitsPerPixel, 32 );
+    m_display = XOpenDisplay(NULL);
+    int iResult = g_cOpenGL.CreateGLContext( m_display, m_iBitsPerPixel, 32 );
 
     if ( !iResult )
     {
@@ -430,6 +430,18 @@ bool MainFrame_c::OnPaint()
 
     SwapBuffers( hDC );
     EndPaint( m_hWnd, &stPaint );
+#else
+    if ( l_bFirstRenderFrame )
+    {
+      l_fFirstFrameTime = m_pTimer->GetCurTime();
+      l_bFirstRenderFrame = false;
+      //if ( !l_bMakeAVI ) g_cBass.PlayMP3();
+    }
+
+    glClearColor( 0, 0, 0, 0 );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+    g_pEffManage->PlayEffects( m_pTimer->GetCurTime() - l_fFirstFrameTime );
 #endif
     return true;
 }
