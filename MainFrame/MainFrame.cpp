@@ -3,9 +3,11 @@
 #include "stdafx.h"
 #endif
 
-#include "MainFrame.hpp"
-
+#define _GNU_SOURCE
+#include <time.h>
 #include <stdarg.h>
+
+#include "MainFrame.hpp"
 
 MainFrame_c* g_pMainFrame = 0;
 
@@ -104,9 +106,33 @@ int main(int argc, char** argv)
       return -1;
     }
 
-    while (true) {
+    bool m_render = true;
+
+    Display *display = g_pMainFrame->GetDisplay();
+
+    while (m_render) {
+        XEvent ev;
+
+        XNextEvent(display, &ev);
+
+        switch(ev.type) {
+        /*case ConfigureNotify:
+            if (width != ev.xconfigure.width
+                    || height != ev.xconfigure.height) {
+                width = ev.xconfigure.width;
+                height = ev.xconfigure.height;
+            }
+            break;*/
+        case ButtonPress:
+            m_render = false;
+            break;
+        }
+
+        g_pMainFrame->OnPaint();
         // Render loop
     }
+
+    XCloseDisplay(display);
 
     delete g_pMainFrame;
     g_pMainFrame = 0;
@@ -269,7 +295,7 @@ bool MainFrame_c::InitWindow( HINSTANCE hInstance ) {
 #else
 bool MainFrame_c::InitWindow()
 {
-    return true;
+    return (m_bInitDone = OnCreate());
 }
 #endif
 
@@ -360,16 +386,16 @@ TimerBase_c::~TimerBase_c() {
 }
 
 Timer_c::Timer_c() {
-  
-        m_liTimeCurrent = 0;
-        m_liTimeFreq = 0;
-        m_liTimePrev = 0;
-        m_liTimeStart = 0;
-
-        m_fTimeCurrent = 0;
-        m_fTimePrev = 0;
-        m_fTimeAppStart = 0;
-        m_fTimeDelta = 0;
+#ifdef WIN32
+    m_liTimeCurrent = 0;
+    m_liTimeFreq = 0;
+    m_liTimePrev = 0;
+    m_liTimeStart = 0;
+#endif
+    m_fTimeCurrent = 0;
+    m_fTimePrev = 0;
+    m_fTimeAppStart = 0;
+    m_fTimeDelta = 0;
 
 #ifdef WIN32
         if ( !QueryPerformanceFrequency((LARGE_INTEGER*)&m_liTimeFreq) )
@@ -385,21 +411,36 @@ Timer_c::~Timer_c() {
 
 bool Timer_c::InitTimer() {
 #ifdef WIN32
-        QueryPerformanceCounter( (LARGE_INTEGER*)&m_liTimeStart );
-        m_fTimeAppStart = (float)m_liTimeStart/m_liTimeFreq;
+    QueryPerformanceCounter( (LARGE_INTEGER*)&m_liTimeStart );
+    m_fTimeAppStart = (float)m_liTimeStart/m_liTimeFreq;
+#else
+    struct timespec tp;
+
+    clock_gettime(CLOCK_MONOTONIC, &tp);
+
+    m_fTimeAppStart = tp.tv_sec * 1000.0f + tp.tv_sec / 1000000.0f;
 #endif
         return true;
 }
 
 void Timer_c::Update() {
 #ifdef WIN32
-        m_liTimePrev = m_liTimeCurrent;
-        QueryPerformanceCounter( (LARGE_INTEGER*)&m_liTimeCurrent );
-        m_liTimeCurrent -= m_liTimeStart;
+    m_liTimePrev = m_liTimeCurrent;
+    QueryPerformanceCounter( (LARGE_INTEGER*)&m_liTimeCurrent );
+    m_liTimeCurrent -= m_liTimeStart;
 
-        m_fTimePrev= m_fTimeCurrent;
-        m_fTimeCurrent = (float)m_liTimeCurrent/m_liTimeFreq;
+    m_fTimePrev= m_fTimeCurrent;
+    m_fTimeCurrent = (float)m_liTimeCurrent/m_liTimeFreq;
 
-        m_fTimeDelta = m_fTimeCurrent - m_fTimePrev;
+    m_fTimeDelta = m_fTimeCurrent - m_fTimePrev;
+#else
+    struct timespec tp;
+
+    clock_gettime(CLOCK_MONOTONIC, &tp);
+
+    m_fTimePrev = m_fTimeCurrent;
+    m_fTimeCurrent = tp.tv_sec * 1000.0f + tp.tv_sec / 1000000.0f;
+
+    m_fTimeDelta = m_fTimeCurrent - m_fTimePrev;
 #endif
 }

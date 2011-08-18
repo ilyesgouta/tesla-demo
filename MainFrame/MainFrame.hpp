@@ -70,11 +70,6 @@ private:
         _int64 m_liTimePrev;
         _int64 m_liTimeCurrent;
         _int64 m_liTimeStart;
-#else
-        long long m_liTimeFreq;
-        long long m_liTimePrev;
-        long long m_liTimeCurrent;
-        long long m_liTimeStart;
 #endif
 
 };
@@ -96,6 +91,8 @@ public:
         /* main frame states */
         virtual void SetWindowHandle( HWND hWnd );
         virtual HWND GetWindowHandle() const;
+#else
+        virtual Display* GetDisplay() const { return m_display; }
 #endif
 
         void SetWindowName( char* pszWindowName ) {
@@ -145,8 +142,8 @@ protected:
         HINSTANCE m_hInstance; // app instance
         HWND m_hWnd; // main window handle
 #else
-        Display *xdisplay;
-        Window xwindow;
+        Display *m_display;
+        Window m_window;
 #endif
         bool m_bWindowActive;
         bool m_bFullScreen;
