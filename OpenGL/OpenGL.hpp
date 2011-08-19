@@ -57,6 +57,7 @@ protected:
         Display *m_display;
         Window m_window;
         EGLSurface m_surface;
+        EGLDisplay m_eglDisplay;
 #endif
 };
 

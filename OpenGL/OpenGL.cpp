@@ -111,7 +111,6 @@ bool OpenGL_c::CreateGLContext( HWND hWindow, int iBitsPerPixel, int iZDepthBits
 #else
 #include <X11/Xutil.h>
 
-static EGLConfig eglConfig[8];
 static EGLConfig eglWConfig[8];
 
 static int cIdx = 0, wIdx = 0;
@@ -129,43 +128,74 @@ bool OpenGL_c::CreateGLContext( Display* display, int iBitsPerPixel, int iZDepth
     EGLint retConfigs;
 
     EGLint targetAttribList[] = {
-        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-        EGL_NATIVE_RENDERABLE, EGL_TRUE,
-        /*EGL_RED_SIZE, 8,
+        EGL_RED_SIZE, 8,
         EGL_GREEN_SIZE, 8,
         EGL_BLUE_SIZE, 8,
-        EGL_ALPHA_SIZE, 8,*/
+        EGL_ALPHA_SIZE, 8,
         EGL_NONE
     };
 
-    if (!eglChooseConfig(display, targetAttribList, eglWConfig, sizeof(eglWConfig), &retConfigs))
+    m_eglDisplay = eglGetDisplay(display);
+
+    EGLint eglMajor, eglMinor;
+
+    if (!eglInitialize(m_eglDisplay, &eglMajor, &eglMinor))
+        return false;
+
+    printf("EGL version %d.%d\n", eglMajor, eglMinor);
+
+    if (!eglChooseConfig(m_eglDisplay, targetAttribList, eglWConfig, sizeof(eglWConfig), &retConfigs))
         return false;
 
     if (!retConfigs)
         return false;
 
-    m_window = XCreateSimpleWindow(display, DefaultRootWindow(display), 0, 0, 640, 480, 1, 1, 0);
+    EGLint vid;
+
+    if (!eglGetConfigAttrib(m_eglDisplay, eglWConfig[0], EGL_NATIVE_VISUAL_ID, &vid))
+        return false;
+
+    XVisualInfo *visInfo, visTemplate;
+    int num_visuals;
+
+    visTemplate.visualid = vid;
+    visInfo = XGetVisualInfo(display, VisualIDMask, &visTemplate, &num_visuals);
+
+    if (!visInfo)
+        return false;
+
+    int scrnum = DefaultScreen(display);
+    Window root = RootWindow(display, scrnum);
+
+    XSetWindowAttributes attr;
+    unsigned long mask;
+
+    attr.background_pixel = 0;
+    attr.border_pixel = 0;
+    attr.colormap = XCreateColormap(display, root, visInfo->visual, AllocNone);
+    attr.event_mask = StructureNotifyMask | ExposureMask | KeyPressMask;
+    mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
+
+    m_window = XCreateWindow(display, root, 0, 0, 640, 480, 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
 
     if (!m_window)
         return false;
 
-    XSelectInput(display, m_window, ButtonPressMask | StructureNotifyMask );
+    XSelectInput(display, m_window, ButtonPressMask | StructureNotifyMask | KeyPressMask );
     XMapWindow(display, m_window);
-
-    m_surface = eglCreateWindowSurface(display, &eglWConfig[wIdx], m_window, targetAttribList);
 
     eglBindAPI(EGL_OPENGL_ES_API);
 
-    EGLint ctxAttribList[] = {
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
-        EGL_NONE
-    };
+    m_surface = eglCreateWindowSurface(m_eglDisplay, eglWConfig[0], m_window, NULL);
 
-    m_hGLRC = eglCreateContext(display, &eglConfig[cIdx], 0, ctxAttribList);
+    if (!m_surface)
+        return false;
+
+    m_hGLRC = eglCreateContext(m_eglDisplay, eglWConfig[0], EGL_NO_CONTEXT, NULL);
 
     if ( m_hGLRC )
     {
-        ret = (eglMakeCurrent(display, m_surface, m_surface, m_hGLRC) == true);
+        ret = (eglMakeCurrent(m_eglDisplay, m_surface, m_surface, m_hGLRC) == true);
         dynglCheckExtensions();
     }
 
