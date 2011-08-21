@@ -8,6 +8,7 @@
 #include <stdarg.h>
 
 #include "MainFrame.hpp"
+#include "OpenGL/OpenGL.hpp"
 
 MainFrame_c* g_pMainFrame = 0;
 
@@ -107,29 +108,34 @@ int main(int argc, char** argv)
     }
 
     bool m_render = true;
+    XEvent ev;
 
     Display *display = g_pMainFrame->GetDisplay();
 
-    while (m_render) {
-        XEvent ev;
+    while (m_render)
+    {
+        if (XPending(display))
+        {
+            XNextEvent(display, &ev);
 
-        XNextEvent(display, &ev);
-
-        switch(ev.type) {
-        /*case ConfigureNotify:
-            if (width != ev.xconfigure.width
-                    || height != ev.xconfigure.height) {
-                width = ev.xconfigure.width;
-                height = ev.xconfigure.height;
+            switch(ev.type) {
+            /*case ConfigureNotify:
+                if (width != ev.xconfigure.width
+                        || height != ev.xconfigure.height) {
+                    width = ev.xconfigure.width;
+                    height = ev.xconfigure.height;
+                }
+                break;*/
+            case ButtonPress:
+                m_render = false;
+                break;
+            default:
+                break;
             }
-            break;*/
-        case ButtonPress:
-            m_render = false;
-            break;
         }
 
         g_pMainFrame->OnPaint();
-        // Render loop
+        eglSwapBuffers(g_cOpenGL.GetEGLDisplay(), g_cOpenGL.GetEGLSurface());
     }
 
     XCloseDisplay(display);
@@ -418,7 +424,7 @@ bool Timer_c::InitTimer() {
 
     clock_gettime(CLOCK_MONOTONIC, &tp);
 
-    m_fTimeAppStart = tp.tv_sec * 1000.0f + tp.tv_sec / 1000000.0f;
+    m_fTimeAppStart = (tp.tv_sec * 1000.0f + tp.tv_nsec / 1000000.0f) / 1000.0f;
 #endif
         return true;
 }
@@ -439,7 +445,7 @@ void Timer_c::Update() {
     clock_gettime(CLOCK_MONOTONIC, &tp);
 
     m_fTimePrev = m_fTimeCurrent;
-    m_fTimeCurrent = tp.tv_sec * 1000.0f + tp.tv_sec / 1000000.0f;
+    m_fTimeCurrent = (tp.tv_sec * 1000.0f + tp.tv_nsec / 1000000.0f) / 1000.0f;
 
     m_fTimeDelta = m_fTimeCurrent - m_fTimePrev;
 #endif
