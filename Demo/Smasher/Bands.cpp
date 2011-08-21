@@ -46,9 +46,49 @@ CBand::~CBand()
 void
 CBand::Render(float fAlpha)
 { 
-    int nS;
+    int nS, i;
  
 #ifdef GL_VERSION_ES_CM_1_1
+    for (nS = 0; nS < BAND_SEGMENTS; nS++)
+        if (aDraw[nS])
+        {
+            float fA;
+            fA = fAlpha * (1.0 - ((float)nS / (float)BAND_SEGMENTS));
+
+            for (i = 0; i < 4; i++) {
+                m_Vertex[i].r = m_Vertex[i].g = m_Vertex[i].b = 1.0f;
+                m_Vertex[i].a = fA;
+            }
+
+            //glTexCoord2f(0.0f, 0.0f);
+            m_Vertex[0].s0 = 0; m_Vertex[0].t0 = 0.0f;
+            //glVertex3fv(&(aPts[nS    ][0].fX));
+            m_Vertex[0].x = aPts[nS    ][0].fX;
+            m_Vertex[0].y = aPts[nS    ][0].fY;
+            m_Vertex[0].z = aPts[nS    ][0].fZ;
+
+            //glTexCoord2f(1.0f, 0.0f);
+            m_Vertex[1].s0 = 1.0f; m_Vertex[0].t0 = 0.0f;
+            //glVertex3fv(&(aPts[nS    ][1].fX));
+            m_Vertex[1].x = aPts[nS    ][1].fX;
+            m_Vertex[1].y = aPts[nS    ][1].fY;
+            m_Vertex[1].z = aPts[nS    ][1].fZ;
+
+            //glTexCoord2f(1.0f, 1.0f);
+            m_Vertex[2].s0 = 1.0f; m_Vertex[2].t0 = 1.0f;
+            //glVertex3fv(&(aPts[nS + 1][1].fX));
+            m_Vertex[2].x = aPts[nS + 1][1].fX;
+            m_Vertex[2].y = aPts[nS + 1][1].fY;
+            m_Vertex[2].z = aPts[nS + 1][1].fZ;
+
+            //glTexCoord2f(0.0f, 1.0f);
+            m_Vertex[3].s0 = 0.0f; m_Vertex[3].t0 = 1.0f;
+            //glVertex3fv(&(aPts[nS + 1][0].fX));
+            m_Vertex[3].x = aPts[nS + 1][0].fX;
+            m_Vertex[3].y = aPts[nS + 1][0].fY;
+            m_Vertex[3].z = aPts[nS + 1][0].fZ;
+        }
+
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_Vertex), m_Vertex, GL_STATIC_DRAW);
