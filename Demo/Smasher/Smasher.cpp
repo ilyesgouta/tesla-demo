@@ -320,6 +320,8 @@ bool MainFrame_c::OnCreate()
     }
 */
 
+    glViewport(0, 0, 640, 480);
+
 #ifdef WIN32
     if ( l_bMakeAVI )
     {
@@ -431,6 +433,8 @@ bool MainFrame_c::OnPaint()
     SwapBuffers( hDC );
     EndPaint( m_hWnd, &stPaint );
 #else
+    m_pTimer->Update();
+
     if ( l_bFirstRenderFrame )
     {
       l_fFirstFrameTime = m_pTimer->GetCurTime();
