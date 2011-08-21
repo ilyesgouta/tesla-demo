@@ -35,6 +35,9 @@ public:
 #endif
         void DestroyGLContext();
 
+        EGLSurface GetEGLSurface() { return m_surface; }
+        EGLDisplay GetEGLDisplay() { return m_eglDisplay; }
+
         /* dont call this on window messages with gl context created!
          * becouse every message is passed thru the gl dll */
         bool UnloadLib();
