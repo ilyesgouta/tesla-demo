@@ -24,9 +24,15 @@ class CBand {
 
 typedef struct __attribute__ ((packed)) CBandVertex {
     float x, y, z;
-    float r, g, b, a;
-    float s0, t0;
 } CBandVertex;
+
+typedef struct __attribute__ ((packed)) CBandColor {
+    float r, g, b, a;
+} CBandColor;
+
+typedef struct __attribute__ ((packed)) CBandTex {
+    float s0, t0;
+} CBandTex;
 
 public:
     CVector aPts[BAND_SEGMENTS+1][2];
@@ -46,8 +52,9 @@ public:
 
 #ifdef GL_VERSION_ES_CM_1_1
 private:
-    GLuint vertexBuffer;
     CBandVertex m_Vertex[4];
+    CBandColor m_Color[4];
+    CBandTex m_Texture[4];
 #endif
 };
 

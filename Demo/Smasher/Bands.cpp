@@ -3,6 +3,7 @@
 #endif
 
 #include <stdlib.h>
+#include <assert.h>
 
 #include "Bands.hpp"
 
@@ -15,10 +16,6 @@ CBand::CBand(float fNewBandWidth,
              float fNewSF)
 {
     int nS;
-
-#ifdef GL_VERSION_ES_CM_1_1
-    glGenBuffers(1, &vertexBuffer);
-#endif
 
     fBandWidth = fNewBandWidth;
     fSpeedFactor = fNewSF;
@@ -38,9 +35,6 @@ CBand::CBand(float fNewBandWidth,
 
 CBand::~CBand()
 {
-#ifdef GL_VERSION_ES_CM_1_1
-    glDeleteBuffers(1, &vertexBuffer);
-#endif
 }
 
 void
@@ -49,6 +43,12 @@ CBand::Render(float fAlpha)
     int nS, i;
  
 #ifdef GL_VERSION_ES_CM_1_1
+    glClientActiveTexture(GL_TEXTURE0);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
     for (nS = 0; nS < BAND_SEGMENTS; nS++)
         if (aDraw[nS])
         {
@@ -56,54 +56,48 @@ CBand::Render(float fAlpha)
             fA = fAlpha * (1.0 - ((float)nS / (float)BAND_SEGMENTS));
 
             for (i = 0; i < 4; i++) {
-                m_Vertex[i].r = m_Vertex[i].g = m_Vertex[i].b = 1.0f;
-                m_Vertex[i].a = fA;
+                m_Color[i].r = m_Color[i].g = 1.0; m_Color[i].b = 1.0f;
+                m_Color[i].a = fA;
             }
 
             //glTexCoord2f(0.0f, 0.0f);
-            m_Vertex[0].s0 = 0; m_Vertex[0].t0 = 0.0f;
+            m_Texture[0].s0 = 0; m_Texture[0].t0 = 0.0f;
             //glVertex3fv(&(aPts[nS    ][0].fX));
             m_Vertex[0].x = aPts[nS    ][0].fX;
             m_Vertex[0].y = aPts[nS    ][0].fY;
             m_Vertex[0].z = aPts[nS    ][0].fZ;
 
             //glTexCoord2f(1.0f, 0.0f);
-            m_Vertex[1].s0 = 1.0f; m_Vertex[0].t0 = 0.0f;
+            m_Texture[1].s0 = 1.0f; m_Texture[1].t0 = 0.0f;
             //glVertex3fv(&(aPts[nS    ][1].fX));
             m_Vertex[1].x = aPts[nS    ][1].fX;
             m_Vertex[1].y = aPts[nS    ][1].fY;
             m_Vertex[1].z = aPts[nS    ][1].fZ;
 
-            //glTexCoord2f(1.0f, 1.0f);
-            m_Vertex[2].s0 = 1.0f; m_Vertex[2].t0 = 1.0f;
-            //glVertex3fv(&(aPts[nS + 1][1].fX));
-            m_Vertex[2].x = aPts[nS + 1][1].fX;
-            m_Vertex[2].y = aPts[nS + 1][1].fY;
-            m_Vertex[2].z = aPts[nS + 1][1].fZ;
-
             //glTexCoord2f(0.0f, 1.0f);
-            m_Vertex[3].s0 = 0.0f; m_Vertex[3].t0 = 1.0f;
+            m_Texture[2].s0 = 0.0f; m_Texture[2].t0 = 1.0f;
             //glVertex3fv(&(aPts[nS + 1][0].fX));
-            m_Vertex[3].x = aPts[nS + 1][0].fX;
-            m_Vertex[3].y = aPts[nS + 1][0].fY;
-            m_Vertex[3].z = aPts[nS + 1][0].fZ;
+            m_Vertex[2].x = aPts[nS + 1][0].fX;
+            m_Vertex[2].y = aPts[nS + 1][0].fY;
+            m_Vertex[2].z = aPts[nS + 1][0].fZ;
+
+            //glTexCoord2f(1.0f, 1.0f);
+            m_Texture[3].s0 = 1.0f; m_Texture[3].t0 = 1.0f;
+            //glVertex3fv(&(aPts[nS + 1][1].fX));
+            m_Vertex[3].x = aPts[nS + 1][1].fX;
+            m_Vertex[3].y = aPts[nS + 1][1].fY;
+            m_Vertex[3].z = aPts[nS + 1][1].fZ;
+
+            glVertexPointer(3, GL_FLOAT, 0, m_Vertex);
+            glColorPointer(4, GL_FLOAT, 0, m_Color);
+            glTexCoordPointer(2, GL_FLOAT, 0, m_Texture);
+
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }
 
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_Vertex), m_Vertex, GL_STATIC_DRAW);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, sizeof(CBandVertex), &m_Vertex[0] + offsetof(CBandVertex, x));
-
-    glEnableClientState(GL_COLOR_ARRAY);
-    glColorPointer(4, GL_FLOAT, sizeof(CBandVertex), &m_Vertex[0] + offsetof(CBandVertex, r));
-
-    glClientActiveTexture(GL_TEXTURE0);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(CBandVertex), &m_Vertex[0] + offsetof(CBandVertex, s0));
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 #else
     glBegin(GL_QUADS);
     for (nS = 0; nS < BAND_SEGMENTS; nS++)
@@ -184,7 +178,7 @@ CBands::CBands(int nNewBands)
     for (nB = 0; nB < nBands; nB++)
         aBands[nB] = new CBand(0.1f + 0.2f * frand(), 1.0f + 1.0 * frand());
 
-    nTex = g_cTexManager.LoadTexture("data/textures/polka.png", 1);
+    nTex = g_cTexManager.LoadTexture("data/textures/polka.png", 0);
 
 #if 0
     glGenTextures(1, &nTex);
@@ -221,12 +215,13 @@ CBands::Render(void)
 
     glBindTexture(GL_TEXTURE_2D, nTex);
     glEnable(GL_TEXTURE_2D);
+
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glColor4f(1.0, 1.0, 1.0, 1.0);
     //glColor3f(0.1, 0.1, 0.5);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glDisable(GL_DEPTH_TEST);
 
 #if 0
     glEnable(GL_FOG);
@@ -279,11 +274,15 @@ CBands::Do(float fTime, float fTimeStart)
 
     fLastTime = fTime;
 
+    glViewport(0, 0, 640, 480);
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+
     glFrustumf(-0.5, 0.5,
                -0.375, 0.375,
                -BAND_NEAR_PLANE, -BAND_FAR_PLANE);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glRotatef(fTime * 50.0, 0.0, 0.0, 1.0);
@@ -292,6 +291,7 @@ CBands::Do(float fTime, float fTimeStart)
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
 
     Move(fDelta * 10.0);
     Render();
