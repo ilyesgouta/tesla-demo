@@ -125,13 +125,16 @@ bool OpenGL_c::CreateGLContext( Display* display, int iBitsPerPixel, int iZDepth
     if ( m_bGLContextCreated )
         return false;
 
-    EGLint retConfigs;
+    EGLint retConfigs = 0;
 
     EGLint targetAttribList[] = {
         EGL_RED_SIZE, 8,
         EGL_GREEN_SIZE, 8,
         EGL_BLUE_SIZE, 8,
         EGL_ALPHA_SIZE, 8,
+        EGL_DEPTH_SIZE, 8,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
+        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
         EGL_NONE
     };
 
@@ -149,11 +152,15 @@ bool OpenGL_c::CreateGLContext( Display* display, int iBitsPerPixel, int iZDepth
 
     if (!retConfigs)
         return false;
+    else
+        printf("found %d configurations.\n", retConfigs);
 
     EGLint vid;
 
     if (!eglGetConfigAttrib(m_eglDisplay, eglWConfig[0], EGL_NATIVE_VISUAL_ID, &vid))
         return false;
+
+    printf("X visual id: 0x%02x\n", vid);
 
     XVisualInfo *visInfo, visTemplate;
     int num_visuals;
@@ -181,20 +188,32 @@ bool OpenGL_c::CreateGLContext( Display* display, int iBitsPerPixel, int iZDepth
     if (!m_window)
         return false;
 
+    {
+       XSizeHints sizehints;
+       sizehints.x = 0;
+       sizehints.y = 0;
+       sizehints.width  = 640;
+       sizehints.height = 480;
+       sizehints.flags = USSize | USPosition;
+       XSetNormalHints(display, m_window, &sizehints);
+       XSetStandardProperties(display, m_window, "tesla-demo", "tesla-demo",
+                               None, (char **)NULL, 0, &sizehints);
+    }
+
     XSelectInput(display, m_window, ButtonPressMask | StructureNotifyMask | KeyPressMask );
     XMapWindow(display, m_window);
 
     eglBindAPI(EGL_OPENGL_ES_API);
 
-    m_surface = eglCreateWindowSurface(m_eglDisplay, eglWConfig[0], m_window, NULL);
-
-    if (!m_surface)
-        return false;
-
     m_hGLRC = eglCreateContext(m_eglDisplay, eglWConfig[0], EGL_NO_CONTEXT, NULL);
 
     if ( m_hGLRC )
     {
+        m_surface = eglCreateWindowSurface(m_eglDisplay, eglWConfig[0], m_window, NULL);
+
+        if (!m_surface)
+            return false;
+
         ret = (eglMakeCurrent(m_eglDisplay, m_surface, m_surface, m_hGLRC) == true);
         dynglCheckExtensions();
     }
@@ -263,17 +282,17 @@ int OpenGL_c::UploadTexture( void* pRawData, int iTWidth, int iTHeight, int iBPP
 
         if ( iChannels == 3 ) 
         {
-          glTexImage2D( GL_TEXTURE_2D, iLev, iChannels, iTWidth, iTHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, pRawData );
+          glTexImage2D( GL_TEXTURE_2D, iLev, GL_RGB, iTWidth, iTHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, pRawData );
           pRGBMap1 = (rgb_t*)pRawData;
         }
         else if ( iChannels == 4 ) 
         {
-          glTexImage2D( GL_TEXTURE_2D, iLev, iChannels, iTWidth, iTHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pRawData );
+          glTexImage2D( GL_TEXTURE_2D, iLev, GL_RGBA, iTWidth, iTHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pRawData );
           pRGBAMap1 = (rgba_t*)pRawData;
         }
         else if ( iChannels == 1 ) 
         {
-          glTexImage2D( GL_TEXTURE_2D, iLev, iChannels, iTWidth, iTHeight, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pRawData );
+          glTexImage2D( GL_TEXTURE_2D, iLev, GL_LUMINANCE, iTWidth, iTHeight, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pRawData );
           pGrayMap1 = (unsigned char*)pRawData;
         }        
         else return -1;
