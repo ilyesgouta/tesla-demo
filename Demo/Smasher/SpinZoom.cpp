@@ -2,7 +2,12 @@
 //3.5-9
 //15-19
 
+#ifdef WIN32
 #include "stdafx.h"
+#endif
+
+#include <stdlib.h>
+
 #include "SpinZoom.hpp"
 #include "Stuff.hpp"
 
@@ -10,6 +15,7 @@ static const float l_fBoundMin = -3;
 static const float l_fBoundMax = 3;
 static const float l_fZMax = 300;
 
+extern CTextureManager g_cTexManager;
 
 class kdat
 {
@@ -29,11 +35,38 @@ kdat unrTab[] = {
 	kdat(20,0), kdat(22,1), 
 	kdat(24,0), kdat(99,0), kdat(99,0), kdat(99,0), kdat(99,0), kdat(99,0)};
 
-	static float l_fChangeTime3 = 19;
+static float l_fChangeTime3 = 19;
 
-/*******************************************************************************************/
-static inline void PutQuad() {
+CSpinZoomVertex CSpinZoom::s_Vertex[4] = {
+	{-1, 1, 0},
+	{1, 1, 0},
+	{1, -1, 0},
+	{-1, -1, 0}
+};
 
+CSpinZoomTex CSpinZoom::s_Texture[4] = {
+	{0, 0},
+	{1, 0},
+	{1, 1},
+	{0, 1}
+};
+
+void CSpinZoom::PutQuad()
+{
+#ifdef GL_VERSION_ES_CM_1_1
+    glClientActiveTexture(GL_TEXTURE0);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glVertexPointer(3, GL_FLOAT, 0, s_Vertex);
+    glTexCoordPointer(2, GL_FLOAT, 0, s_Texture);
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+#else
         glBegin( GL_QUADS );
           glTexCoord2f( 0, 0 );
           glVertex3f( - 1, 1, 0 );
@@ -44,6 +77,7 @@ static inline void PutQuad() {
           glTexCoord2f( 0, 1 );
           glVertex3f( -1, -1, 0 );
         glEnd();
+#endif
 }
 /*******************************************************************************************/
 inline void CSpin::Init( float fAngle0, float fAngleChange, float fScaleChange, CSinWave cSinWave ) {
@@ -143,23 +177,28 @@ void CSpin::Render( float fTime ) {
 			
 			//          glRotatef( 5*(float)cos(fTime) + 10*(float)cos(fTime/2), 0, .5, 1 );
 
-			PutQuad();
+            CSpinZoom::PutQuad();
         }
         glPopMatrix();
 		
 		switch(u)
 		{
 		case 5:
-		case 6:
-			cDarkQuads.Render( 20, CColor(0,0,0.1,0.12));
+		case 6: {
+			CColor c = CColor(0,0,0.1,0.12);
+			cDarkQuads.Render( 20, c);
 			break;
+		}
 		case 7:
-		case 8:
-			cDarkQuads.Render( 220, CColor(0,0,0.041,0.1));
+		case 8: {
+			CColor c = CColor(0,0,0.041,0.1);
+			cDarkQuads.Render( 220, c);
 			break;
-			
-		default:
-			cDarkQuads.Render( 80);
+		}
+		default: {
+			CColor c = CColor(0, 0, 0, .2);
+			cDarkQuads.Render( 80, c);
+		}
 		}
 		
 }
@@ -195,7 +234,7 @@ void CSpinZoom::Do( float fTime, float fTimeStart ) {
 
         glMatrixMode( GL_PROJECTION );
         glLoadIdentity();
-        glFrustum( -.6f, .6f, -.45f, .45f, 1, l_fZMax );
+        glFrustumf( -.6f, .6f, -.45f, .45f, 1, l_fZMax );
 
         glMatrixMode( GL_MODELVIEW );
         glLoadIdentity();

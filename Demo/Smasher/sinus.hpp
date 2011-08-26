@@ -2,6 +2,8 @@
 #if !defined (_SINUS_HPP_)
 #define _SINUS_HPP_
 
+#include <math.h>
+
 class CSinPulse {
 
 public:
