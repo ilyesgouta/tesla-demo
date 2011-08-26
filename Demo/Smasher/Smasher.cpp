@@ -320,8 +320,6 @@ bool MainFrame_c::OnCreate()
     }
 */
 
-    glViewport(0, 0, 640, 480);
-
 #ifdef WIN32
     if ( l_bMakeAVI )
     {
@@ -442,7 +440,7 @@ bool MainFrame_c::OnPaint()
       //if ( !l_bMakeAVI ) g_cBass.PlayMP3();
     }
 
-    glClearColor( 0, 0, 0, 0 );
+    glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     g_pEffManage->PlayEffects( m_pTimer->GetCurTime() - l_fFirstFrameTime );
