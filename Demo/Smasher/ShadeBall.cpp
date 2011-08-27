@@ -63,24 +63,24 @@ void CShadeBall::PutQuad( CTexel cUVPos, float fScale = 1 )
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     m_Vertex[0].x = -300*fScale;
-    m_Vertex[0].y = 300*fScale;
-    m_Vertex[0].z = 0;
-    m_Texture[0].s0 = 0 + cUVPos.fU; m_Texture[0].t0 = 0 + cUVPos.fV;
-
-    m_Vertex[0].x = 300*fScale;
-    m_Vertex[0].y = 300*fScale;
-    m_Vertex[0].z = 0;
-    m_Texture[0].s0 = 1 + cUVPos.fU; m_Texture[0].t0 = 0 + cUVPos.fV;
-
-    m_Vertex[0].x = 300*fScale;
-    m_Vertex[0].y = -300*fScale;
-    m_Vertex[0].z = 0;
-    m_Texture[0].s0 = 1 + cUVPos.fU; m_Texture[0].t0 = 1 + cUVPos.fV;
-
-    m_Vertex[0].x = -300*fScale;
     m_Vertex[0].y = -300*fScale;
     m_Vertex[0].z = 0;
     m_Texture[0].s0 = 0 + cUVPos.fU; m_Texture[0].t0 = 1 + cUVPos.fV;
+
+    m_Vertex[1].x = -300*fScale;
+    m_Vertex[1].y = 300*fScale;
+    m_Vertex[1].z = 0;
+    m_Texture[1].s0 = 0 + cUVPos.fU; m_Texture[1].t0 = 0 + cUVPos.fV;
+
+    m_Vertex[2].x = 300*fScale;
+    m_Vertex[2].y = -300*fScale;
+    m_Vertex[2].z = 0;
+    m_Texture[2].s0 = 1 + cUVPos.fU; m_Texture[2].t0 = 1 + cUVPos.fV;
+
+    m_Vertex[3].x = 300*fScale;
+    m_Vertex[3].y = 300*fScale;
+    m_Vertex[3].z = 0;
+    m_Texture[3].s0 = 1 + cUVPos.fU; m_Texture[3].t0 = 0 + cUVPos.fV;
 
     glVertexPointer(3, GL_FLOAT, 0, m_Vertex);
     glTexCoordPointer(2, GL_FLOAT, 0, m_Texture);
