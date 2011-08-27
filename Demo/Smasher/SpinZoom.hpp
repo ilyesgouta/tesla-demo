@@ -11,8 +11,6 @@
 #include "Effect.hpp"
 #include "sinus.hpp"
 
-#include "Effect.hpp"
-
 #include "TexManager.hpp"
 
 #include <GLES/gl.h>
