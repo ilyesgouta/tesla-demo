@@ -5,13 +5,13 @@
 class CDarkQuads {
 
 public: 
-        CDarkQuads() {};
+    CDarkQuads() {};
 
-        void Render( int iSeed, CColor& cColor /*= CColor(0, 0, 0, .2)*/ );
+    void Render( int iSeed, CColor& cColor /*= CColor(0, 0, 0, .2)*/ );
 
 protected:
 
-        int m_iSeed;
+    int m_iSeed;
 };
 
 #endif
