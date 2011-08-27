@@ -24,13 +24,13 @@
 #include "Dragon.hpp"
 #include "EnergyStream.hpp"
 #include "Tree.hpp"
-#include "ShadeBall.hpp"
 #include "Splines.hpp"
 #include "FaceMorph.hpp"
 #include "FFDEnvVector.hpp"
 #endif
 
 #include "SpinZoom.hpp"
+#include "ShadeBall.hpp"
 #include "Bands.hpp"
 
 CEffManager* g_pEffManage = 0;
@@ -333,7 +333,6 @@ bool MainFrame_c::OnCreate()
     g_pEffManage = new CEffManager();
 
 #if 0
-    g_pEffManage->AddEffect( new CShadeBall(), 24.5, 48.5 );
     g_pEffManage->AddEffect( new CSplines(), 48.5, 67.7 );
     g_pEffManage->AddEffect( new CFFDEnv(), 67.7, 87 );
     g_pEffManage->AddEffect( new CBands(), 69, 85 );
@@ -345,6 +344,7 @@ bool MainFrame_c::OnCreate()
     g_pEffManage->AddEffect( new CThing(), 222.5, 254 );
 #else
     g_pEffManage->AddEffect( new CSpinZoom(), 0, 24.5 );
+    g_pEffManage->AddEffect( new CShadeBall(), 24.5, 48.5 );
     g_pEffManage->AddEffect( new CBands(), 48.5, 67.7 );
 #endif
     //if ( !l_bMakeAVI ) g_cBass.LoadMP3( "tournesol.mp3" );

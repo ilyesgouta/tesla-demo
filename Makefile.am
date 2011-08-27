@@ -47,6 +47,7 @@ tesla_demo_SOURCES = \
     Demo/Smasher/TexManager.cpp \
     Demo/Smasher/Stuff.cpp \
     Demo/Smasher/SpinZoom.cpp \
+    Demo/Smasher/ShadeBall.cpp \
     Demo/Smasher/Bands.cpp \
     Demo/Smasher/Smasher.cpp
 
@@ -59,7 +60,6 @@ tesla_demo_SOURCES = \
 #    Demo/Smasher/Dragon.cpp \
 #    Demo/Smasher/Splines.cpp \
 #    Demo/Smasher/FaceMorph.cpp \
-#    Demo/Smasher/ShadeBall.cpp \
 #    Demo/Smasher/Scape.cpp \
 #    Demo/Smasher/tessellator.cpp \
 #    Demo/Smasher/BassPlay.cpp \
