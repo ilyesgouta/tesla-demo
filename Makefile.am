@@ -50,6 +50,7 @@ tesla_demo_SOURCES = \
     Demo/Smasher/ShadeBall.cpp \
     Demo/Smasher/Splines.cpp \
     Demo/Smasher/Bands.cpp \
+    Demo/Smasher/EnergyStream.cpp \
     Demo/Smasher/Smasher.cpp
 
 #    Demo/Smasher/GridNode.cpp \
@@ -65,7 +66,6 @@ tesla_demo_SOURCES = \
 #    Demo/Smasher/BassPlay.cpp \
 #    Demo/Smasher/ScrewBolt.cpp \
 #    Demo/Smasher/Rotator.cpp \
-#    Demo/Smasher/EnergyStream.cpp \
 #    Demo/Smasher/PolkaLike.cpp
 
 CLEANFILES = $(BUILT_SOURCES)
