@@ -52,7 +52,6 @@ private:
     CVertex m_Vertex[4];
     CTex m_Texture[4];
 #endif
-
 };
 
 #endif /* _FACE_MORPH_HPP_ */
