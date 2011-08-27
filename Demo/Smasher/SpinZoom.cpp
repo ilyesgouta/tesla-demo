@@ -79,22 +79,21 @@ void CSpinZoom::PutQuad()
         glEnd();
 #endif
 }
-/*******************************************************************************************/
-inline void CSpin::Init( float fAngle0, float fAngleChange, float fScaleChange, CSinWave cSinWave ) {
 
-        m_cPosition.fZ = -((float)rand()/RAND_MAX)*l_fZMax;
-        m_cPosition.fX = ((float)rand()/RAND_MAX)*(l_fBoundMax - l_fBoundMin) + l_fBoundMin;
-        m_cPosition.fY = ((float)rand()/RAND_MAX)*(l_fBoundMax - l_fBoundMin) + l_fBoundMin;
+inline void CSpin::Init( float fAngle0, float fAngleChange, float fScaleChange, CSinWave cSinWave )
+{
+    m_cPosition.fZ = -((float)rand()/RAND_MAX)*l_fZMax;
+    m_cPosition.fX = ((float)rand()/RAND_MAX)*(l_fBoundMax - l_fBoundMin) + l_fBoundMin;
+    m_cPosition.fY = ((float)rand()/RAND_MAX)*(l_fBoundMax - l_fBoundMin) + l_fBoundMin;
 
-        m_fAngle = fAngle0;
-        m_fAngleChange = fAngleChange;
-        m_fScaleChange = fScaleChange;
-        m_cSinWave = cSinWave;
+    m_fAngle = fAngle0;
+    m_fAngleChange = fAngleChange;
+    m_fScaleChange = fScaleChange;
+    m_cSinWave = cSinWave;
 }
 
-/*******************************************************************************************/
-void CSpin::Render( float fTime ) {
-	
+void CSpin::Render( float fTime )
+{
 	int u;
 	CDarkQuads cDarkQuads;
 	float timeSpan;
@@ -202,15 +201,9 @@ void CSpin::Render( float fTime ) {
 		}
 		
 }
-/*******************************************************************************************/
 
-
-
-
-
-/*******************************************************************************************/
-CSpinZoom::CSpinZoom() {
-	
+CSpinZoom::CSpinZoom()
+{
 	m_pSpins = 0;
 	m_iSpins = 0;
 	
@@ -222,36 +215,34 @@ CSpinZoom::CSpinZoom() {
 	for ( int i = 0; i != m_iSpins; i++ )
 		m_pSpins[i].Init( 0, 5, 1.02f, CSinWave(30.f, 1.23f, 0) );
 }
-/*******************************************************************************************/
-CSpinZoom::~CSpinZoom() {
 
-        if ( m_pSpins ) delete[] m_pSpins;
+CSpinZoom::~CSpinZoom()
+{
+	if ( m_pSpins ) delete[] m_pSpins;
 }
-/*******************************************************************************************/
-void CSpinZoom::Do( float fTime, float fTimeStart ) {
 
-        m_fTime = fTime - fTimeStart - .1;
+void CSpinZoom::Do( float fTime, float fTimeStart )
+{
+	m_fTime = fTime - fTimeStart - .1;
 
-        glMatrixMode( GL_PROJECTION );
-        glLoadIdentity();
-        glFrustumf( -.6f, .6f, -.45f, .45f, 1, l_fZMax );
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	glFrustumf( -.6f, .6f, -.45f, .45f, 1, l_fZMax );
 
-        glMatrixMode( GL_MODELVIEW );
-        glLoadIdentity();
+	glMatrixMode( GL_MODELVIEW );
+	glLoadIdentity();
 
-        glEnable( GL_TEXTURE_2D );
-        glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE );
-        glDisable( GL_CULL_FACE );
-        glDisable( GL_DEPTH_TEST );
-        glDepthMask( 0 );
+	glEnable( GL_TEXTURE_2D );
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+	glDisable( GL_CULL_FACE );
+	glDisable( GL_DEPTH_TEST );
+	glDepthMask( 0 );
 
-        glBindTexture( GL_TEXTURE_2D, m_iTex1 );
+	glBindTexture( GL_TEXTURE_2D, m_iTex1 );
 
-        for ( int i = 0; i != m_iSpins; i++ )
-        {
-          m_pSpins[i].Render( m_fTime );
-        }
-
+	for ( int i = 0; i != m_iSpins; i++ )
+	{
+		m_pSpins[i].Render( m_fTime );
+	}
 }
-/*******************************************************************************************/
