@@ -14,8 +14,8 @@ include_HEADERS = \
     Demo/Smasher/resource.h \
     Demo/Smasher/base.h
 
-CFLAGS =
-CXXFLAGS =
+AM_CFLAGS =
+AM_CXXFLAGS =
 
 tesla_demo_CFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(LIBPNG_CFLAGS)
 tesla_demo_CXXFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(LIBPNG_CFLAGS)
@@ -53,6 +53,7 @@ tesla_demo_SOURCES = \
     Demo/Smasher/EnergyStream.cpp \
     Demo/Smasher/tubes.cpp \
     Demo/Smasher/tessellator.cpp \
+    Demo/Smasher/PolkaLike.cpp \
     Demo/Smasher/Smasher.cpp
 
 #    Demo/Smasher/GridNode.cpp \
@@ -65,7 +66,6 @@ tesla_demo_SOURCES = \
 #    Demo/Smasher/Scape.cpp \
 #    Demo/Smasher/BassPlay.cpp \
 #    Demo/Smasher/ScrewBolt.cpp \
-#    Demo/Smasher/Rotator.cpp \
-#    Demo/Smasher/PolkaLike.cpp
+#    Demo/Smasher/Rotator.cpp
 
 CLEANFILES = $(BUILT_SOURCES)
