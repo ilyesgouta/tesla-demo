@@ -65,9 +65,9 @@ void CSplineTrail::Render( float fTime )
 
     for ( int i = 0; i != m_iTailLen; i++ )
     {
-        cPos.fX = sin(t*m_cXSinParams.fX)*m_cXSinParams.fZ + sin(t*m_cXSinParams.fY + 1)*m_cXSinParams.fZ;
-        cPos.fY = sin(t*m_cYSinParams.fX)*m_cYSinParams.fZ + sin(t*m_cYSinParams.fY + 1)*m_cYSinParams.fZ;
-        cPos.fZ = sin(t*m_cZSinParams.fX)*m_cZSinParams.fZ + sin(t*m_cZSinParams.fY + 1)*m_cZSinParams.fZ;
+        cPos.fX = sin(t * m_cXSinParams.fX) * m_cXSinParams.fZ + sin(t * m_cXSinParams.fY + 1) * m_cXSinParams.fZ;
+        cPos.fY = sin(t * m_cYSinParams.fX) * m_cYSinParams.fZ + sin(t * m_cYSinParams.fY + 1) * m_cYSinParams.fZ;
+        cPos.fZ = sin(t * m_cZSinParams.fX) * m_cZSinParams.fZ + sin(t * m_cZSinParams.fY + 1) * m_cZSinParams.fZ;
 
         fAlpha = 1 - (float)i/m_iTailLen;
         clamp( &fAlpha );
@@ -89,25 +89,25 @@ void CSplineTrail::Render( float fTime )
         } else k = 1;
 
 #ifdef GL_VERSION_ES_CM_1_1
-        m_Vertex[0].x = ((cPos - cX + cY)*k).fX;
-        m_Vertex[0].y = ((cPos - cX + cY)*k).fY;
-        m_Vertex[0].z = ((cPos - cX + cY)*k).fZ;
-        m_Texture[0].s0 = 0; m_Texture[0].t0 = 0;
+        m_Vertex[0].x = (cPos - cX - cY).fX;
+        m_Vertex[0].y = (cPos - cX - cY).fY;
+        m_Vertex[0].z = (cPos - cX - cY).fZ;
+        m_Texture[0].s0 = 0; m_Texture[0].t0 = 1;
 
-        m_Vertex[1].x = ((cPos + cX + cY)*k).fX;
-        m_Vertex[1].y = ((cPos + cX + cY)*k).fY;
-        m_Vertex[1].z = ((cPos + cX + cY)*k).fZ;
-        m_Texture[1].s0 = 1; m_Texture[1].t0 = 0;
+        m_Vertex[1].x = ((cPos - cX + cY)*k).fX;
+        m_Vertex[1].y = ((cPos - cX + cY)*k).fY;
+        m_Vertex[1].z = ((cPos - cX + cY)*k).fZ;
+        m_Texture[1].s0 = 0; m_Texture[1].t0 = 0;
 
         m_Vertex[2].x = ((cPos + cX - cY)*k).fX;
         m_Vertex[2].y = ((cPos + cX - cY)*k).fY;
         m_Vertex[2].z = ((cPos + cX - cY)*k).fZ;
         m_Texture[2].s0 = 1; m_Texture[2].t0 = 1;
 
-        m_Vertex[3].x = (cPos - cX - cY).fX;
-        m_Vertex[3].y = (cPos - cX - cY).fY;
-        m_Vertex[3].z = (cPos - cX - cY).fZ;
-        m_Texture[3].s0 = 0; m_Texture[3].t0 = 1;
+        m_Vertex[3].x = ((cPos + cX + cY)*k).fX;
+        m_Vertex[3].y = ((cPos + cX + cY)*k).fY;
+        m_Vertex[3].z = ((cPos + cX + cY)*k).fZ;
+        m_Texture[3].s0 = 1; m_Texture[3].t0 = 0;
 
         glVertexPointer(3, GL_FLOAT, 0, m_Vertex);
         glTexCoordPointer(2, GL_FLOAT, 0, m_Texture);
