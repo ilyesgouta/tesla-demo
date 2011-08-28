@@ -266,8 +266,6 @@ CBands::Do(float fTime, float fTimeStart)
 
     fLastTime = fTime;
 
-    glViewport(0, 0, 640, 480);
-
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 

@@ -157,9 +157,9 @@ MainFrame_c::MainFrame_c() {
         m_iError = 0;
         m_szErrorMessage[0] = 0;  
         m_bWindowActive = true;
-        m_iWindowWidth = 640;
-        m_iWindowHeight = 480;
-        m_iBitsPerPixel = 16;
+        m_iWindowWidth = 1280;
+        m_iWindowHeight = 720;
+        m_iBitsPerPixel = 32;
         strcpy( m_szWindowName, "default name" );
         m_bFullScreen = false;
         m_bInitDone = false;

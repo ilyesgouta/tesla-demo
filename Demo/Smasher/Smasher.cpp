@@ -284,8 +284,8 @@ void Start()
       g_pMainFrame->m_iBitsPerPixel = 32;
     }
 #else
-    g_pMainFrame->m_iWindowWidth = 640;
-    g_pMainFrame->m_iWindowHeight = 480;
+    g_pMainFrame->m_iWindowWidth = 1280;
+    g_pMainFrame->m_iWindowHeight = 720;
     g_pMainFrame->m_iBitsPerPixel = 32;
 #endif
 }
@@ -442,6 +442,8 @@ bool MainFrame_c::OnPaint()
 
     glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+    glViewport(0, 0, 1280, 720);
 
     g_pEffManage->PlayEffects( m_pTimer->GetCurTime() - l_fFirstFrameTime );
 #endif

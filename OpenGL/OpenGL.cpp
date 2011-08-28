@@ -183,7 +183,7 @@ bool OpenGL_c::CreateGLContext( Display* display, int iBitsPerPixel, int iZDepth
     attr.event_mask = StructureNotifyMask | ExposureMask | KeyPressMask;
     mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
 
-    m_window = XCreateWindow(display, root, 0, 0, 640, 480, 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
+    m_window = XCreateWindow(display, root, 0, 0, 1280, 720, 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
 
     if (!m_window)
         return false;
@@ -192,8 +192,8 @@ bool OpenGL_c::CreateGLContext( Display* display, int iBitsPerPixel, int iZDepth
        XSizeHints sizehints;
        sizehints.x = 0;
        sizehints.y = 0;
-       sizehints.width  = 640;
-       sizehints.height = 480;
+       sizehints.width  = 1280;
+       sizehints.height = 720;
        sizehints.flags = USSize | USPosition;
        XSetNormalHints(display, m_window, &sizehints);
        XSetStandardProperties(display, m_window, "tesla-demo", "tesla-demo",
