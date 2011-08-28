@@ -199,7 +199,7 @@ void CFFDEnv::Do( float fTime, float fTimeStart )
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glColor4f( 1, 1, 1, 1*fAlpha );
 
-#if GL_VERSION_ES_CM_1_1
+#ifdef GL_VERSION_ES_CM_1_1
     glClientActiveTexture(GL_TEXTURE0);
 
     glEnableClientState(GL_VERTEX_ARRAY);
