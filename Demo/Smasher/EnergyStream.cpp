@@ -8,7 +8,7 @@
 static float l_fChangeTime = 15;
 static float l_fChangeTime1 = 25;
 static float l_fChangeTime2 = 38;
-static float l_fChangeTime2a =46;
+static float l_fChangeTime2a = 46;
 static float l_fChangeTime3 = 58;
 
 CFlareStream::CFlareStream()
@@ -91,25 +91,25 @@ void CFlareStream::Render( float fTime, CVector& cBaseX, CVector& cBaseY, float 
         cFlarePos.fZ = m_pFlares[i].fZ + 2 * cos(fTime * 7 + i * 3.14);
 
 #ifdef GL_VERSION_ES_CM_1_1
-        m_Vertex[0].x = (cFlarePos - cBaseX + cBaseY).fX;
-        m_Vertex[0].y = (cFlarePos - cBaseX + cBaseY).fY;
-        m_Vertex[0].z = (cFlarePos - cBaseX + cBaseY).fZ;
-        m_Texture[0].s0 = 0; m_Texture[0].t0 = 0;
+        m_Vertex[0].x = (cFlarePos - cBaseX - cBaseY).fX;
+        m_Vertex[0].y = (cFlarePos - cBaseX - cBaseY).fY;
+        m_Vertex[0].z = (cFlarePos - cBaseX - cBaseY).fZ;
+        m_Texture[0].s0 = 0; m_Texture[0].t0 = 1;
 
-        m_Vertex[1].x = (cFlarePos + cBaseX + cBaseY).fX;
-        m_Vertex[1].y = (cFlarePos + cBaseX + cBaseY).fY;
-        m_Vertex[1].z = (cFlarePos + cBaseX + cBaseY).fZ;
-        m_Texture[1].s0 = 1; m_Texture[1].t0 = 0;
+        m_Vertex[1].x = (cFlarePos - cBaseX + cBaseY).fX;
+        m_Vertex[1].y = (cFlarePos - cBaseX + cBaseY).fY;
+        m_Vertex[1].z = (cFlarePos - cBaseX + cBaseY).fZ;
+        m_Texture[1].s0 = 0; m_Texture[1].t0 = 0;
 
         m_Vertex[2].x = (cFlarePos + cBaseX - cBaseY).fX;
         m_Vertex[2].y = (cFlarePos + cBaseX - cBaseY).fY;
         m_Vertex[2].z = (cFlarePos + cBaseX - cBaseY).fZ;
         m_Texture[2].s0 = 1; m_Texture[2].t0 = 1;
 
-        m_Vertex[3].x = (cFlarePos - cBaseX - cBaseY).fX;
-        m_Vertex[3].y = (cFlarePos - cBaseX - cBaseY).fY;
-        m_Vertex[3].z = (cFlarePos - cBaseX - cBaseY).fZ;
-        m_Texture[3].s0 = 0; m_Texture[3].t0 = 1;
+        m_Vertex[3].x = (cFlarePos + cBaseX + cBaseY).fX;
+        m_Vertex[3].y = (cFlarePos + cBaseX + cBaseY).fY;
+        m_Vertex[3].z = (cFlarePos + cBaseX + cBaseY).fZ;
+        m_Texture[3].s0 = 1; m_Texture[3].t0 = 0;
 
         glVertexPointer(3, GL_FLOAT, 0, m_Vertex);
         glTexCoordPointer(2, GL_FLOAT, 0, m_Texture);
