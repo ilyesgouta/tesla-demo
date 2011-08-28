@@ -60,33 +60,25 @@ CBand::Render(float fAlpha)
                 m_Color[i].a = fA;
             }
 
-            //glTexCoord2f(0.0f, 0.0f);
-            m_Texture[0].s0 = 0; m_Texture[0].t0 = 0.0f;
-            //glVertex3fv(&(aPts[nS    ][0].fX));
-            m_Vertex[0].x = aPts[nS    ][0].fX;
-            m_Vertex[0].y = aPts[nS    ][0].fY;
-            m_Vertex[0].z = aPts[nS    ][0].fZ;
+            m_Vertex[0].x = aPts[nS + 1][0].fX;
+            m_Vertex[0].y = aPts[nS + 1][0].fY;
+            m_Vertex[0].z = aPts[nS + 1][0].fZ;
+            m_Texture[0].s0 = 0; m_Texture[0].t0 = 1.0f;
 
-            //glTexCoord2f(1.0f, 0.0f);
-            m_Texture[1].s0 = 1.0f; m_Texture[1].t0 = 0.0f;
-            //glVertex3fv(&(aPts[nS    ][1].fX));
-            m_Vertex[1].x = aPts[nS    ][1].fX;
-            m_Vertex[1].y = aPts[nS    ][1].fY;
-            m_Vertex[1].z = aPts[nS    ][1].fZ;
+            m_Vertex[1].x = aPts[nS    ][0].fX;
+            m_Vertex[1].y = aPts[nS    ][0].fY;
+            m_Vertex[1].z = aPts[nS    ][0].fZ;
+            m_Texture[1].s0 = 0.0f; m_Texture[1].t0 = 0.0f;
 
-            //glTexCoord2f(0.0f, 1.0f);
-            m_Texture[2].s0 = 0.0f; m_Texture[2].t0 = 1.0f;
-            //glVertex3fv(&(aPts[nS + 1][0].fX));
-            m_Vertex[2].x = aPts[nS + 1][0].fX;
-            m_Vertex[2].y = aPts[nS + 1][0].fY;
-            m_Vertex[2].z = aPts[nS + 1][0].fZ;
+            m_Vertex[2].x = aPts[nS + 1][1].fX;
+            m_Vertex[2].y = aPts[nS + 1][1].fY;
+            m_Vertex[2].z = aPts[nS + 1][1].fZ;
+            m_Texture[2].s0 = 1.0f; m_Texture[2].t0 = 1.0f;
 
-            //glTexCoord2f(1.0f, 1.0f);
-            m_Texture[3].s0 = 1.0f; m_Texture[3].t0 = 1.0f;
-            //glVertex3fv(&(aPts[nS + 1][1].fX));
-            m_Vertex[3].x = aPts[nS + 1][1].fX;
-            m_Vertex[3].y = aPts[nS + 1][1].fY;
-            m_Vertex[3].z = aPts[nS + 1][1].fZ;
+            m_Vertex[3].x = aPts[nS    ][1].fX;
+            m_Vertex[3].y = aPts[nS    ][1].fY;
+            m_Vertex[3].z = aPts[nS    ][1].fZ;
+            m_Texture[3].s0 = 1.0f; m_Texture[3].t0 = 0.0f;
 
             glVertexPointer(3, GL_FLOAT, 0, m_Vertex);
             glColorPointer(4, GL_FLOAT, 0, m_Color);
