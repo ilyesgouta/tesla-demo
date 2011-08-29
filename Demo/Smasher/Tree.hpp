@@ -13,6 +13,8 @@
 
 #include "ffd.h"
 
+#include <GLES/gl.h>
+
 class CTree : public CEffect {
 
 public:

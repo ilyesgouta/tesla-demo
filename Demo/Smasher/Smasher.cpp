@@ -20,7 +20,6 @@
 #include "LinePlane.hpp"
 #include "Rotator.hpp"
 #include "Dragon.hpp"
-#include "Tree.hpp"
 #include "FaceMorph.hpp"
 #endif
 
@@ -32,6 +31,7 @@
 #include "EnergyStream.hpp"
 #include "tubes.hpp"
 #include "PolkaLike.hpp"
+#include "Tree.hpp"
 
 CEffManager* g_pEffManage = 0;
 
@@ -333,7 +333,6 @@ bool MainFrame_c::OnCreate()
     g_pEffManage = new CEffManager();
 
 #if 0
-    g_pEffManage->AddEffect( new CTree(), 165 + 21, 201 );
     g_pEffManage->AddEffect( new CFaceMorph(), 203, 222.5 );
     g_pEffManage->AddEffect( new CThing(), 222.5, 254 );
 #else
@@ -345,6 +344,7 @@ bool MainFrame_c::OnCreate()
     g_pEffManage->AddEffect( new CEnergyStream(), 87, 145 );
     g_pEffManage->AddEffect( new CTubes(), 145, 165 );
     g_pEffManage->AddEffect( new PolkaLike_c(), 165, 203 );
+    g_pEffManage->AddEffect( new CTree(), 165 + 21, 201 );
 #endif
     //if ( !l_bMakeAVI ) g_cBass.LoadMP3( "tournesol.mp3" );
 

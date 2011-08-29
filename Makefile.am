@@ -54,12 +54,12 @@ tesla_demo_SOURCES = \
     Demo/Smasher/tubes.cpp \
     Demo/Smasher/tessellator.cpp \
     Demo/Smasher/PolkaLike.cpp \
+    Demo/Smasher/Tree.cpp \
+    Demo/Smasher/ffd.cpp \
     Demo/Smasher/Smasher.cpp
 
 #    Demo/Smasher/GridNode.cpp \
-#    Demo/Smasher/Tree.cpp \
 #    Demo/Smasher/LinePlane.cpp \
-#    Demo/Smasher/ffd.cpp \
 #    Demo/Smasher/TerrainGen.cpp \
 #    Demo/Smasher/Dragon.cpp \
 #    Demo/Smasher/FaceMorph.cpp \

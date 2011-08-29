@@ -2,6 +2,14 @@
 // copyrights (C) 1999 by Konrad Zagorowicz
 // free form deformations class def
 
+#include "3dlib/3dlib.h"
+#include "base3d/CVector.hpp"
+#include "base3d/CTexel.hpp"
+#include "base3d/CColor.hpp"
+#include "base3d/CMatrix.hpp"
+
+#include <GLES/gl.h>
+
 #if !defined (ffd_h)
 #define ffd_h
 
