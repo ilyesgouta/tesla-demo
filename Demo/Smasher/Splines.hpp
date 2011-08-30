@@ -16,13 +16,13 @@
 
 class CSplineTrail {
 
-typedef struct __attribute__ ((packed)) CSplineTrailVertex {
+typedef struct __attribute__ ((packed)) CVertex {
     float x, y, z;
-} CSplineTrailVertex;
+} CVertex;
 
-typedef struct __attribute__ ((packed)) CSplineTrailTex {
+typedef struct __attribute__ ((packed)) CTex {
     float s0, t0;
-} CSplineTrailTex;
+} CTex;
 
 public:
     CSplineTrail() {
@@ -43,8 +43,8 @@ protected:
     CVector m_cZSinParams;
 #ifdef GL_VERSION_ES_CM_1_1
 private:
-    CSplineTrailVertex m_Vertex[4];
-    CSplineTrailTex m_Texture[4];
+    CVertex m_Vertex[4];
+    CTex m_Texture[4];
 #endif
 };
 
