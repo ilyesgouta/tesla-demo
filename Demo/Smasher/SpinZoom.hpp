@@ -40,14 +40,6 @@ protected:
     CSinWave m_cSinWave;
 };
 
-typedef struct __attribute__ ((packed)) CSpinZoomVertex {
-    float x, y, z;
-} CSpinZoomVertex;
-
-typedef struct __attribute__ ((packed)) CSpinZoomTex {
-    float s0, t0;
-} CSpinZoomTex;
-
 class CSpinZoom : public CEffect {
 
 public:
@@ -65,11 +57,6 @@ protected:
 
     CSpin* m_pSpins;
     int m_iSpins;
-#ifdef GL_VERSION_ES_CM_1_1
-private:
-    static CSpinZoomVertex s_Vertex[4];
-    static CSpinZoomTex s_Texture[4];
-#endif
 };
 
 #endif 

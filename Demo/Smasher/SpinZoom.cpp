@@ -37,14 +37,22 @@ kdat unrTab[] = {
 
 static float l_fChangeTime3 = 19;
 
-CSpinZoomVertex CSpinZoom::s_Vertex[4] = {
+typedef struct __attribute__ ((packed)) CVertex {
+    float x, y, z;
+} CVertex;
+
+typedef struct __attribute__ ((packed)) CTex {
+    float s0, t0;
+} CTex;
+
+static CVertex s_Vertex[4] = {
 	{-1, 1, 0},
 	{1, 1, 0},
 	{1, -1, 0},
 	{-1, -1, 0}
 };
 
-CSpinZoomTex CSpinZoom::s_Texture[4] = {
+CTex s_Texture[4] = {
 	{0, 0},
 	{1, 0},
 	{1, 1},
@@ -67,16 +75,16 @@ void CSpinZoom::PutQuad()
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 #else
-        glBegin( GL_QUADS );
-          glTexCoord2f( 0, 0 );
-          glVertex3f( - 1, 1, 0 );
-          glTexCoord2f( 1, 0 );
-          glVertex3f( 1, 1, 0 );
-          glTexCoord2f( 1, 1 );
-          glVertex3f( 1, -1, 0 );
-          glTexCoord2f( 0, 1 );
-          glVertex3f( -1, -1, 0 );
-        glEnd();
+    glBegin( GL_QUADS );
+    glTexCoord2f( 0, 0 );
+    glVertex3f( - 1, 1, 0 );
+    glTexCoord2f( 1, 0 );
+    glVertex3f( 1, 1, 0 );
+    glTexCoord2f( 1, 1 );
+    glVertex3f( 1, -1, 0 );
+    glTexCoord2f( 0, 1 );
+    glVertex3f( -1, -1, 0 );
+    glEnd();
 #endif
 }
 
