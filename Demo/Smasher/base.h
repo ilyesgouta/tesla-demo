@@ -2,7 +2,7 @@
 #define __BASE_H
 
 #include <math.h>
-#include "m.h"
+//#include "m.h"
 
 #define	MAX_MESH_NAME	  16
 
@@ -100,7 +100,11 @@ public:
  }
 
  void Normalize(void) {
-  mNormalize_3F_3F(&fX, &fX);
+  //mNormalize_3F_3F(&fX, &fX);
+     float d = sqrtf(fX * fX + fY * fY + fZ * fZ);
+     fX = fX / d;
+     fY = fY / d;
+     fZ = fZ / d;
  }
 
  float 
