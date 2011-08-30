@@ -132,7 +132,7 @@ void CShadeBall::MakeSphere()
 
     m_pVertices = new CVector[m_iVertices];
     m_pUV = new CTexel[m_iVertices];
-    m_pFaces = new int[3 * m_iFaces];
+    m_pFaces = new unsigned short[3 * m_iFaces];
 
     for ( int v = 0; v != iVSeg; v++ )
     {

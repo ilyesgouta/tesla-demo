@@ -38,7 +38,7 @@ protected:
     CTexel* m_pUV;
     int m_iVertices;
 
-    int* m_pFaces;
+    unsigned short* m_pFaces;
     int m_iFaces;
 
     void MakeSphere();
