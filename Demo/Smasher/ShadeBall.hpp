@@ -15,13 +15,13 @@
 
 class CShadeBall : public CEffect {
 
-typedef struct __attribute__ ((packed)) CShadeBallVertex {
+typedef struct __attribute__ ((packed)) CVertex {
     float x, y, z;
-} CShadeBallVertex;
+} CVertex;
 
-typedef struct __attribute__ ((packed)) CShadeBallTex {
+typedef struct __attribute__ ((packed)) CTex {
     float s0, t0;
-} CShadeBallTex;
+} CTex;
 
 public:
     CShadeBall();
@@ -46,8 +46,8 @@ protected:
 
 #ifdef GL_VERSION_ES_CM_1_1
 private:
-    CShadeBallVertex m_Vertex[4];
-    CShadeBallTex m_Texture[4];
+    CVertex m_Vertex[4];
+    CTex m_Texture[4];
 #endif
 
 };

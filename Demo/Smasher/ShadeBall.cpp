@@ -12,46 +12,44 @@
 class CTime {
 
 public:
-
-      CTime() {
+    CTime() {
         t = 0, v = 0;
-      }
+    }
 
-      CTime( float t0, float v0 ) {
+    CTime( float t0, float v0 ) {
         t = t0;
         v = v0;
-      }
+    }
 
-
-      float t, v;
+    float t, v;
 };
 
 CTime l_aTimes[] = {
-  CTime( 0, 0 ),
-  CTime( 1.5, 1 ),
-  CTime( 5, 1 ),
-  CTime( 7, 0 ),
-  CTime( 9, 1 ),
-  CTime( 14.5, 1 ), 
-  CTime( 16, 0 ),
-  CTime( 18.0, 1 ),
-  CTime( 20, 1 ),
-  CTime( 24, 0 )
+    CTime( 0, 0 ),
+    CTime( 1.5, 1 ),
+    CTime( 5, 1 ),
+    CTime( 7, 0 ),
+    CTime( 9, 1 ),
+    CTime( 14.5, 1 ),
+    CTime( 16, 0 ),
+    CTime( 18.0, 1 ),
+    CTime( 20, 1 ),
+    CTime( 24, 0 )
 };
 
 int l_iTimes = sizeof(l_aTimes)/sizeof(CTime);
 
-float KeyVal( float fTime ) {
-  
-        for ( int i = 0; i != l_iTimes-1; i++ )
+float KeyVal( float fTime )
+{
+    for ( int i = 0; i != l_iTimes-1; i++ )
+    {
+        if ( fTime >= l_aTimes[i].t && fTime < l_aTimes[i+1].t )
         {
-          if ( fTime >= l_aTimes[i].t && fTime < l_aTimes[i+1].t )
-          {
             return (l_aTimes[i+1].v - l_aTimes[i].v)*((fTime-l_aTimes[i].t)/(l_aTimes[i+1].t-l_aTimes[i].t)) + l_aTimes[i].v;
-          }
         }
+    }
 
-        return 0;
+    return 0;
 }
 
 void CShadeBall::PutQuad( CTexel cUVPos, float fScale = 1 )
@@ -118,9 +116,9 @@ CShadeBall::CShadeBall()
     MakeSphere();
 }
 
-CShadeBall::~CShadeBall() {
-
-        g_cTexManager.ReleaseTexture( m_iGLTex );
+CShadeBall::~CShadeBall()
+{
+    g_cTexManager.ReleaseTexture( m_iGLTex );
 }
 
 void CShadeBall::MakeSphere()
@@ -134,7 +132,7 @@ void CShadeBall::MakeSphere()
 
     m_pVertices = new CVector[m_iVertices];
     m_pUV = new CTexel[m_iVertices];
-    m_pFaces = new int[3*m_iFaces];
+    m_pFaces = new int[3 * m_iFaces];
 
     for ( int v = 0; v != iVSeg; v++ )
     {
@@ -238,7 +236,7 @@ void CShadeBall::Do( float fTime, float fTimeStart )
 #ifndef GL_VERSION_ES_CM_1_1
     glBegin( GL_QUADS );
 #endif
-      PutQuad( CTexel(0, 0), 1 );
+    PutQuad( CTexel(0, 0), 1 );
 #ifndef GL_VERSION_ES_CM_1_1
     glEnd();
 #endif
