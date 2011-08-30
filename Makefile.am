@@ -56,13 +56,13 @@ tesla_demo_SOURCES = \
     Demo/Smasher/PolkaLike.cpp \
     Demo/Smasher/Tree.cpp \
     Demo/Smasher/ffd.cpp \
+    Demo/Smasher/FaceMorph.cpp \
     Demo/Smasher/Smasher.cpp
 
 #    Demo/Smasher/GridNode.cpp \
 #    Demo/Smasher/LinePlane.cpp \
 #    Demo/Smasher/TerrainGen.cpp \
 #    Demo/Smasher/Dragon.cpp \
-#    Demo/Smasher/FaceMorph.cpp \
 #    Demo/Smasher/Scape.cpp \
 #    Demo/Smasher/BassPlay.cpp \
 #    Demo/Smasher/ScrewBolt.cpp \
