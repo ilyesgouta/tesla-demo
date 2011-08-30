@@ -139,7 +139,8 @@ void CTree::Do( float fTime, float fTimeStart )
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glVertexPointer( 3, GL_FLOAT, 0, m_pVertices );
     glTexCoordPointer( 2, GL_FLOAT, 0, m_pUVMap );
-    //glDrawElements( GL_TRIANGLES, m_iFaces*3, GL_UNSIGNED_INT, m_pFaces );
+
+    glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
 
     glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 

@@ -18,28 +18,25 @@
 class CTree : public CEffect {
 
 public:
-        CTree();
-        virtual ~CTree();
+    CTree();
+    virtual ~CTree();
 
-        virtual void Do( float fTime, float fTimeStart = 0 );
+    virtual void Do( float fTime, float fTimeStart = 0 );
 
 protected:
+    scene_t* m_pScene;
 
-        scene_t* m_pScene;
+    CVector* m_pVertices;
+    CTexel* m_pUVMap;
+    int m_iVertices;
 
-        CVector* m_pVertices;
-        CTexel* m_pUVMap;
-        int m_iVertices;
+    unsigned short* m_pFaces;
+    int m_iFaces;
 
+    int m_iGLTex;
+    int m_iGLTex1;
 
-        unsigned short* m_pFaces; // TODO: this should be signed?
-        int m_iFaces;
+    CFFD m_cFFD;
 
-        int m_iGLTex;
-        int m_iGLTex1;
-
-
-        CFFD m_cFFD;
-
-        CVector m_aDeform[5*5*5];
+    CVector m_aDeform[5*5*5];
 };
