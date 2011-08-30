@@ -60,12 +60,12 @@ tesla_demo_SOURCES = \
     Demo/Smasher/Rotator.cpp \
     Demo/Smasher/Smasher.cpp
 
-#    Demo/Smasher/GridNode.cpp \
-#    Demo/Smasher/LinePlane.cpp \
-#    Demo/Smasher/TerrainGen.cpp \
 #    Demo/Smasher/Dragon.cpp \
-#    Demo/Smasher/Scape.cpp \
-#    Demo/Smasher/BassPlay.cpp \
-#    Demo/Smasher/ScrewBolt.cpp
+#    Demo/Smasher/ScrewBolt.cpp \
+# Demo/Smasher/LinePlane.cpp \
+# Demo/Smasher/Scape.cpp \
+# Demo/Smasher/GridNode.cpp \
+# Demo/Smasher/TerrainGen.cpp \
+#    Demo/Smasher/BassPlay.cpp
 
 CLEANFILES = $(BUILT_SOURCES)

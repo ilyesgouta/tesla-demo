@@ -31,6 +31,7 @@
 #include "PolkaLike.hpp"
 #include "Tree.hpp"
 #include "FaceMorph.hpp"
+//#include "ScrewBolt.hpp"
 #include "Rotator.hpp"
 
 CEffManager* g_pEffManage = 0;
@@ -333,6 +334,7 @@ bool MainFrame_c::OnCreate()
     g_pEffManage = new CEffManager();
 
     g_pEffManage->AddEffect( new CSpinZoom(), 0, 24.5 );
+    //g_pEffManage->AddEffect( new CScrewBolt(), 5, 24.5 );
     g_pEffManage->AddEffect( new CShadeBall(), 24.5, 48.5 );
     g_pEffManage->AddEffect( new CSplines(), 48.5, 67.7 );
     g_pEffManage->AddEffect( new CFFDEnv(), 67.7, 87 );
