@@ -46,17 +46,17 @@ typedef struct __attribute__ ((packed)) CTex {
 } CTex;
 
 static CVertex s_Vertex[4] = {
+    {-1, -1, 0},
 	{-1, 1, 0},
-	{1, 1, 0},
-	{1, -1, 0},
-	{-1, -1, 0}
+    {1, -1, 0},
+    {1, 1, 0}
 };
 
-CTex s_Texture[4] = {
+static CTex s_Texture[4] = {
+    {0, 1},
 	{0, 0},
-	{1, 0},
-	{1, 1},
-	{0, 1}
+    {1, 1},
+    {1, 0}
 };
 
 void CSpinZoom::PutQuad()
@@ -76,14 +76,19 @@ void CSpinZoom::PutQuad()
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 #else
     glBegin( GL_QUADS );
+
     glTexCoord2f( 0, 0 );
-    glVertex3f( - 1, 1, 0 );
+    glVertex3f( -1, 1, 0 );
+
     glTexCoord2f( 1, 0 );
     glVertex3f( 1, 1, 0 );
+
     glTexCoord2f( 1, 1 );
     glVertex3f( 1, -1, 0 );
+
     glTexCoord2f( 0, 1 );
     glVertex3f( -1, -1, 0 );
+
     glEnd();
 #endif
 }
