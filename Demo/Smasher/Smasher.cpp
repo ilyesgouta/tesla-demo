@@ -18,7 +18,6 @@
 
 #if 0
 #include "LinePlane.hpp"
-#include "Rotator.hpp"
 #include "Dragon.hpp"
 #endif
 
@@ -32,6 +31,7 @@
 #include "PolkaLike.hpp"
 #include "Tree.hpp"
 #include "FaceMorph.hpp"
+#include "Rotator.hpp"
 
 CEffManager* g_pEffManage = 0;
 
@@ -332,9 +332,6 @@ bool MainFrame_c::OnCreate()
 #endif
     g_pEffManage = new CEffManager();
 
-#if 0
-    g_pEffManage->AddEffect( new CThing(), 222.5, 254 );
-#else
     g_pEffManage->AddEffect( new CSpinZoom(), 0, 24.5 );
     g_pEffManage->AddEffect( new CShadeBall(), 24.5, 48.5 );
     g_pEffManage->AddEffect( new CSplines(), 48.5, 67.7 );
@@ -345,7 +342,8 @@ bool MainFrame_c::OnCreate()
     g_pEffManage->AddEffect( new PolkaLike_c(), 165, 203 );
     g_pEffManage->AddEffect( new CTree(), 165 + 21, 201 );
     g_pEffManage->AddEffect( new CFaceMorph(), 203, 222.5 );
-#endif
+    g_pEffManage->AddEffect( new CThing(), 222.5, 254 );
+
     //if ( !l_bMakeAVI ) g_cBass.LoadMP3( "tournesol.mp3" );
 
     return true;
