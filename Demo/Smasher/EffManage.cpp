@@ -11,6 +11,8 @@ CEffManager::CEffManager()
 {
     memset( m_aEffects, 0, sizeof(m_aEffects) );
     m_iEffects = 0;
+
+    m_aTFinish = 0;
 }
 
 CEffManager::~CEffManager()
@@ -28,12 +30,17 @@ bool CEffManager::AddEffect( CEffect* pEffect, float fTimeStart, float fTimeEnd 
     m_aTStart[m_iEffects] = fTimeStart;
     m_aTEnd[m_iEffects] = fTimeEnd;
 
+    if (m_aTFinish < fTimeEnd)
+        m_aTFinish = fTimeEnd;
+
     m_iEffects++;
     return true;
-}        
+}
 
-void CEffManager::PlayEffects( float fTime )
+void CEffManager::PlayEffects( float fTime, bool &finished )
 {
+    finished = (fTime >= m_aTFinish);
+
     for ( int i = 0; i != m_iEffects; i++ )
         if ( fTime > m_aTStart[i] && fTime < m_aTEnd[i] )
             m_aEffects[i]->Do( fTime, m_aTStart[i] );

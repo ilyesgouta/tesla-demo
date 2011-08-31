@@ -448,7 +448,12 @@ bool MainFrame_c::OnPaint()
 
     glViewport(0, 0, 1280, 720);
 
-    g_pEffManage->PlayEffects( m_pTimer->GetCurTime() - l_fFirstFrameTime );
+    bool hasEnded = false;
+
+    g_pEffManage->PlayEffects( m_pTimer->GetCurTime() - l_fFirstFrameTime, hasEnded );
+
+    if (hasEnded)
+        return false;
 #endif
     return true;
 }

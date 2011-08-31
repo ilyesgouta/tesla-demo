@@ -134,7 +134,9 @@ int main(int argc, char** argv)
             }
         }
 
-        g_pMainFrame->OnPaint();
+        if (!g_pMainFrame->OnPaint())
+            break;
+
         eglSwapBuffers(g_cOpenGL.GetEGLDisplay(), g_cOpenGL.GetEGLSurface());
     }
 

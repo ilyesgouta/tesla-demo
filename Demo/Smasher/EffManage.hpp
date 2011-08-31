@@ -14,12 +14,13 @@ public:
 
     bool AddEffect( CEffect* pEffect, float fTimeStart, float fTimeEnd );
 
-    void PlayEffects( float fTime );
+    void PlayEffects( float fTime, bool &finished);
 
 protected:
     CEffect* m_aEffects[EFFECTS_MAX];
     float m_aTStart[EFFECTS_MAX];
     float m_aTEnd[EFFECTS_MAX];
+    float m_aTFinish;
     int m_iEffects;
 };
 
