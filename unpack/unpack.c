@@ -1,7 +1,7 @@
 //
 // (c) Copyright 2011 Ilyes Gouta, ilyes.gouta@gmail.com
 //
-// This utility unpacks the tesla demo resources used for rendering.
+// This utility unpacks the tesla demo assets used for rendering.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -51,7 +51,8 @@ int main(int argc, char** argv)
 
     printf("found %d resources ..\n", res_count);
 
-    for (i = 0; i < res_count; i++) {
+    for (i = 0; i < res_count; i++)
+    {
         int start_offset, length, zeros, path_len;
         char path[64], *c;
 
@@ -62,7 +63,9 @@ int main(int argc, char** argv)
         fread(path, 1, path_len, file);
 
         c = path;
-        while (*c) {
+
+        while (*c)
+        {
             if (*c == '\\')
                 *c = '/';
             else
@@ -78,7 +81,9 @@ int main(int argc, char** argv)
         char *dir = dirname(path);
 
         c = dir;
-        while (*c) {
+
+        while (*c)
+        {
             char *d = strstr(c, "/");
 
             if (d) {
@@ -96,7 +101,8 @@ int main(int argc, char** argv)
 
         char *data = (char*)calloc(1, length);
 
-        if (data) {
+        if (data)
+        {
             FILE* res = fopen(path2, "wb");
 
             if (res) {
