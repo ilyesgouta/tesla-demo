@@ -10,6 +10,8 @@
 #include "MainFrame.hpp"
 #include "OpenGL/OpenGL.hpp"
 
+#include "Demo/Smasher/Mpg123Audio.hpp"
+
 MainFrame_c* g_pMainFrame = 0;
 
 static void ErrorMessage( char* pszErrorMessage ) {
@@ -112,6 +114,9 @@ int main(int argc, char** argv)
 
     Display *display = g_pMainFrame->GetDisplay();
 
+    g_cMpg123.LoadMP3( "tournesol.mp3" );
+    g_cMpg123.PlayMP3();
+
     while (m_render)
     {
         if (XPending(display))
@@ -139,6 +144,8 @@ int main(int argc, char** argv)
 
         eglSwapBuffers(g_cOpenGL.GetEGLDisplay(), g_cOpenGL.GetEGLSurface());
     }
+
+    g_cMpg123.StopMP3();
 
     XCloseDisplay(display);
 
