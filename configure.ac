@@ -20,8 +20,6 @@ AM_INIT_AUTOMAKE([1.11])
 # Checks for header files.
 AC_HEADER_STDC
 
-CXXFLAGS=-std=c++0x
-
 PKG_CHECK_MODULES(EGL, egl, [have_egl=yes], [have_egl=no])
 AC_SUBST([EGL_CFLAGS])
 AC_SUBST([EGL_LIBS])
@@ -34,9 +32,17 @@ PKG_CHECK_MODULES(X11, x11, [have_x11=yes], [have_x11=no])
 AC_SUBST([X11_CFLAGS])
 AC_SUBST([X11_LIBS])
 
-PKG_CHECK_MODULES(LIBPNG, libpng, [have_libpng=yes], [have_libpng=no])
-AC_SUBST([LIBPNG_CFLAGS])
-AC_SUBST([LIBPNG_LIBS])
+PKG_CHECK_MODULES(libmpg123, libmpg123, [have_libmpg123=yes], [have_libmpg123=no])
+AC_SUBST([libmpg123_CFLAGS])
+AC_SUBST([libmpg123_LIBS])
+
+PKG_CHECK_MODULES(alsa, alsa, [have_alsa=yes], [have_alsa=no])
+AC_SUBST([alsa_CFLAGS])
+AC_SUBST([alsa_LIBS])
+
+PKG_CHECK_MODULES(libpng, libpng, [have_libpng=yes], [have_libpng=no])
+AC_SUBST([libpng_CFLAGS])
+AC_SUBST([libpng_LIBS])
 
 AC_CHECK_LIB(jpeg, jpeg_destroy_decompress,
                    have_libjpeg=yes, have_libjpeg=no
@@ -53,12 +59,12 @@ if test "$have_libjpeg" = yes; then
          have_libjpeg=no)
    AC_MSG_RESULT($jpeg_ok)
    if test "$have_libjpeg" = yes; then
-      JPEG_LIBS="-ljpeg"
+      jpeg_LIBS="-ljpeg"
    else
       AC_MSG_ERROR([JPEG library (libjpeg) not found])
    fi
 fi
-AC_SUBST([JPEG_LIBS])
+AC_SUBST([jpeg_LIBS])
 
 AC_CONFIG_FILES([
 	Makefile

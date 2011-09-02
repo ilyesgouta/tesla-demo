@@ -17,10 +17,10 @@ include_HEADERS = \
 AM_CFLAGS =
 AM_CXXFLAGS =
 
-tesla_demo_CFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(LIBPNG_CFLAGS)
-tesla_demo_CXXFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(LIBPNG_CFLAGS)
+tesla_demo_CFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(libpng_CFLAGS) $(libmpg123_CFLAGS) $(alsa_CFLAGS)
+tesla_demo_CXXFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(libpng_CFLAGS) $(libmpg123_CFLAGS) $(alsa_CFLAGS)
 
-tesla_demo_LDADD = $(EGL_LIBS) $(GLESV1_CM_LIBS) $(X11_LIBS) $(LIBPNG_LIBS) $(JPEG_LIBS) -lrt
+tesla_demo_LDADD = $(EGL_LIBS) $(GLESV1_CM_LIBS) $(X11_LIBS) $(libpng_LIBS) $(jpeg_LIBS) $(libmpg123_LIBS) $(alsa_LIBS) -lrt -lpthread
 
 tesla_demo_SOURCES = \
     load3ds/Misc.c \
@@ -62,6 +62,7 @@ tesla_demo_SOURCES = \
     Demo/Smasher/GridNode.cpp \
     Demo/Smasher/TerrainGen.cpp \
     Demo/Smasher/Rotator.cpp \
+    Demo/Smasher/Mpg123Audio.cpp \
     Demo/Smasher/Smasher.cpp
 
 #    Demo/Smasher/Dragon.cpp \
