@@ -32,38 +32,75 @@
 
 #include <GLES/gl.h>
 
-void CDarkQuads::Render( int iSeed, CColor& cCol ) {
+typedef struct __attribute__ ((packed)) CVertex {
+    float x, y, z;
+} CVertex;
 
-        int iHeight;
-        int iY;
+void CDarkQuads::Render( int iSeed, CColor& cCol )
+{
+    int iHeight;
+    int iY;
 
-        glMatrixMode( GL_PROJECTION );
-        glLoadIdentity();
-        glOrthof( 0.0f, 640.0f, 0.0f, 480.0f, -1.0f, 1.0f );
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity();
+    glOrthof( 0.0f, 1280.0f, 0.0f, 720.0f, -1.0f, 1.0f );
 
-        glMatrixMode( GL_MODELVIEW );
-        glLoadIdentity();
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity();
 
-        glDisable( GL_TEXTURE_2D );
-        glDisable( GL_DEPTH_TEST );
-        glDisable( GL_CULL_FACE );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glDisable( GL_TEXTURE_2D );
+    glDisable( GL_DEPTH_TEST );
+    glDisable( GL_CULL_FACE );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-        glColor4f( cCol.fR, cCol.fG, cCol.fB, cCol.fA );
+    glColor4f( cCol.fR, cCol.fG, cCol.fB, cCol.fA );
 
-        // TODO: port to GL ES 1.1
-        //glBegin( GL_QUADS );
+    CVertex vertex[4];
 
-        for ( int i = 0; i != iSeed; i++ )
-        {
-          iY = rand()%480;
-          iHeight = rand()%8 + 1;
+#ifdef GL_VERSION_ES_CM_1_1
+    glClientActiveTexture(GL_TEXTURE0);
 
-          //glVertex3f(   0, iY + iHeight, 0 );
-          //glVertex3f( 640, iY + iHeight, 0 );
-          //glVertex3f( 640, iY - iHeight, 0 );
-          //glVertex3f(   0, iY - iHeight, 0 );
-        }
+    glEnableClientState(GL_VERTEX_ARRAY);
 
-        //glEnd();
+    glVertexPointer(3, GL_FLOAT, 0, vertex);
+#else
+    glBegin( GL_QUADS );
+#endif
+
+    for ( int i = 0; i != iSeed; i++ )
+    {
+        iY = rand() % 720;
+        iHeight = rand() % 8 + 1;
+
+#ifdef GL_VERSION_ES_CM_1_1
+        vertex[0].x = 0;
+        vertex[0].y = iY - iHeight;
+        vertex[0].z = 0;
+
+        vertex[1].x = 0;
+        vertex[1].y = iY + iHeight;
+        vertex[1].z = 0;
+
+        vertex[2].x = 1280;
+        vertex[2].y = iY - iHeight;
+        vertex[2].z = 0;
+
+        vertex[3].x = 1280;
+        vertex[3].y = iY + iHeight;
+        vertex[3].z = 0;
+
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+#else
+        glVertex3f(   0, iY + iHeight, 0 );
+        glVertex3f( 640, iY + iHeight, 0 );
+        glVertex3f( 640, iY - iHeight, 0 );
+        glVertex3f(   0, iY - iHeight, 0 );
+#endif
+    }
+
+#ifdef GL_VERSION_ES_CM_1_1
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
+    glEnd();
+#endif
 }
