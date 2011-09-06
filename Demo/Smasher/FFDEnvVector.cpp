@@ -95,24 +95,24 @@ CFFDEnv::CFFDEnv()
     }
 
     m_Vertex[0].x = 0;
-    m_Vertex[0].y = 0;
+    m_Vertex[0].y = 1;
     m_Vertex[0].z = 0;
-    m_Texture[0].s0 = 0; m_Texture[0].t0 = 0;
+    m_Texture[0].s0 = 0; m_Texture[0].t0 = 1;
 
-    m_Vertex[1].x = 1;
+    m_Vertex[1].x = 0;
     m_Vertex[1].y = 0;
     m_Vertex[1].z = 0;
-    m_Texture[1].s0 = 1; m_Texture[1].t0 = 0;
+    m_Texture[1].s0 = 0; m_Texture[1].t0 = 0;
 
     m_Vertex[2].x = 1;
     m_Vertex[2].y = 1;
     m_Vertex[2].z = 0;
     m_Texture[2].s0 = 1; m_Texture[2].t0 = 1;
 
-    m_Vertex[3].x = 0;
-    m_Vertex[3].y = 1;
+    m_Vertex[3].x = 1;
+    m_Vertex[3].y = 0;
     m_Vertex[3].z = 0;
-    m_Texture[3].s0 = 0; m_Texture[3].t0 = 1;
+    m_Texture[3].s0 = 1; m_Texture[3].t0 = 0;
 }
 
 CFFDEnv::~CFFDEnv()
@@ -239,10 +239,13 @@ void CFFDEnv::Do( float fTime, float fTimeStart )
 
     glTexCoord2f( 0, 0 );
     glVertex3f( 0, 0, 0 );
+
     glTexCoord2f( 1, 0 );
     glVertex3f( 1, 0, 0 );
+
     glTexCoord2f( 1, 1 );
     glVertex3f( 1, 1, 0 );
+
     glTexCoord2f( 0, 1 );
     glVertex3f( 0, 1, 0 );
 
