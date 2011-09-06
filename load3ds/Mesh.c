@@ -312,13 +312,23 @@ static void ReadCamera(camera_t *camera,header_t *chcamera)
 	float	*d=(float*)(chcamera+1);
 	float	*d1=(float*)((char*)chcamera+8);
 
+    if ((unsigned int)d & 0x3) {
+        memset(&camera->pos, 0, sizeof(vector_t));
+        memset(&camera->target, 0, sizeof(vector_t));
+        camera->roll = 0;
+        camera->fov = 0;
+        camera->fZNear = 0;
+        camera->fZFar = 0;
+        return;
+    }
+
 	camera->pos.x=d[0];
 	camera->pos.y=d[2];
 	camera->pos.z=d[1];
 	camera->target.x=d[3];
 	camera->target.y=d[5];
 	camera->target.z=d[4];
-	camera->roll=d[6]*(float)pi/180.0f;
+    camera->roll = d[6] * (float)pi/180.0f;
 	camera->fov=d[7];
 	camera->fZNear=d1[9];
 	camera->fZFar=d1[10];
