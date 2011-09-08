@@ -21,12 +21,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <lib3ds/types.h>
+#include <lib3ds/mesh.h>
+#include <lib3ds/vector.h>
+#include <lib3ds/file.h>
+
 #include "3dlib/3dlib.h"
 #include "base3d/CVector.hpp"
 #include "base3d/CTexel.hpp"
 #include "base3d/CColor.hpp"
 #include "base3d/CMatrix.hpp"
-#include "load3ds/Load3ds.h"
 
 #include "TexManager.hpp"
 #include "MainFrame/MainFrame.hpp"
@@ -46,7 +50,7 @@ public:
     virtual void Do( float fTime, float fTimeStart = 0 );
 
 protected:
-    scene_t* m_pScene;
+    Lib3dsFile* m_pScene;
 
     CVector* m_pVertices;
     CTexel* m_pUVMap;
@@ -60,5 +64,5 @@ protected:
 
     CFFD m_cFFD;
 
-    CVector m_aDeform[5*5*5];
+    CVector m_aDeform[5 * 5 * 5];
 };

@@ -41,7 +41,7 @@ CTree::CTree()
 {
     m_pScene = 0;
 
-    m_pScene = Load3ds( SCENE_NAME );
+    m_pScene = lib3ds_file_load( SCENE_NAME );
 
     if ( !m_pScene )
     {
@@ -49,35 +49,37 @@ CTree::CTree()
         return;
     }
 
-    m_pVertices = new CVector[m_pScene->objects[0].nvertices];
-    m_pUVMap = new CTexel[m_pScene->objects[0].nvertices];
-    m_iVertices = m_pScene->objects[0].nvertices;
-    m_pFaces = new unsigned short[3*m_pScene->objects[0].nfaces];
-    m_iFaces = m_pScene->objects[0].nfaces;
+    int nvertices = m_pScene->meshes->points;
+    int nfaces = m_pScene->meshes->faces;
 
-    face_t* pFace = m_pScene->objects[0].faces;
-    vertex_t* pVertex = m_pScene->objects[0].vertices;
+    m_pVertices = new CVector[nvertices];
+    m_pUVMap = new CTexel[nvertices];
+    m_iVertices = nvertices;
+    m_pFaces = new unsigned short[3 * nfaces];
+    m_iFaces = nfaces;
+
+    Lib3dsPoint* pVertices = m_pScene->meshes->pointL;
 
     uint i;
 
-    for ( i = 0; i != m_pScene->objects[0].nvertices; i++ )
+    for ( i = 0; i != nvertices; i++ )
     {
-        //m_pVertices[i] = (CVector&)m_pScene->objects[0].vertices[i].vlocal;
-        m_pUVMap[i] = (CTexel&)m_pScene->objects[0].vertices[i].wlocal;
+        m_pVertices[i] = pVertices[i].pos;
+        m_pUVMap[i].fU = m_pScene->meshes->texelL[i][1];
+        m_pUVMap[i].fV = m_pScene->meshes->texelL[i][0];
     }
 
-    for ( i = 0; i != m_pScene->objects[0].nfaces; i++ )
+    for ( i = 0; i != nfaces; i++ )
     {
-        m_pFaces[3*i + 0] = ((long)pFace->vertices[0] - (long)pVertex)/sizeof(vertex_t);
-        m_pFaces[3*i + 1] = ((long)pFace->vertices[1] - (long)pVertex)/sizeof(vertex_t);
-        m_pFaces[3*i + 2] = ((long)pFace->vertices[2] - (long)pVertex)/sizeof(vertex_t);
-        pFace++;
+        m_pFaces[3 * i + 0] = m_pScene->meshes->faceL[i].points[0];
+        m_pFaces[3 * i + 1] = m_pScene->meshes->faceL[i].points[1];
+        m_pFaces[3 * i + 2] = m_pScene->meshes->faceL[i].points[2];
     }
 
     m_iGLTex = g_cTexManager.LoadTexture( "data/textures/t1a.jpg" );
     m_iGLTex1 = g_cTexManager.LoadTexture( "data/textures/max_t3.jpg" );
 
-    m_cFFD.set_vector_table( &m_pScene->objects[0].vertices->vlocal, m_pScene->objects[0].nvertices, sizeof(vertex_t) );
+    m_cFFD.set_vector_table( m_pVertices, nvertices, sizeof(CVector) );
     m_cFFD.set_deform( m_aDeform, 5, 5, 5, 0 );
 }
 
