@@ -27,7 +27,6 @@
 #include "base3d/CColor.hpp"
 #include "base3d/CMatrix.hpp"
 #include "base3d/CVector.hpp"
-#include "load3ds/Load3ds.h"
 
 #include "TexManager.hpp"
 
