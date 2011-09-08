@@ -24,6 +24,11 @@
 #if !defined (_FACE_MORPH_HPP_)
 #define _FACE_MORPH_HPP_
 
+#include <lib3ds/types.h>
+#include <lib3ds/mesh.h>
+#include <lib3ds/vector.h>
+#include <lib3ds/file.h>
+
 #include "Effect.hpp"
 #include "TexManager.hpp"
 #include "ffd.h"
@@ -37,7 +42,7 @@ public:
     virtual void Do( float fTime, float fTimeStrat );
 
 protected:
-    scene_t* m_pScene;
+    Lib3dsFile* m_pScene;
 
     int m_iGLTex1;
     int m_iGLTex1a;
@@ -47,14 +52,18 @@ protected:
 
     CVector* m_pVertices;
     CVector* m_pNormals;
+    Lib3dsVector* m_pMeshNormals[5];
     CTexel* m_pUV;
     CTexel* m_pEnvUV;
     int m_iVertices;
 
+    Lib3dsMesh* GetMesh(int id);
+    int GetMeshCount();
+
     unsigned short* m_pFaces;
     int m_iFaces;
 
-    CVector m_aDeform[5*5*5];
+    CVector m_aDeform[5 * 5 * 5];
 
     int m_iTubeVertices;
     int m_iTubeFaces;

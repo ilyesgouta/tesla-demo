@@ -82,6 +82,17 @@ static inline CVector LerpNormal( vertex_t& cV1, vertex_t& cV2, float t )
     return (v2 - v1)*t + v1;
 }
 
+static inline CVector LerpVertex2( const Lib3dsVector& cV1, const Lib3dsVector& cV2, float t )
+{
+    CVector ret;
+
+    ret.fX = (cV2[0] - cV1[0]) * t + cV1[0];
+    ret.fY = (cV2[1] - cV1[1]) * t + cV1[1];
+    ret.fZ = (cV2[2] - cV1[2]) * t + cV1[2];
+
+    return (ret);
+}
+
 CFaceMorph::CFaceMorph()
 {
     m_iGLTex1 = g_cTexManager.LoadTexture( "data/textures/y6.jpg" );
@@ -92,51 +103,56 @@ CFaceMorph::CFaceMorph()
 
     m_iGLTexBlend = g_cTexManager.LoadTexture( "data/textures/blend2.png" );
 
+    m_pScene = lib3ds_file_load( "data/3d/faces.3ds" );
 
-    m_pScene = Load3ds( "data/3d/faces.3ds" );
+    Lib3dsMesh *object_2 = m_pScene->meshes->next->next;
 
-    face_t* pFace = m_pScene->objects[2].faces;
-    m_iFaces = m_pScene->objects[2].nfaces;
+    m_iFaces = object_2->faces;
 
-    m_iVertices = m_pScene->objects[2].nvertices;
+    m_iVertices = object_2->points;
     m_pVertices = new CVector[m_iVertices];
     m_pUV = new CTexel[m_iVertices];
     m_pNormals = new CVector[m_iVertices];
     m_pEnvUV = new CTexel[m_iVertices];
 
-    vertex_t* pVertices = m_pScene->objects[2].vertices;
+    Lib3dsPoint* pVertices = object_2->pointL;
 
     m_pFaces = new unsigned short[3 * m_iFaces];
 
     for ( int i = 0; i != m_iFaces; i++ )
     {
-        m_pFaces[3 * i + 0] = ((long)pFace[i].vertices[0] - (long)pVertices)/sizeof(vertex_t);
-        m_pUV[m_pFaces[3*i + 0]].fU = pFace[i].maptexel[0]->u;
-        m_pUV[m_pFaces[3*i + 0]].fV = pFace[i].maptexel[0]->v;
+        m_pFaces[3 * i + 0] = object_2->faceL[i].points[0];
+        m_pUV[m_pFaces[3 * i + 0]].fU = object_2->texelL[m_pFaces[3 * i + 0]][1];
+        m_pUV[m_pFaces[3 * i + 0]].fV = object_2->texelL[m_pFaces[3 * i + 0]][0];
 
-        m_pFaces[3*i + 1] = ((long)pFace[i].vertices[1] - (long)pVertices)/sizeof(vertex_t);
-        m_pUV[m_pFaces[3*i + 1]].fU = pFace[i].maptexel[1]->u;
-        m_pUV[m_pFaces[3*i + 1]].fV = pFace[i].maptexel[1]->v;
+        m_pFaces[3 * i + 1] = object_2->faceL[i].points[1];
+        m_pUV[m_pFaces[3 * i + 1]].fU = object_2->texelL[m_pFaces[3 * i + 1]][1];
+        m_pUV[m_pFaces[3 * i + 1]].fV = object_2->texelL[m_pFaces[3 * i + 1]][0];
 
-        m_pFaces[3*i + 2] = ((long)pFace[i].vertices[2] - (long)pVertices)/sizeof(vertex_t);
-        m_pUV[m_pFaces[3*i + 2]].fU = pFace[i].maptexel[2]->u;
-        m_pUV[m_pFaces[3*i + 2]].fV = pFace[i].maptexel[2]->v;
+        m_pFaces[3 * i + 2] = object_2->faceL[i].points[2];
+        m_pUV[m_pFaces[3 * i + 2]].fU = object_2->texelL[m_pFaces[3 * i + 2]][1];
+        m_pUV[m_pFaces[3 * i + 2]].fV = object_2->texelL[m_pFaces[3 * i + 2]][0];
     }
 
-    for ( uint u = 0; u != m_pScene->nobjects; u++ )
-    {
-        pVertices = m_pScene->objects[u].vertices;
+    int count = GetMeshCount();
 
-        for ( uint i = 0; (uint)i != m_pScene->objects[u].nvertices; i++ )
+    for ( uint u = 0; u != count; u++ )
+    {
+        Lib3dsMesh *mesh = GetMesh(u);
+
+        /*for ( uint i = 0; (uint)i != mesh->points; i++ )
         {
             pVertices->vlocal = pVertices->vglobal;
             pVertices++;
-        }
+        }*/
+
+        m_pMeshNormals[u] = new Lib3dsVector[mesh->points];
+        lib3ds_mesh_calculate_normals(mesh, m_pMeshNormals[u]);
     }
 
     /* create tubes */
-    m_iTubeVertices = iVSeg*iHSeg;
-    m_iTubeFaces = (iVSeg - 1)*(iHSeg - 1)*2;
+    m_iTubeVertices = iVSeg * iHSeg;
+    m_iTubeFaces = (iVSeg - 1) * (iHSeg - 1) * 2;
 
     m_pTubeVertices = 0;
     m_pTubeUV = 0;
@@ -151,12 +167,12 @@ CFaceMorph::CFaceMorph()
         {
             for ( int h = 0; h != iHSeg; h++ )
             {
-                m_pTubeVertices[v*iHSeg + h].fX = fR*(float)cos( pi*h*2/(iHSeg-1) );
-                m_pTubeVertices[v*iHSeg + h].fY = v*70.f - (iVSeg-1)*35.f;
-                m_pTubeVertices[v*iHSeg + h].fZ = fR*(float)sin( pi*h*2/(iHSeg-1) );
+                m_pTubeVertices[v * iHSeg + h].fX = fR * (float)cos( pi * h * 2 / (iHSeg - 1) );
+                m_pTubeVertices[v * iHSeg + h].fY = v * 70.f - (iVSeg - 1) * 35.f;
+                m_pTubeVertices[v * iHSeg + h].fZ = fR * (float)sin( pi * h * 2 / (iHSeg - 1) );
 
-                m_pTubeUV[2*(v*iHSeg + h) + 0] = (float)h/(iHSeg-1);
-                m_pTubeUV[2*(v*iHSeg + h) + 1] = (float)v/(iVSeg-1);
+                m_pTubeUV[2 * (v * iHSeg + h) + 0] = (float)h / (iHSeg - 1);
+                m_pTubeUV[2 * (v * iHSeg + h) + 1] = (float)v / (iVSeg - 1);
             }
         }
 
@@ -164,16 +180,39 @@ CFaceMorph::CFaceMorph()
         {
             for ( int h = 0; h != iHSeg - 1; h++ )
             {
-                m_pTubeFaces[6*(v*(iHSeg-1) + h) + 0] = v*iHSeg + h;
-                m_pTubeFaces[6*(v*(iHSeg-1) + h) + 1] = v*iHSeg + h + 1;
-                m_pTubeFaces[6*(v*(iHSeg-1) + h) + 2] = (v+1)*iHSeg + h;
+                m_pTubeFaces[6 * (v * (iHSeg - 1) + h) + 0] = v * iHSeg + h;
+                m_pTubeFaces[6 * (v * (iHSeg - 1) + h) + 1] = v * iHSeg + h + 1;
+                m_pTubeFaces[6 * (v * (iHSeg - 1) + h) + 2] = (v + 1) * iHSeg + h;
 
-                m_pTubeFaces[6*(v*(iHSeg-1) + h) + 3] = v*iHSeg + h + 1;
-                m_pTubeFaces[6*(v*(iHSeg-1) + h) + 4] = (v+1)*iHSeg + h + 1;
-                m_pTubeFaces[6*(v*(iHSeg-1) + h) + 5] = (v+1)*iHSeg + h;
+                m_pTubeFaces[6 * (v * (iHSeg - 1) + h) + 3] = v * iHSeg + h + 1;
+                m_pTubeFaces[6 * (v * (iHSeg - 1) + h) + 4] = (v + 1) * iHSeg + h + 1;
+                m_pTubeFaces[6 * (v * (iHSeg - 1) + h) + 5] = (v + 1) * iHSeg + h;
             }
         }
     }
+}
+
+Lib3dsMesh* CFaceMorph::GetMesh(int id)
+{
+    Lib3dsMesh* mesh = m_pScene->meshes;
+
+    for (int i = 0; i < id; i++)
+        mesh = mesh->next;
+
+    return (mesh);
+}
+
+int CFaceMorph::GetMeshCount()
+{
+    int count = 0;
+    Lib3dsMesh* mesh = m_pScene->meshes;
+
+    while (mesh) {
+        count++;
+        mesh = mesh->next;
+    }
+
+    return (count);
 }
 
 CFaceMorph::~CFaceMorph()
@@ -267,13 +306,13 @@ void CFaceMorph::Do( float fTime, float fTimeStart )
     direction.fY = sin(time) + cos(time);
     direction.Normalize();
 
-    vertex_t* pV1 = m_pScene->objects[iO1].vertices;
-    vertex_t* pV2 = m_pScene->objects[iO2].vertices;
+    Lib3dsPoint* pV1 = GetMesh(iO1)->pointL;
+    Lib3dsPoint* pV2 = GetMesh(iO2)->pointL;
 
     for ( int i = 0; i != m_iVertices; i++ )
     {
-        m_pVertices[i] = LerpVertex( pV1[i], pV2[i], fT );
-        m_pNormals[i] = LerpNormal( pV1[i], pV2[i], fT );
+        m_pVertices[i] = LerpVertex2( pV1[i].pos, pV2[i].pos, fT );
+        m_pNormals[i] = LerpVertex2( m_pMeshNormals[iO1][i], m_pMeshNormals[iO2][i], fT );
 
         cN = cCam * m_pNormals[i];
 
