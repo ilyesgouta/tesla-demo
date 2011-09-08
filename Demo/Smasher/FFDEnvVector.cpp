@@ -20,6 +20,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 #ifdef WIN32
 #include "stdafx.h"
 #endif
@@ -54,44 +55,50 @@ CFFDEnv::CFFDEnv()
     m_iGLTex1 = g_cTexManager.LoadTexture( "data/textures/max_t3.jpg" );
     m_iGLTex2 = g_cTexManager.LoadTexture( "data/textures/gothickiemura02.jpg" );
     m_iGLTexBlend = g_cTexManager.LoadTexture( "data/textures/blend.tga" );
-    m_pScene = Load3ds( "data/3d/meta.3ds" );
 
-    face_t* pFace = m_pScene->objects[SCENE_OBJ_START].faces;
-    m_iFaces = m_pScene->objects[SCENE_OBJ_START].nfaces;
-    m_pFaces = new unsigned short[3*m_iFaces];
+    m_pScene = lib3ds_file_load( "data/3d/meta.3ds" );
 
-    m_iVertices = m_pScene->objects[SCENE_OBJ_START].nvertices;
+    m_iFaces = m_pScene->meshes->faces;
+
+    m_pFaces = new unsigned short[3 * m_iFaces];
+
+    m_iVertices = m_pScene->meshes->points;
+
     m_pVertices = new CVector[m_iVertices];
     m_pNormals = new CVector[m_iVertices];
     m_pUV = new CTexel[m_iVertices];
     m_pEnvUV = new CTexel[m_iVertices];
 
-    vertex_t* pVertices = m_pScene->objects[SCENE_OBJ_START].vertices;
-
-
     for ( long i = 0; i != m_iFaces; i++ )
     {
-        m_pFaces[3*i + 0] = ((long)pFace[i].vertices[0] - (long)pVertices)/sizeof(vertex_t);
-        m_pUV[m_pFaces[3*i + 0]].fU = pFace[i].maptexel[0]->u;
-        m_pUV[m_pFaces[3*i + 0]].fV = pFace[i].maptexel[0]->v;
+        m_pFaces[3 * i + 0] = m_pScene->meshes->faceL[i].points[0];
+        m_pUV[m_pFaces[3 * i + 0]].fU = m_pScene->meshes->texelL[m_pFaces[3 * i + 0]][1];
+        m_pUV[m_pFaces[3 * i + 0]].fV = m_pScene->meshes->texelL[m_pFaces[3 * i + 0]][0];
 
-        m_pFaces[3*i + 1] = ((long)pFace[i].vertices[1] - (long)pVertices)/sizeof(vertex_t);
-        m_pUV[m_pFaces[3*i + 1]].fU = pFace[i].maptexel[1]->u;
-        m_pUV[m_pFaces[3*i + 1]].fV = pFace[i].maptexel[1]->v;
+        m_pFaces[3 * i + 1] = m_pScene->meshes->faceL[i].points[1];
+        m_pUV[m_pFaces[3 * i + 1]].fU = m_pScene->meshes->texelL[m_pFaces[3 * i + 1]][1];
+        m_pUV[m_pFaces[3 * i + 1]].fV = m_pScene->meshes->texelL[m_pFaces[3 * i + 1]][0];
 
-        m_pFaces[3*i + 2] = ((long)pFace[i].vertices[2] - (long)pVertices)/sizeof(vertex_t);
-        m_pUV[m_pFaces[3*i + 2]].fU = pFace[i].maptexel[2]->u;
-        m_pUV[m_pFaces[3*i + 2]].fV = pFace[i].maptexel[2]->v;
+        m_pFaces[3 * i + 2] = m_pScene->meshes->faceL[i].points[2];
+        m_pUV[m_pFaces[3 * i + 2]].fU = m_pScene->meshes->texelL[m_pFaces[3 * i + 2]][1];
+        m_pUV[m_pFaces[3 * i + 2]].fV = m_pScene->meshes->texelL[m_pFaces[3 * i + 2]][0];
     }
 
-    int u = SCENE_OBJ_START;
+    /*Lib3dsPoint* pVertices = m_pScene->meshes->pointL;
 
-    pVertices = m_pScene->objects[u].vertices;
+    for (long i = 0; i != m_iVertices; i++ )
+        m_pVertices[i] = pVertices[i].pos;
 
-    for (long i = 0; i != m_pScene->objects[u].nvertices; i++ )
+    lib3ds_mesh_calculate_normals(m_pScene->meshes, m_pNormals);*/
+
+    int count = GetMeshCount();
+
+    for ( uint u = 0; u != count; u++ )
     {
-        m_pVertices[i] = (CVector&)pVertices[i].vlocal;
-        m_pNormals[i] = ((CVector&)pVertices[i].wlocal);
+        Lib3dsMesh *mesh = GetMesh(u);
+
+        m_pMeshNormals[u] = new Lib3dsVector[mesh->points];
+        lib3ds_mesh_calculate_normals(mesh, m_pMeshNormals[u]);
     }
 
     m_Vertex[0].x = 0;
@@ -120,6 +127,40 @@ CFFDEnv::~CFFDEnv()
     if ( m_pVertices ) delete[] m_pVertices;
     if ( m_pNormals ) delete[] m_pNormals;
     if ( m_pFaces ) delete[] m_pFaces;
+}
+
+Lib3dsMesh* CFFDEnv::GetMesh(int id)
+{
+    Lib3dsMesh* mesh = m_pScene->meshes;
+
+    for (int i = 0; i < id; i++)
+        mesh = mesh->next;
+
+    return (mesh);
+}
+
+int CFFDEnv::GetMeshCount()
+{
+    int count = 0;
+    Lib3dsMesh* mesh = m_pScene->meshes;
+
+    while (mesh) {
+        count++;
+        mesh = mesh->next;
+    }
+
+    return (count);
+}
+
+static inline CVector LerpVertex2( const Lib3dsVector& cV1, const Lib3dsVector& cV2, float t )
+{
+    CVector ret;
+
+    ret.fX = (cV2[0] - cV1[0]) * t + cV1[0];
+    ret.fY = (cV2[1] - cV1[1]) * t + cV1[1];
+    ret.fZ = (cV2[2] - cV1[2]) * t + cV1[2];
+
+    return (ret);
 }
 
 void CFFDEnv::Do( float fTime, float fTimeStart )
@@ -167,29 +208,30 @@ void CFFDEnv::Do( float fTime, float fTimeStart )
     cCamRot.m_.sMatrix.stBaseW = CBase(0, 0, 0, 1);
 
     /* calc morphing */
-    float fT = fmod(fTime*.5, 1);
+    float fT = fmod(fTime * .5, 1);
 
-    fT = cos((1-fT)*3.14159)*.5 + .5;
+    fT = cos((1 - fT) * 3.14159) * .5 + .5;
 
-    int iO1 = (int)(fmod(fTime*.5, 6));
+    int iO1 = (int)(fmod(fTime * .5, 6));
     int iO2 = iO1 + 1 >= 6 ? 0 : iO1 + 1;
 
-    object_t* pO1 = &m_pScene->objects[iO1];
-    object_t* pO2 = &m_pScene->objects[iO2];
+    printf("morphing objects: %d -> %d\n", iO1, iO2);
+
+    Lib3dsPoint* pV1 = GetMesh(iO1)->pointL;
+    Lib3dsPoint* pV2 = GetMesh(iO2)->pointL;
 
     for ( i = 0; i != m_iVertices; i++ )
     {
-        m_pVertices[i] = LerpVertex( pO1->vertices[i], pO2->vertices[i], fT );
-        m_pNormals[i] = LerpNormal( pO1->vertices[i], pO2->vertices[i], fT );
+        m_pVertices[i] = LerpVertex2( pV1[i].pos, pV2[i].pos, fT );
+        m_pNormals[i] = LerpVertex2( m_pMeshNormals[iO1][i], m_pMeshNormals[iO2][i], fT );
     }
-
 
     /* calc envmap */
     for ( i = 0; i != m_iVertices; i++ )
     {
-        cN = cCamRot*m_pNormals[i];
-        m_pEnvUV[i].fU = cN.fX*.5 + .5;
-        m_pEnvUV[i].fV = cN.fY*.5 + .5;
+        cN = cCamRot * m_pNormals[i];
+        m_pEnvUV[i].fU = cN.fX * .5 + .5;
+        m_pEnvUV[i].fV = cN.fY * .5 + .5;
     }
 
     glVertexPointer( 3, GL_FLOAT, 0, m_pVertices );
@@ -197,16 +239,16 @@ void CFFDEnv::Do( float fTime, float fTimeStart )
     /* mesh */
     glBindTexture( GL_TEXTURE_2D, m_iGLTex2 );
     glTexCoordPointer( 2, GL_FLOAT, 0, m_pUV );
-    glColor4f( 1, 1, 1, 1*fAlpha );
+    glColor4f( 1, 1, 1, 1 * fAlpha );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    glDrawElements( GL_TRIANGLES, m_iFaces*3, GL_UNSIGNED_SHORT, m_pFaces );
+    glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
 
     /* env */
     glBindTexture( GL_TEXTURE_2D, m_iGLTex1 );
     glTexCoordPointer( 2, GL_FLOAT, 0, m_pEnvUV );
-    glColor4f( 1, 1, 1, 1*fAlpha );
+    glColor4f( 1, 1, 1, 1 * fAlpha );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE );
-    glDrawElements( GL_TRIANGLES, m_iFaces*3, GL_UNSIGNED_SHORT, m_pFaces );
+    glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();

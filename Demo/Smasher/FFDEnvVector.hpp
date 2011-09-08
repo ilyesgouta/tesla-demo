@@ -24,12 +24,16 @@
 #if !defined (_FFD_ENV_VECTOR_HPP_)
 #define _FFD_ENV_VECTOR_HPP_
 
+#include <lib3ds/types.h>
+#include <lib3ds/mesh.h>
+#include <lib3ds/vector.h>
+#include <lib3ds/file.h>
+
 #include "3dlib/3dlib.h"
 #include "base3d/CVector.hpp"
 #include "base3d/CTexel.hpp"
 #include "base3d/CColor.hpp"
 #include "base3d/CMatrix.hpp"
-#include "load3ds/Load3ds.h"
 
 #include "TexManager.hpp"
 
@@ -54,7 +58,7 @@ public:
     virtual void Do( float fTime, float fTimeStrat );
 
 protected:
-    scene_t* m_pScene;
+    Lib3dsFile* m_pScene;
 
     int m_iGLTex1;
     int m_iGLTex2;
@@ -62,9 +66,13 @@ protected:
 
     CVector* m_pVertices;
     CVector* m_pNormals;
+    Lib3dsVector* m_pMeshNormals[5];
     CTexel* m_pUV;
     CTexel* m_pEnvUV;
     int m_iVertices;
+
+    Lib3dsMesh* GetMesh(int id);
+    int GetMeshCount();
 
     unsigned short* m_pFaces;
     int m_iFaces;
