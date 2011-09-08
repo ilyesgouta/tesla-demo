@@ -40,6 +40,10 @@ PKG_CHECK_MODULES(alsa, alsa, [have_alsa=yes], [have_alsa=no])
 AC_SUBST([alsa_CFLAGS])
 AC_SUBST([alsa_LIBS])
 
+PKG_CHECK_MODULES(lib3ds, lib3ds, [have_lib3ds=yes], [have_lib3ds=no])
+AC_SUBST([lib3ds_CFLAGS])
+AC_SUBST([lib3ds_LIBS])
+
 PKG_CHECK_MODULES(libpng, libpng, [have_libpng=yes], [have_libpng=no])
 AC_SUBST([libpng_CFLAGS])
 AC_SUBST([libpng_LIBS])

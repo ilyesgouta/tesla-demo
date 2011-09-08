@@ -2,8 +2,6 @@
 bin_PROGRAMS = tesla-demo
 
 include_HEADERS = \
-    load3ds/3ds.h \
-    load3ds/Load3ds.h \
     3dlib/Motion.h \
     3dlib/Matrix.h \
     3dlib/Quater.h \
@@ -17,18 +15,12 @@ include_HEADERS = \
 AM_CFLAGS =
 AM_CXXFLAGS =
 
-tesla_demo_CFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(libpng_CFLAGS) $(libmpg123_CFLAGS) $(alsa_CFLAGS)
-tesla_demo_CXXFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(libpng_CFLAGS) $(libmpg123_CFLAGS) $(alsa_CFLAGS)
+tesla_demo_CFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(lib3ds_CFLAGS) $(libpng_CFLAGS) $(libmpg123_CFLAGS) $(alsa_CFLAGS)
+tesla_demo_CXXFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(lib3ds_CFLAGS) $(libpng_CFLAGS) $(libmpg123_CFLAGS) $(alsa_CFLAGS)
 
-tesla_demo_LDADD = $(EGL_LIBS) $(GLESV1_CM_LIBS) $(X11_LIBS) $(libpng_LIBS) $(jpeg_LIBS) $(libmpg123_LIBS) $(alsa_LIBS) -lrt -lpthread
+tesla_demo_LDADD = $(EGL_LIBS) $(GLESV1_CM_LIBS) $(X11_LIBS) $(libpng_LIBS) $(jpeg_LIBS) $(libmpg123_LIBS) $(alsa_LIBS) $(lib3ds_LIBS) -lrt -lpthread
 
 tesla_demo_SOURCES = \
-    load3ds/Misc.c \
-    load3ds/Mesh.c \
-    load3ds/Material.c \
-    load3ds/P_spline.c \
-    load3ds/Load3ds.c \
-    load3ds/Keyf.c \
     3dlib/Quater.c \
     3dlib/Vector.c \
     3dlib/Matrix.c \
