@@ -29,6 +29,11 @@
 
 #include  <math.h>
 
+#include <lib3ds/types.h>
+#include <lib3ds/mesh.h>
+#include <lib3ds/vector.h>
+#include <lib3ds/file.h>
+
 class CVector
 {
 public:
@@ -45,6 +50,12 @@ public:
 
     CVector( float fAll ) {
         fX = fY = fZ = fAll;
+    }
+
+    CVector( const Lib3dsVector& vec ) {
+        fX = vec[0];
+        fY = vec[1];
+        fZ = vec[2];
     }
 
     void Normalize()
@@ -105,6 +116,13 @@ public:
             fY = cV1.fY;
         if ( fZ < cV1.fZ )
             fZ = cV1.fZ;
+    }
+
+    CVector operator = (const Lib3dsVector& cV) {
+        fX = cV[0];
+        fY = cV[1];
+        fZ = cV[2];
+        return *this;
     }
 
     CVector& operator += (CVector& cV)
