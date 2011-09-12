@@ -27,6 +27,7 @@
 #include <lib3ds/types.h>
 #include <lib3ds/mesh.h>
 #include <lib3ds/vector.h>
+#include <lib3ds/matrix.h>
 #include <lib3ds/file.h>
 
 #include "Effect.hpp"
