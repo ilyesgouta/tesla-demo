@@ -53,6 +53,8 @@ protected:
     Lib3dsFile* m_pScene;
 
     CVector* m_pVertices;
+    CVector* m_pDestVertices;
+
     CTexel* m_pUVMap;
     int m_iVertices;
 

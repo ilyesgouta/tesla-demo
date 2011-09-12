@@ -26,6 +26,8 @@
 
 #include "Tree.hpp"
 
+#include <stdlib.h>
+
 extern CTextureManager g_cTexManager;
 extern MainFrame_c* g_pMainFrame;
 
@@ -53,20 +55,19 @@ CTree::CTree()
     int nfaces = m_pScene->meshes->faces;
 
     m_pVertices = new CVector[nvertices];
+    m_pDestVertices = new CVector[nvertices];
+
     m_pUVMap = new CTexel[nvertices];
     m_iVertices = nvertices;
     m_pFaces = new unsigned short[3 * nfaces];
     m_iFaces = nfaces;
 
-    Lib3dsPoint* pVertices = m_pScene->meshes->pointL;
-
     uint i;
 
-    for ( i = 0; i != nvertices; i++ )
-    {
-        m_pVertices[i] = pVertices[i].pos;
-        m_pUVMap[i].fU = m_pScene->meshes->texelL[i][1];
-        m_pUVMap[i].fV = m_pScene->meshes->texelL[i][0];
+    for ( i = 0; i != nvertices; i++ ) {
+        m_pVertices[i] = m_pScene->meshes->pointL[i].pos;
+        m_pUVMap[i].fU = (float)rand() / RAND_MAX;
+        m_pUVMap[i].fV = (float)rand() / RAND_MAX;
     }
 
     for ( i = 0; i != nfaces; i++ )
@@ -128,7 +129,7 @@ void CTree::Do( float fTime, float fTimeStart )
         clamp( &fAlpha );
     }
 
-    glColor4f( 1, 1, 1, .2*fAlpha  );
+    glColor4f( 1, 1, 1, .2 * fAlpha  );
 
     /* make zoom here */
 
@@ -137,7 +138,8 @@ void CTree::Do( float fTime, float fTimeStart )
     glRotatef( 5 * sin(fTime / 3), 0, 0, 1 );
     glRotatef( fTime * 10, 0, 1, 0 );
 
-    glBindTexture( GL_TEXTURE_2D, m_iGLTex );
+    glRotatef( 90, 1, 0, 0 );
+    glRotatef( 180, 0, 1, 0 );
 
     glEnableClientState( GL_VERTEX_ARRAY );
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -158,10 +160,13 @@ void CTree::Do( float fTime, float fTimeStart )
 
     m_cFFD.set_deform( m_aDeform, 5, 5, 5, sizeof(CVector) );
 
-    m_cFFD.calc_spline_deform( m_pVertices, sizeof(CVector) );
+    m_cFFD.calc_spline_deform( m_pDestVertices, sizeof(CVector) );
 
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    glVertexPointer( 3, GL_FLOAT, 0, m_pVertices );
+
+    glBindTexture( GL_TEXTURE_2D, m_iGLTex );
+
+    glVertexPointer( 3, GL_FLOAT, 0, m_pDestVertices );
     glTexCoordPointer( 2, GL_FLOAT, 0, m_pUVMap );
 
     glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
@@ -170,10 +175,10 @@ void CTree::Do( float fTime, float fTimeStart )
 
     glMatrixMode( GL_TEXTURE );
     glLoadIdentity();
-    glTranslatef( fTime*.1, fTime*.5, 0 );
+    glTranslatef( fTime * .1, fTime * .5, 0 );
 
     glBindTexture( GL_TEXTURE_2D, m_iGLTex1 );
-    glDrawElements( GL_TRIANGLES, m_iFaces*3, GL_UNSIGNED_SHORT, m_pFaces );
+    glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
 
     glLoadIdentity();
     glMatrixMode( GL_MODELVIEW );
