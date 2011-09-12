@@ -58,11 +58,17 @@ CFFDEnv::CFFDEnv()
 
     m_pScene = lib3ds_file_load( "data/3d/meta.3ds" );
 
-    m_iFaces = m_pScene->meshes->faces;
+    Lib3dsMesh *mesh = m_pScene->meshes;
+
+    // will seek to the latest asset into the .3ds file which has well defined texels
+    while (!mesh->texelL)
+        mesh = mesh->next;
+
+    m_iFaces = mesh->faces;
 
     m_pFaces = new unsigned short[3 * m_iFaces];
 
-    m_iVertices = m_pScene->meshes->points;
+    m_iVertices = mesh->points;
 
     m_pVertices = new CVector[m_iVertices];
     m_pNormals = new CVector[m_iVertices];
@@ -71,25 +77,18 @@ CFFDEnv::CFFDEnv()
 
     for ( long i = 0; i != m_iFaces; i++ )
     {
-        m_pFaces[3 * i + 0] = m_pScene->meshes->faceL[i].points[0];
-        m_pUV[m_pFaces[3 * i + 0]].fU = m_pScene->meshes->texelL[m_pFaces[3 * i + 0]][1];
-        m_pUV[m_pFaces[3 * i + 0]].fV = m_pScene->meshes->texelL[m_pFaces[3 * i + 0]][0];
+        m_pFaces[3 * i + 0] = mesh->faceL[i].points[0];
+        m_pUV[m_pFaces[3 * i + 0]].fU = mesh->texelL[m_pFaces[3 * i + 0]][0];
+        m_pUV[m_pFaces[3 * i + 0]].fV = mesh->texelL[m_pFaces[3 * i + 0]][1];
 
-        m_pFaces[3 * i + 1] = m_pScene->meshes->faceL[i].points[1];
-        m_pUV[m_pFaces[3 * i + 1]].fU = m_pScene->meshes->texelL[m_pFaces[3 * i + 1]][1];
-        m_pUV[m_pFaces[3 * i + 1]].fV = m_pScene->meshes->texelL[m_pFaces[3 * i + 1]][0];
+        m_pFaces[3 * i + 1] = mesh->faceL[i].points[1];
+        m_pUV[m_pFaces[3 * i + 1]].fU = mesh->texelL[m_pFaces[3 * i + 1]][0];
+        m_pUV[m_pFaces[3 * i + 1]].fV = mesh->texelL[m_pFaces[3 * i + 1]][1];
 
-        m_pFaces[3 * i + 2] = m_pScene->meshes->faceL[i].points[2];
-        m_pUV[m_pFaces[3 * i + 2]].fU = m_pScene->meshes->texelL[m_pFaces[3 * i + 2]][1];
-        m_pUV[m_pFaces[3 * i + 2]].fV = m_pScene->meshes->texelL[m_pFaces[3 * i + 2]][0];
+        m_pFaces[3 * i + 2] = mesh->faceL[i].points[2];
+        m_pUV[m_pFaces[3 * i + 2]].fU = mesh->texelL[m_pFaces[3 * i + 2]][0];
+        m_pUV[m_pFaces[3 * i + 2]].fV = mesh->texelL[m_pFaces[3 * i + 2]][1];
     }
-
-    /*Lib3dsPoint* pVertices = m_pScene->meshes->pointL;
-
-    for (long i = 0; i != m_iVertices; i++ )
-        m_pVertices[i] = pVertices[i].pos;
-
-    lib3ds_mesh_calculate_normals(m_pScene->meshes, m_pNormals);*/
 
     int count = GetMeshCount();
 
@@ -97,8 +96,21 @@ CFFDEnv::CFFDEnv()
     {
         Lib3dsMesh *mesh = GetMesh(u);
 
-        m_pMeshNormals[u] = new Lib3dsVector[mesh->points];
-        lib3ds_mesh_calculate_normals(mesh, m_pMeshNormals[u]);
+        for (int i = 0; i < mesh->faces; i++)
+            mesh->faceL[i].smoothing = 1;
+
+        m_pMeshNormals[u] = new Lib3dsVector[m_iVertices];
+
+        Lib3dsVector* normals = new Lib3dsVector[3 * mesh->faces];
+        lib3ds_mesh_calculate_normals(mesh, normals);
+
+        for (int i = 0; i < mesh->faces; i++) {
+            memcpy(&m_pMeshNormals[u][mesh->faceL[i].points[0]], &normals[3 * i + 0], sizeof(Lib3dsVector));
+            memcpy(&m_pMeshNormals[u][mesh->faceL[i].points[1]], &normals[3 * i + 1], sizeof(Lib3dsVector));
+            memcpy(&m_pMeshNormals[u][mesh->faceL[i].points[2]], &normals[3 * i + 2], sizeof(Lib3dsVector));
+        }
+
+        delete [] normals;
     }
 
     m_Vertex[0].x = 0;
@@ -152,7 +164,7 @@ int CFFDEnv::GetMeshCount()
     return (count);
 }
 
-static inline CVector LerpVertex2( const Lib3dsVector& cV1, const Lib3dsVector& cV2, float t )
+static inline CVector LerpVector( const Lib3dsVector& cV1, const Lib3dsVector& cV2, float t )
 {
     CVector ret;
 
@@ -187,7 +199,7 @@ void CFFDEnv::Do( float fTime, float fTimeStart )
     glEnable( GL_CULL_FACE );
     glEnable( GL_DEPTH_TEST );
     glDepthMask( 1 );
-    glCullFace( GL_FRONT );
+    glCullFace( GL_BACK );
     glDepthFunc( GL_LEQUAL );
 
     glEnableClientState( GL_VERTEX_ARRAY );
@@ -207,6 +219,9 @@ void CFFDEnv::Do( float fTime, float fTimeStart )
     glGetFloatv( GL_MODELVIEW_MATRIX, cCamRot.m_.aMatrix );
     cCamRot.m_.sMatrix.stBaseW = CBase(0, 0, 0, 1);
 
+    glRotatef( 90, 1, 0, 0 );
+    glRotatef( 180, 0, 1, 0 );
+
     /* calc morphing */
     float fT = fmod(fTime * .5, 1);
 
@@ -215,21 +230,17 @@ void CFFDEnv::Do( float fTime, float fTimeStart )
     int iO1 = (int)(fmod(fTime * .5, 6));
     int iO2 = iO1 + 1 >= 6 ? 0 : iO1 + 1;
 
-    printf("morphing objects: %d -> %d\n", iO1, iO2);
-
     Lib3dsPoint* pV1 = GetMesh(iO1)->pointL;
     Lib3dsPoint* pV2 = GetMesh(iO2)->pointL;
 
     for ( i = 0; i != m_iVertices; i++ )
     {
-        m_pVertices[i] = LerpVertex2( pV1[i].pos, pV2[i].pos, fT );
-        m_pNormals[i] = LerpVertex2( m_pMeshNormals[iO1][i], m_pMeshNormals[iO2][i], fT );
-    }
+        m_pVertices[i] = LerpVector( pV1[i].pos, pV2[i].pos, fT );
+        m_pNormals[i] = LerpVector( m_pMeshNormals[iO1][i], m_pMeshNormals[iO2][i], fT );
 
-    /* calc envmap */
-    for ( i = 0; i != m_iVertices; i++ )
-    {
+        /* calc envmap */
         cN = cCamRot * m_pNormals[i];
+
         m_pEnvUV[i].fU = cN.fX * .5 + .5;
         m_pEnvUV[i].fV = cN.fY * .5 + .5;
     }
@@ -248,7 +259,7 @@ void CFFDEnv::Do( float fTime, float fTimeStart )
     glTexCoordPointer( 2, GL_FLOAT, 0, m_pEnvUV );
     glColor4f( 1, 1, 1, 1 * fAlpha );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE );
-    glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
+    //glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
