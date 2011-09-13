@@ -64,6 +64,8 @@ CFFDEnv::CFFDEnv()
     while (!mesh->texelL)
         mesh = mesh->next;
 
+    m_pMesh = mesh;
+
     m_iFaces = mesh->faces;
 
     m_pFaces = new unsigned short[3 * m_iFaces];
@@ -78,16 +80,8 @@ CFFDEnv::CFFDEnv()
     for ( long i = 0; i != m_iFaces; i++ )
     {
         m_pFaces[3 * i + 0] = mesh->faceL[i].points[0];
-        m_pUV[m_pFaces[3 * i + 0]].fU = mesh->texelL[m_pFaces[3 * i + 0]][0];
-        m_pUV[m_pFaces[3 * i + 0]].fV = mesh->texelL[m_pFaces[3 * i + 0]][1];
-
         m_pFaces[3 * i + 1] = mesh->faceL[i].points[1];
-        m_pUV[m_pFaces[3 * i + 1]].fU = mesh->texelL[m_pFaces[3 * i + 1]][0];
-        m_pUV[m_pFaces[3 * i + 1]].fV = mesh->texelL[m_pFaces[3 * i + 1]][1];
-
         m_pFaces[3 * i + 2] = mesh->faceL[i].points[2];
-        m_pUV[m_pFaces[3 * i + 2]].fU = mesh->texelL[m_pFaces[3 * i + 2]][0];
-        m_pUV[m_pFaces[3 * i + 2]].fV = mesh->texelL[m_pFaces[3 * i + 2]][1];
     }
 
     int count = GetMeshCount();
@@ -95,9 +89,6 @@ CFFDEnv::CFFDEnv()
     for ( uint u = 0; u != count; u++ )
     {
         Lib3dsMesh *mesh = GetMesh(u);
-
-        for (int i = 0; i < mesh->faces; i++)
-            mesh->faceL[i].smoothing = 1;
 
         m_pMeshNormals[u] = new Lib3dsVector[m_iVertices];
 
@@ -249,7 +240,8 @@ void CFFDEnv::Do( float fTime, float fTimeStart )
 
     /* mesh */
     glBindTexture( GL_TEXTURE_2D, m_iGLTex2 );
-    glTexCoordPointer( 2, GL_FLOAT, 0, m_pUV );
+    glTexCoordPointer( 2, GL_FLOAT, 0, m_pMesh->texelL );
+
     glColor4f( 1, 1, 1, 1 * fAlpha );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
@@ -257,9 +249,10 @@ void CFFDEnv::Do( float fTime, float fTimeStart )
     /* env */
     glBindTexture( GL_TEXTURE_2D, m_iGLTex1 );
     glTexCoordPointer( 2, GL_FLOAT, 0, m_pEnvUV );
+
     glColor4f( 1, 1, 1, 1 * fAlpha );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE );
-    //glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
+    glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
