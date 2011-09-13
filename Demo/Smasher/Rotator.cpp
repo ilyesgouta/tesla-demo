@@ -154,6 +154,7 @@ void CThing::Do( float fTime, float fTimeStart )
         cUVPos.fU = -( .4 * sin(fTime + i * 6) + .4 * cos(fTime * 2 + i * 4)) * .1;
         cUVPos.fV = ( .3 * sin(fTime + i * 12) + .4 * sin(fTime + i * 5)) * .05;
 #ifdef GL_VERSION_ES_CM_1_1
+        PutQuad( cUVPos );
 #else
         glBegin( GL_QUADS );
         PutQuad( cUVPos );
