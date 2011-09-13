@@ -268,7 +268,7 @@ void CFaceMorph::Do( float fTime, float fTimeStart )
         RenderTube( 1 + u, 1 + fTime * 10 * u );
     }
 
-    glRotatef( 90, 1, 0, 0 );
+    glRotatef( 100, 1, 0, 0 );
     glRotatef( 180, 0, 1, 0 );
 
     glMatrixMode( GL_PROJECTION );
@@ -315,12 +315,13 @@ void CFaceMorph::Do( float fTime, float fTimeStart )
     for ( int i = 0; i != m_iVertices; i++ )
     {
         m_pVertices[i] = LerpVector( pV1[i].pos, pV2[i].pos, fT );
+
         m_pNormals[i] = LerpVector( m_pMeshNormals[iO1][i], m_pMeshNormals[iO2][i], fT );
 
         cN = cCam * m_pNormals[i];
 
-        m_pEnvUV[i].fU = cN.fX * .5 + .7;
-        m_pEnvUV[i].fV = cN.fY * .5 + .7;
+        m_pEnvUV[i].fU = cN.fX;
+        m_pEnvUV[i].fV = cN.fY;
 
         /*
         if ( l_iEnableDisplace > 0 )
