@@ -44,6 +44,7 @@ public:
 
 protected:
     Lib3dsFile* m_pScene;
+    Lib3dsMesh* m_pMesh;
 
     int m_iGLTex1;
     int m_iGLTex1a;

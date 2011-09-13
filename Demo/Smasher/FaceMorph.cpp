@@ -107,6 +107,8 @@ CFaceMorph::CFaceMorph()
 
     Lib3dsMesh *object_2 = m_pScene->meshes->next->next;
 
+    m_pMesh = object_2;
+
     m_iFaces = object_2->faces;
 
     m_iVertices = object_2->points;
@@ -120,16 +122,8 @@ CFaceMorph::CFaceMorph()
     for ( int i = 0; i != m_iFaces; i++ )
     {
         m_pFaces[3 * i + 0] = object_2->faceL[i].points[0];
-        m_pUV[m_pFaces[3 * i + 0]].fU = object_2->texelL[m_pFaces[3 * i + 0]][0];
-        m_pUV[m_pFaces[3 * i + 0]].fV = object_2->texelL[m_pFaces[3 * i + 0]][1];
-
         m_pFaces[3 * i + 1] = object_2->faceL[i].points[1];
-        m_pUV[m_pFaces[3 * i + 1]].fU = object_2->texelL[m_pFaces[3 * i + 1]][0];
-        m_pUV[m_pFaces[3 * i + 1]].fV = object_2->texelL[m_pFaces[3 * i + 1]][1];
-
         m_pFaces[3 * i + 2] = object_2->faceL[i].points[2];
-        m_pUV[m_pFaces[3 * i + 2]].fU = object_2->texelL[m_pFaces[3 * i + 2]][0];
-        m_pUV[m_pFaces[3 * i + 2]].fV = object_2->texelL[m_pFaces[3 * i + 2]][1];
     }
 
     int count = GetMeshCount();
@@ -138,8 +132,8 @@ CFaceMorph::CFaceMorph()
     {
         Lib3dsMesh *mesh = GetMesh(u);
 
-        for (int i = 0; i < mesh->faces; i++)
-            mesh->faceL[i].smoothing = 0;
+        //for (int i = 0; i < mesh->faces; i++)
+        //    mesh->faceL[i].smoothing = 0;
 
         m_pMeshNormals[u] = new Lib3dsVector[m_iVertices];
 
@@ -325,8 +319,8 @@ void CFaceMorph::Do( float fTime, float fTimeStart )
 
         cN = cCam * m_pNormals[i];
 
-        m_pEnvUV[i].fU = cN.fX * .5 + .5;
-        m_pEnvUV[i].fV = cN.fY * .5 + .5;
+        m_pEnvUV[i].fU = cN.fX * .5 + .7;
+        m_pEnvUV[i].fV = cN.fY * .5 + .7;
 
         /*
         if ( l_iEnableDisplace > 0 )
@@ -354,7 +348,7 @@ void CFaceMorph::Do( float fTime, float fTimeStart )
 
     glColor4f( 1, 1, 1, 1 * fAlpha );
 
-    glTexCoordPointer( 2, GL_FLOAT, 0, m_pUV );
+    glTexCoordPointer( 2, GL_FLOAT, 0, m_pMesh->texelL );
     glBindTexture( GL_TEXTURE_2D, m_iGLTex1 );
 
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -363,7 +357,7 @@ void CFaceMorph::Do( float fTime, float fTimeStart )
     glTranslatef( fTime * .05, fTime * .1, 0 );
     glRotatef( fTime * 30, 0, 0, 1 );
 
-    //glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
+    glDrawElements( GL_TRIANGLES, m_iFaces * 3, GL_UNSIGNED_SHORT, m_pFaces );
 
     glColor4f( 1, 1, 1, .5 * fAlpha );
 
