@@ -58,7 +58,7 @@ PolkaLike_c::~PolkaLike_c()
 void PolkaLike_c::Init()
 {
     int iTracks = 4;
-    int iTrackElems = 128;
+    int iTrackElems = 48;
 
     m_pTracks = new Track_c[iTracks];
     m_iTracks = iTracks;
@@ -343,6 +343,8 @@ void Track_c::Render( float fDelTime, float fTime )
                 m_pTrackElems[i].m_fAnlgeZ = m_fInitAngleZ;
             }
     }
+
+    glFlushFaces();
 
 #ifdef GL_VERSION_ES_CM_1_1
     glDisableClientState(GL_VERTEX_ARRAY);
