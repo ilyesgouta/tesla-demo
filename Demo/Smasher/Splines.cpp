@@ -68,7 +68,7 @@ void CSplineTrail::Render( float fTime )
     CVector& cY = cCam.m_.sMatrix.stBaseY;
     CVector cPos;
 
-    glBlendFunc(GL_SRC_COLOR, GL_ONE);//_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_COLOR, GL_ONE);
     glBindTexture( GL_TEXTURE_2D, m_iGLTex );
 
 #ifdef GL_VERSION_ES_CM_1_1
@@ -94,13 +94,13 @@ void CSplineTrail::Render( float fTime )
         fAlpha = 1 - (float)i/m_iTailLen;
         clamp( &fAlpha );
 
-        fAlpha *= fAlpha; fAlpha *= fAlpha;
+        fAlpha *= fAlpha; //fAlpha *= fAlpha;
 
         glColor4f( 1*fAlpha, 1*fAlpha, .9*fAlpha, fAlpha );
 
         float k = sin(fAlpha * 3.14 + 5);//t );
 
-        glColor4f( 1, 1, .9, .1 * fAlpha );
+        //glColor4f( 1, 1, .9, .1 * fAlpha );
 
         if (t > 3)
         {
@@ -279,7 +279,7 @@ void CSplines::Do( float fTime, float fTimeStart )
 
     glColor4f( 1, 1, 1, .3 + .1*sin(fTime*2) );
 
-    for ( int i = 0; i != 8; i++ )
+    for ( int i = 0; i != 4; i++ )
     {
         glRotatef( 6*fTime*i, 0, 1, 0 );
         glRotatef( 5, 0, 0, 1 );

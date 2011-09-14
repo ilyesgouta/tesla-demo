@@ -206,23 +206,23 @@ CEnergyStream::CEnergyStream()
 
     int iFlareTex = g_cTexManager.LoadTexture("data/textures/flare02.jpg");
 
-    m_pFStreams[0].Init( 150, iFlareTex, CVector(0, 50, 0), 300 );
-    m_pFStreams[1].Init( 150, iFlareTex, CVector(0, 0, 0), 150 );
-    m_pFStreams[2].Init( 150, iFlareTex, CVector(0, 90, 60), 250 );
-    m_pFStreams[3].Init( 150, iFlareTex, CVector(0, -100, 30), 160 );
-    m_pFStreams[4].Init( 150, iFlareTex, CVector(0, 50, -100), 340 );
-    m_pFStreams[5].Init( 150, iFlareTex, CVector(0, -50, 50), 270  );
-    m_pFStreams[6].Init( 150, iFlareTex, CVector(0, 100, 50), 180 );
-    m_pFStreams[7].Init( 150, iFlareTex, CVector(0, -30, 90), 130 );
+    m_pFStreams[0].Init( 50, iFlareTex, CVector(0, 50, 0), 300 );
+    m_pFStreams[1].Init( 50, iFlareTex, CVector(0, 0, 0), 150 );
+    m_pFStreams[2].Init( 50, iFlareTex, CVector(0, 90, 60), 250 );
+    m_pFStreams[3].Init( 50, iFlareTex, CVector(0, -100, 30), 160 );
+    m_pFStreams[4].Init( 50, iFlareTex, CVector(0, 50, -100), 340 );
+    m_pFStreams[5].Init( 50, iFlareTex, CVector(0, -50, 50), 270  );
+    m_pFStreams[6].Init( 50, iFlareTex, CVector(0, 100, 50), 180 );
+    m_pFStreams[7].Init( 50, iFlareTex, CVector(0, -30, 90), 130 );
 
-    m_pFStreams[8].Init( 150, iFlareTex, CVector(0, 150, 10), 200 );
-    m_pFStreams[9].Init( 150, iFlareTex, CVector(0, 100, -100), 210 );
-    m_pFStreams[10].Init( 150, iFlareTex, CVector(0, 190, 160), 220 );
-    m_pFStreams[11].Init( 150, iFlareTex, CVector(0, -200, 130), 230 );
-    m_pFStreams[12].Init( 150, iFlareTex, CVector(0, 150, -200), 240 );
-    m_pFStreams[13].Init( 150, iFlareTex, CVector(0, -150, 250), 160 );
-    m_pFStreams[14].Init( 150, iFlareTex, CVector(0, 200, 150), 230 );
-    m_pFStreams[15].Init( 150, iFlareTex, CVector(0, -130, 190), 250 );
+    m_pFStreams[8].Init( 50, iFlareTex, CVector(0, 150, 10), 200 );
+    m_pFStreams[9].Init( 50, iFlareTex, CVector(0, 100, -100), 210 );
+    m_pFStreams[10].Init( 50, iFlareTex, CVector(0, 190, 160), 220 );
+    m_pFStreams[11].Init( 50, iFlareTex, CVector(0, -200, 130), 230 );
+    m_pFStreams[12].Init( 50, iFlareTex, CVector(0, 150, -200), 240 );
+    m_pFStreams[13].Init( 50, iFlareTex, CVector(0, -150, 250), 160 );
+    m_pFStreams[14].Init( 50, iFlareTex, CVector(0, 200, 150), 230 );
+    m_pFStreams[15].Init( 50, iFlareTex, CVector(0, -130, 190), 250 );
 }
 
 CEnergyStream::~CEnergyStream()
@@ -324,6 +324,28 @@ void CEnergyStream::Do( float fTime, float fTimeStart )
 
     if ( fTime > l_fChangeTime )
     {
+        for ( i = 0; i != 4; i++ )
+        {
+#ifdef GL_VERSION_ES_CM_1_1
+            glClientActiveTexture(GL_TEXTURE0);
+
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+#else
+            glBegin( GL_QUADS );
+#endif
+
+            PutQuad( cUVPos );
+#ifdef GL_VERSION_ES_CM_1_1
+            glDisableClientState(GL_VERTEX_ARRAY);
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+#else
+            glEnd();
+#endif
+            glRotatef( 180/3, 1, 0, 0 );
+        }
+    }
+    else
         for ( i = 0; i != 8; i++ )
         {
 #ifdef GL_VERSION_ES_CM_1_1
@@ -334,7 +356,6 @@ void CEnergyStream::Do( float fTime, float fTimeStart )
 #else
             glBegin( GL_QUADS );
 #endif
-
             PutQuad( cUVPos );
 #ifdef GL_VERSION_ES_CM_1_1
             glDisableClientState(GL_VERTEX_ARRAY);
@@ -343,27 +364,6 @@ void CEnergyStream::Do( float fTime, float fTimeStart )
             glEnd();
 #endif
             glRotatef( 180/7, 1, 0, 0 );
-        }
-    }
-    else
-        for ( i = 0; i != 16; i++ )
-        {
-#ifdef GL_VERSION_ES_CM_1_1
-            glClientActiveTexture(GL_TEXTURE0);
-
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-#else
-            glBegin( GL_QUADS );
-#endif
-            PutQuad( cUVPos );
-#ifdef GL_VERSION_ES_CM_1_1
-            glDisableClientState(GL_VERTEX_ARRAY);
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-#else
-            glEnd();
-#endif
-            glRotatef( 180/15, 1, 0, 0 );
         }
 
     glPopMatrix();

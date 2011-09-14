@@ -38,6 +38,7 @@ typedef struct __attribute__ ((packed)) CVertex {
 
 void CDarkQuads::Render( int iSeed, CColor& cCol )
 {
+#if 0
     int iHeight;
     int iY;
 
@@ -102,5 +103,6 @@ void CDarkQuads::Render( int iSeed, CColor& cCol )
     glDisableClientState(GL_VERTEX_ARRAY);
 #else
     glEnd();
+#endif
 #endif
 }

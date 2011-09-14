@@ -252,9 +252,9 @@ CBands::Render(void)
         fAlpha = fLastTime - 69.0;
     }
     else
-    if (fLastTime >= 84.0 && fLastTime < 84.0 + 1.0)
+    if (fLastTime >= 82.0 && fLastTime < 82.0 + 1.0)
     {
-        fAlpha = 1.0 - (fLastTime - 84.0);
+        fAlpha = 1.0 - (fLastTime - 82.0);
     }
 
     for (nB = 0; nB < nBands; nB++)
