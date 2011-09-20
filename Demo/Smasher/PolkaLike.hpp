@@ -76,6 +76,10 @@ typedef struct __attribute__ ((packed)) CTex {
     float s0, t0;
 } CTex;
 
+typedef struct __attribute__ ((packed)) CColor {
+    float r, g, b, a;
+} CColor;
+
 public:
     Track_c();
 
@@ -100,13 +104,14 @@ protected:
 
     int m_triBufSize, m_triCurrentIndex;
 
-    void glPutFace(const CVector& cV1, const CVector& cV2, const CVector& cV3, const CVector& cV4);
+    void glPutFace(const CVector& cV1, const CVector& cV2, const CVector& cV3, const CVector& cV4, float alpha);
     void glFlushFaces();
 
 #ifdef GL_VERSION_ES_CM_1_1
 private:
     CVertex *m_Vertex;
     CTex *m_Texture;
+    CColor *m_Color;
 #endif
 };
 

@@ -58,7 +58,7 @@ PolkaLike_c::~PolkaLike_c()
 void PolkaLike_c::Init()
 {
     int iTracks = 4;
-    int iTrackElems = 48;
+    int iTrackElems = 64;
 
     m_pTracks = new Track_c[iTracks];
     m_iTracks = iTracks;
@@ -129,12 +129,12 @@ void PolkaLike_c::Do( float fTime, float fTimeStart )
 
     glBindTexture( GL_TEXTURE_2D, m_iBack );
 
-    float fAlpha = fTime*.5f;
+    float fAlpha = fTime * .5f;
     clamp( &fAlpha );
 
-    float fCol = .25*sin(fTime) + .5;
+    float fCol = .25 * sin(fTime) + .5;
 
-    glColor4f( 1, 1, 1, fCol*fAlpha );
+    glColor4f( 1, 1, 1, fCol * fAlpha );
 
     glClientActiveTexture(GL_TEXTURE0);
 
@@ -179,6 +179,10 @@ Track_c::Track_c()
 
     m_Vertex = new CVertex[m_triBufSize];
     m_Texture = new CTex[m_triBufSize];
+    m_Color = new CColor[m_triBufSize];
+
+    for (int i = 0; i < m_triBufSize; i++)
+        m_Color[i].r = m_Color[i].g = m_Color[i].b = 1.0f;
 }
 
 void Track_c::Init( int iElems, float fInitAngleChange, float fInitPosChange )
@@ -204,11 +208,12 @@ void Track_c::Init( int iElems, float fInitAngleChange, float fInitPosChange )
     }
 }
 
-void Track_c::glPutFace(const CVector& cV1, const CVector& cV2, const CVector& cV3, const CVector& cV4)
+void Track_c::glPutFace(const CVector& cV1, const CVector& cV2, const CVector& cV3, const CVector& cV4, float alpha)
 {
     if (m_triCurrentIndex == m_triBufSize) {
         glVertexPointer(3, GL_FLOAT, 0, m_Vertex);
         glTexCoordPointer(2, GL_FLOAT, 0, m_Texture);
+        glColorPointer(4, GL_FLOAT, 0, m_Color);
 
         glDrawArrays(GL_TRIANGLES, 0, m_triBufSize);
 
@@ -221,6 +226,8 @@ void Track_c::glPutFace(const CVector& cV1, const CVector& cV2, const CVector& c
         m_Texture[m_triCurrentIndex].s0 = 0;
         m_Texture[m_triCurrentIndex].t0 = 1;
 
+        m_Color[m_triCurrentIndex].a = alpha;
+
         m_triCurrentIndex++;
 
         m_Vertex[m_triCurrentIndex].x = cV2.fX;
@@ -230,14 +237,7 @@ void Track_c::glPutFace(const CVector& cV1, const CVector& cV2, const CVector& c
         m_Texture[m_triCurrentIndex].s0 = 0;
         m_Texture[m_triCurrentIndex].t0 = 0;
 
-        m_triCurrentIndex++;
-
-        m_Vertex[m_triCurrentIndex].x = cV3.fX;
-        m_Vertex[m_triCurrentIndex].y = cV3.fY;
-        m_Vertex[m_triCurrentIndex].z = cV3.fZ;
-
-        m_Texture[m_triCurrentIndex].s0 = 1;
-        m_Texture[m_triCurrentIndex].t0 = 1;
+        m_Color[m_triCurrentIndex].a = alpha;
 
         m_triCurrentIndex++;
 
@@ -247,6 +247,19 @@ void Track_c::glPutFace(const CVector& cV1, const CVector& cV2, const CVector& c
 
         m_Texture[m_triCurrentIndex].s0 = 1;
         m_Texture[m_triCurrentIndex].t0 = 1;
+
+        m_Color[m_triCurrentIndex].a = alpha;
+
+        m_triCurrentIndex++;
+
+        m_Vertex[m_triCurrentIndex].x = cV3.fX;
+        m_Vertex[m_triCurrentIndex].y = cV3.fY;
+        m_Vertex[m_triCurrentIndex].z = cV3.fZ;
+
+        m_Texture[m_triCurrentIndex].s0 = 1;
+        m_Texture[m_triCurrentIndex].t0 = 1;
+
+        m_Color[m_triCurrentIndex].a = alpha;
 
         m_triCurrentIndex++;
 
@@ -257,6 +270,8 @@ void Track_c::glPutFace(const CVector& cV1, const CVector& cV2, const CVector& c
         m_Texture[m_triCurrentIndex].s0 = 1;
         m_Texture[m_triCurrentIndex].t0 = 0;
 
+        m_Color[m_triCurrentIndex].a = alpha;
+
         m_triCurrentIndex++;
 
         m_Vertex[m_triCurrentIndex].x = cV2.fX;
@@ -266,6 +281,8 @@ void Track_c::glPutFace(const CVector& cV1, const CVector& cV2, const CVector& c
         m_Texture[m_triCurrentIndex].s0 = 0;
         m_Texture[m_triCurrentIndex].t0 = 0;
 
+        m_Color[m_triCurrentIndex].a = alpha;
+
         m_triCurrentIndex++;
     }
 }
@@ -274,6 +291,7 @@ void Track_c::glFlushFaces()
 {
     glVertexPointer(3, GL_FLOAT, 0, m_Vertex);
     glTexCoordPointer(2, GL_FLOAT, 0, m_Texture);
+    glColorPointer(4, GL_FLOAT, 0, m_Color);
 
     glDrawArrays(GL_TRIANGLES, 0, m_triCurrentIndex);
 
@@ -292,6 +310,7 @@ void Track_c::Render( float fDelTime, float fTime )
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
 #else
     glBegin( GL_QUADS );
 #endif
@@ -309,9 +328,9 @@ void Track_c::Render( float fDelTime, float fTime )
         cRot.fX *= 5;
         cRot.fY *= 5;
 
-        fAlpha = -m_pTrackElems[i].m_cPosition.fZ/l_fZMax + .2;
+        fAlpha = -m_pTrackElems[i].m_cPosition.fZ / l_fZMax;
 
-        glColor4f( 1, 1, 1, fAlpha );
+        //glColor4f( 1, 1, 1, fAlpha );
 
 #ifdef GL_VERSION_ES_CM_1_1
         CVector v1 = m_pTrackElems[i].m_cPosition - cRot - cRot1;
@@ -319,7 +338,7 @@ void Track_c::Render( float fDelTime, float fTime )
         CVector v3 = m_pTrackElems[i].m_cPosition - cRot + cRot1;
         CVector v4 = m_pTrackElems[i].m_cPosition + cRot + cRot1;
 
-        glPutFace(v1, v2, v3, v4);
+        glPutFace(v1, v2, v3, v4, fAlpha);
 #else
         glTexCoord2f( 0, 0 );
         glVertex3fv( (float*)&(m_pTrackElems[i].m_cPosition + cRot - cRot1) );
@@ -349,6 +368,7 @@ void Track_c::Render( float fDelTime, float fTime )
 #ifdef GL_VERSION_ES_CM_1_1
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
 #else
     glEnd();
 #endif
@@ -372,6 +392,6 @@ void Track_c::Render( float fDelTime, float fTime )
 
     m_cInitPos.fZ = -l_fZMax;
 
-    m_fInitAngleZ += m_fInitAngleChange*fDelTime;
-    m_fInitPos += m_fInitPosChange*fDelTime;
+    m_fInitAngleZ += m_fInitAngleChange * fDelTime;
+    m_fInitPos += m_fInitPosChange * fDelTime;
 }
