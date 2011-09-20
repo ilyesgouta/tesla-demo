@@ -111,6 +111,9 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 #else
 int main(int argc, char** argv)
 {
+    printf("tesla-demo, a OpenGL|ES 1.1 port by Ilyes Gouta (ilyes.gouta@gmail.com) of Tesla from the demo group Sunflower.\n"
+           "Released with permission under GPLv3, please visit http://www.gnu.org/licenses/gpl.html for more information.\n");
+
     Start();
 
     if ( !g_pMainFrame )
