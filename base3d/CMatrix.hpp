@@ -77,16 +77,28 @@ public:
     }
 };
 
+class CBaseI {
+public:
+    float fX, fY, fZ, fW;
+
+    float Dot( CVector& cV ) {
+        return fX * cV.fX + fY * cV.fY + fZ * cV.fZ + fW;
+    }
+
+    float Dot( CBase& cV ) {
+        return fX * cV.fX + fY * cV.fY + fZ * cV.fZ + fW * cV.fW;
+    }
+};
+
 class CMatrix
 {
 public:
     union m__ {
-        m__() { memset(aMatrix, 0, sizeof(aMatrix)); }
         struct sMatrix {
-            CBase stBaseX;
-            CBase stBaseY;
-            CBase stBaseZ;
-            CBase stBaseW;
+            CBaseI stBaseX;
+            CBaseI stBaseY;
+            CBaseI stBaseZ;
+            CBaseI stBaseW;
         } sMatrix;
         float aMatrix[16];
     } m_;
@@ -94,10 +106,25 @@ public:
     CMatrix() { }
 
 	void Identity() {
-        m_.sMatrix.stBaseX = CBase(1, 0, 0, 0);
-        m_.sMatrix.stBaseY = CBase(0, 1, 0, 0);
-        m_.sMatrix.stBaseZ = CBase(0, 0, 1, 0);
-        m_.sMatrix.stBaseW = CBase(0, 0, 0, 1);
+		m_.sMatrix.stBaseX.fX = 1;
+		m_.sMatrix.stBaseX.fY = 0;
+		m_.sMatrix.stBaseX.fZ = 0;
+		m_.sMatrix.stBaseX.fW = 0;
+
+		m_.sMatrix.stBaseY.fX = 0;
+		m_.sMatrix.stBaseY.fY = 1;
+		m_.sMatrix.stBaseY.fZ = 0;
+		m_.sMatrix.stBaseY.fW = 0;
+
+		m_.sMatrix.stBaseZ.fX = 0;
+		m_.sMatrix.stBaseZ.fY = 0;
+		m_.sMatrix.stBaseZ.fZ = 1;
+		m_.sMatrix.stBaseZ.fW = 0;
+
+		m_.sMatrix.stBaseW.fX = 0;
+		m_.sMatrix.stBaseW.fY = 0;
+		m_.sMatrix.stBaseW.fZ = 0;
+		m_.sMatrix.stBaseW.fW = 1;
 	}
 
     CMatrix& operator *= (CMatrix& cM) {

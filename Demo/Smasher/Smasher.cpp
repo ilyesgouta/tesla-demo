@@ -327,8 +327,8 @@ bool MainFrame_c::OnCreate()
       return false;
     }
 
-    m_display = XOpenDisplay(NULL);
-    int iResult = g_cOpenGL.CreateGLContext( m_display, m_iBitsPerPixel, 32 );
+    //m_display = XOpenDisplay(NULL);
+    int iResult = g_cOpenGL.CreateGLContext( m_iBitsPerPixel, 32 );
 
     if ( !iResult )
     {

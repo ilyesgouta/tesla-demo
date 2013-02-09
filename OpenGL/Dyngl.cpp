@@ -25,7 +25,8 @@
 #endif
 
 #ifndef WIN32
-#include <GL/gl.h>
+#include <GLES/gl.h>
+
 #include <string.h>
 #endif
 

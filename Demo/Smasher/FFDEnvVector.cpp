@@ -208,7 +208,11 @@ void CFFDEnv::Do( float fTime, float fTimeStart )
     glRotatef( 90, 1, 0, 0 );
 
     glGetFloatv( GL_MODELVIEW_MATRIX, cCamRot.m_.aMatrix );
-    cCamRot.m_.sMatrix.stBaseW = CBase(0, 0, 0, 1);
+
+    cCamRot.m_.sMatrix.stBaseW.fX = 0;
+    cCamRot.m_.sMatrix.stBaseW.fY = 0;
+    cCamRot.m_.sMatrix.stBaseW.fZ = 0;
+    cCamRot.m_.sMatrix.stBaseW.fW = 1;
 
     glRotatef( 90, 1, 0, 0 );
     glRotatef( 180, 0, 1, 0 );

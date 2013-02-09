@@ -66,9 +66,17 @@ void Frustum( CMatrix& cDest, float fLeft, float fRight, float fDown, float fUp,
 CCamera::CCamera()
 {
     l_cNeg.Identity();
-    l_cNeg.m_.sMatrix.stBaseX = CVector(-1, 0, 0);
-    l_cNeg.m_.sMatrix.stBaseY = CVector( 0, 1, 0);
-    l_cNeg.m_.sMatrix.stBaseZ = CVector( 0, 0,-1);
+    l_cNeg.m_.sMatrix.stBaseX.fX = -1;
+    l_cNeg.m_.sMatrix.stBaseX.fY = 0;
+    l_cNeg.m_.sMatrix.stBaseX.fZ = 0;
+
+    l_cNeg.m_.sMatrix.stBaseY.fX = 0;
+    l_cNeg.m_.sMatrix.stBaseY.fY = 1;
+    l_cNeg.m_.sMatrix.stBaseY.fZ = 0;
+
+    l_cNeg.m_.sMatrix.stBaseZ.fX = 0;
+    l_cNeg.m_.sMatrix.stBaseZ.fY = 0;
+    l_cNeg.m_.sMatrix.stBaseZ.fZ = -1;
 
     m_cInvViewMatrix.Identity();
     m_cViewMatrix.Identity();
@@ -124,10 +132,21 @@ void CCamera::SetView(const CVector& stRight, const CVector& stUp, const CVector
         m_stBaseY.Normalize();
         m_stBaseZ.Normalize();
 
-        m_cInvViewMatrix.m_.sMatrix.stBaseX = m_stBaseX;
-        m_cInvViewMatrix.m_.sMatrix.stBaseY = m_stBaseY;
-        m_cInvViewMatrix.m_.sMatrix.stBaseZ = m_stBaseZ;
-        m_cInvViewMatrix.m_.sMatrix.stBaseW = m_stPosition;
+        m_cInvViewMatrix.m_.sMatrix.stBaseX.fX = m_stBaseX.fX;
+        m_cInvViewMatrix.m_.sMatrix.stBaseX.fY = m_stBaseX.fY;
+        m_cInvViewMatrix.m_.sMatrix.stBaseX.fZ = m_stBaseX.fZ;
+
+        m_cInvViewMatrix.m_.sMatrix.stBaseY.fX = m_stBaseY.fX;
+        m_cInvViewMatrix.m_.sMatrix.stBaseY.fY = m_stBaseY.fY;
+        m_cInvViewMatrix.m_.sMatrix.stBaseY.fZ = m_stBaseY.fZ;
+
+        m_cInvViewMatrix.m_.sMatrix.stBaseZ.fX = m_stBaseZ.fX;
+        m_cInvViewMatrix.m_.sMatrix.stBaseZ.fY = m_stBaseZ.fY;
+        m_cInvViewMatrix.m_.sMatrix.stBaseZ.fZ = m_stBaseZ.fZ;
+
+        m_cInvViewMatrix.m_.sMatrix.stBaseW.fX = m_stPosition.fX;
+        m_cInvViewMatrix.m_.sMatrix.stBaseW.fY = m_stPosition.fY;
+        m_cInvViewMatrix.m_.sMatrix.stBaseW.fZ = m_stPosition.fZ;
 
         m_cViewMatrix.Inverse( m_cInvViewMatrix );
 

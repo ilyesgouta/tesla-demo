@@ -68,7 +68,7 @@ bool CMpg123Audio::InitializeDevice()
 
     snd_lib_error_set_handler(error_ignorer);
 
-    if (snd_pcm_open(&m_hPCM, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0)
+    if (snd_pcm_open(&m_hPCM, "hw:0,1", SND_PCM_STREAM_PLAYBACK, 0) < 0)
         return -1;
 
     snd_pcm_hw_params_alloca(&hw);

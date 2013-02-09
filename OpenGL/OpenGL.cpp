@@ -36,10 +36,6 @@ OpenGL_c::OpenGL_c() {
         m_bGLContextCreated = false;
         m_bGLLibLoaded = false;
         m_hGLRC = 0;
-#ifndef WIN32
-        m_display = 0;
-#endif
-
 }
 
 OpenGL_c::~OpenGL_c() {
@@ -131,121 +127,127 @@ bool OpenGL_c::CreateGLContext( HWND hWindow, int iBitsPerPixel, int iZDepthBits
         return iResult;
 }
 #else
-#include <X11/Xutil.h>
 
+static EGLConfig g_defaultConfig;
 static EGLConfig eglWConfig[8];
 
 static int cIdx = 0, wIdx = 0;
 
-bool OpenGL_c::CreateGLContext( Display* display, int iBitsPerPixel, int iZDepthBits )
+bool OpenGL_c::CreateGLContext( int iBitsPerPixel, int iZDepthBits )
 {
-    int ret;
+    DFBResult ret;
+    bool result = false;
 
-    if ( !m_bGLLibLoaded )
-        return false;
+    int argc = 1;
+    char** argv = NULL;
+
+    DFBSurfaceDescription desc;
+
+    //if ( !m_bGLLibLoaded )
+    //    return false;
 
     if ( m_bGLContextCreated )
         return false;
 
     EGLint retConfigs = 0;
 
-    EGLint targetAttribList[] = {
-        EGL_RED_SIZE, 8,
-        EGL_GREEN_SIZE, 8,
-        EGL_BLUE_SIZE, 8,
-        EGL_ALPHA_SIZE, 8,
-        EGL_DEPTH_SIZE, 8,
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
-        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-        EGL_NONE
-    };
-
-    m_eglDisplay = eglGetDisplay(display);
-
-    EGLint eglMajor, eglMinor;
-
-    if (!eglInitialize(m_eglDisplay, &eglMajor, &eglMinor))
-        return false;
-
-    printf("EGL version %d.%d\n", eglMajor, eglMinor);
-
-    if (!eglChooseConfig(m_eglDisplay, targetAttribList, eglWConfig, sizeof(eglWConfig), &retConfigs))
-        return false;
-
-    if (!retConfigs)
-        return false;
-    else
-        printf("found %d configurations.\n", retConfigs);
-
-    EGLint vid;
-
-    if (!eglGetConfigAttrib(m_eglDisplay, eglWConfig[0], EGL_NATIVE_VISUAL_ID, &vid))
-        return false;
-
-    printf("X visual id: 0x%02x\n", vid);
-
-    XVisualInfo *visInfo, visTemplate;
-    int num_visuals;
-
-    visTemplate.visualid = vid;
-    visInfo = XGetVisualInfo(display, VisualIDMask, &visTemplate, &num_visuals);
-
-    if (!visInfo)
-        return false;
-
-    int scrnum = DefaultScreen(display);
-    Window root = RootWindow(display, scrnum);
-
-    XSetWindowAttributes attr;
-    unsigned long mask;
-
-    attr.background_pixel = 0;
-    attr.border_pixel = 0;
-    attr.colormap = XCreateColormap(display, root, visInfo->visual, AllocNone);
-    attr.event_mask = StructureNotifyMask | ExposureMask | KeyPressMask;
-    mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
-
-    m_window = XCreateWindow(display, root, 0, 0, 1280, 720, 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
-
-    if (!m_window)
-        return false;
-
-    {
-       XSizeHints sizehints;
-       sizehints.x = 0;
-       sizehints.y = 0;
-       sizehints.width  = 1280;
-       sizehints.height = 720;
-       sizehints.flags = USSize | USPosition;
-       XSetNormalHints(display, m_window, &sizehints);
-       XSetStandardProperties(display, m_window, "tesla-demo", "tesla-demo",
-                               None, (char **)NULL, 0, &sizehints);
+    ret = DirectFBInit(&argc, &argv);
+    if (ret) {
+         return ret;
     }
 
-    XSelectInput(display, m_window, ButtonPressMask | StructureNotifyMask | KeyPressMask );
-    XMapWindow(display, m_window);
+    ret = DirectFBCreate(&g_pDFBMain);
+    if (ret) {
+         return -1;
+    }
+
+    g_pDFBMain->SetCooperativeLevel(g_pDFBMain, DFSCL_EXCLUSIVE);
+
+    memset(&desc, 0, sizeof(desc));
+
+    desc.flags = DSDESC_CAPS;
+    desc.caps = (DFBSurfaceCapabilities)(DSCAPS_PRIMARY | DSCAPS_DOUBLE);
+
+    ret = g_pDFBMain->CreateSurface(g_pDFBMain, &desc, &pPrimarySurface);
+    if (ret) {
+         return -2;
+    }
+
+    pPrimarySurface->Clear(pPrimarySurface, 255, 0, 0, 255);
+    pPrimarySurface->Flip(pPrimarySurface, NULL, DSFLIP_BLIT);
+
+    EGLint major, minor;
+    int i, numConfigs = 8;
+
+    m_eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+
+    if (m_eglDisplay == EGL_NO_DISPLAY)
+        return -1;
+
+    if (eglInitialize(m_eglDisplay, &major, &minor) == EGL_FALSE)
+        return -2;
+
+    printf("EGL successfully initialized!\n");
 
     eglBindAPI(EGL_OPENGL_ES_API);
 
-    m_hGLRC = eglCreateContext(m_eglDisplay, eglWConfig[0], EGL_NO_CONTEXT, NULL);
+    EGLint attribList[] =
+    {
+        EGL_RENDERABLE_TYPE,    EGL_OPENGL_ES_BIT,
+        EGL_SURFACE_TYPE,       EGL_WINDOW_BIT,
+        EGL_RED_SIZE,           8,
+        EGL_BLUE_SIZE,          8,
+        EGL_GREEN_SIZE,         8,
+        EGL_ALPHA_SIZE,         8,
+        EGL_NONE
+    };
+
+    if (eglChooseConfig(m_eglDisplay, attribList, eglWConfig, 8, &numConfigs) == EGL_FALSE)
+        return -3;
+
+    printf("num configs available: %d\n", numConfigs);
+
+    for (i = 0; i < numConfigs; i++)
+    {
+        int red, green, blue, alpha, rendertype;
+
+        eglGetConfigAttrib(m_eglDisplay, eglWConfig[i], EGL_RED_SIZE, &red);
+        eglGetConfigAttrib(m_eglDisplay, eglWConfig[i], EGL_GREEN_SIZE, &green);
+        eglGetConfigAttrib(m_eglDisplay, eglWConfig[i], EGL_BLUE_SIZE, &blue);
+        eglGetConfigAttrib(m_eglDisplay, eglWConfig[i], EGL_ALPHA_SIZE, &alpha);
+
+        eglGetConfigAttrib(m_eglDisplay, eglWConfig[i], EGL_RENDERABLE_TYPE, &rendertype);
+
+        if ((red == 8) && (blue == 8) && (green == 8) && (alpha == 8) &&
+            ((rendertype & EGL_OPENGL_ES_BIT) == EGL_OPENGL_ES_BIT))
+            break;
+    }
+
+    if (i == numConfigs)
+        return -4;
+
+    g_defaultConfig = eglWConfig[i];
+
+    eglBindAPI(EGL_OPENGL_ES_API);
+
+    m_hGLRC = eglCreateContext(m_eglDisplay, g_defaultConfig, EGL_NO_CONTEXT, NULL);
 
     if ( m_hGLRC )
     {
-        m_surface = eglCreateWindowSurface(m_eglDisplay, eglWConfig[0], m_window, NULL);
+        printf("successfully created an EGL context.\n");
+        m_surface = eglCreateWindowSurface(m_eglDisplay, g_defaultConfig, pPrimarySurface, NULL);
 
         if (!m_surface)
             return false;
 
-        ret = (eglMakeCurrent(m_eglDisplay, m_surface, m_surface, m_hGLRC) == true);
+        result = (eglMakeCurrent(m_eglDisplay, m_surface, m_surface, m_hGLRC) == true);
         dynglCheckExtensions();
     }
 
-    if ( ret ) {
-        m_display = display;
+    if ( result )
         m_bGLContextCreated = true;
-    }
 
-    return ret;
+    return result;
 }
 #endif
 
@@ -263,8 +265,8 @@ void OpenGL_c::DestroyGLContext() {
 	dynwglMakeCurrent( 0, 0 );
 	dynwglDeleteContext( m_hGLRC );
 #else
-    eglMakeCurrent( m_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
-    eglDestroyContext( m_display, m_hGLRC );
+    eglMakeCurrent( m_eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
+    eglDestroyContext( m_eglDisplay, m_hGLRC );
 #endif
 }
 

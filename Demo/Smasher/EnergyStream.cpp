@@ -377,8 +377,9 @@ void CEnergyStream::Do( float fTime, float fTimeStart )
 
     for ( i = 0; i != m_iFStreams; i++ )
     {
-        CVector v1 = (cCamera.m_.sMatrix.stBaseX * 10);
-        CVector v2 = (cCamera.m_.sMatrix.stBaseY * 10);
+        CVector v1 = CVector(cCamera.m_.sMatrix.stBaseX.fX, cCamera.m_.sMatrix.stBaseX.fY, cCamera.m_.sMatrix.stBaseX.fZ) * 10;
+        CVector v2 = CVector(cCamera.m_.sMatrix.stBaseY.fX, cCamera.m_.sMatrix.stBaseY.fY, cCamera.m_.sMatrix.stBaseY.fZ) * 10;
+
         m_pFStreams[i].Render( fTime, v1, v2, fAlpha );
     }
 

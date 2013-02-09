@@ -20,17 +20,18 @@ AM_INIT_AUTOMAKE([1.11])
 # Checks for header files.
 AC_HEADER_STDC
 
-PKG_CHECK_MODULES(EGL, egl, [have_egl=yes], [have_egl=no])
+EGL_REQUIRED_VERSION=2.1
+PKG_CHECK_MODULES([EGL], [egl >= $EGL_REQUIRED_VERSION])
 AC_SUBST([EGL_CFLAGS])
 AC_SUBST([EGL_LIBS])
 
-PKG_CHECK_MODULES(GLESV1_CM, glesv1_cm, [have_gles11=yes], [have_gles11=no])
-AC_SUBST([GLESV1_CM_CFLAGS])
-AC_SUBST([GLESV1_CM_LIBS])
+AC_CHECK_HEADERS([GLES/gl.h], [], AC_MSG_ERROR([OpenGL ES 1.1 headers not found]))
 
-PKG_CHECK_MODULES(X11, x11, [have_x11=yes], [have_x11=no])
-AC_SUBST([X11_CFLAGS])
-AC_SUBST([X11_LIBS])
+EGL_LIBS="$EGL_LIBS -lGLESv1_CM"
+
+PKG_CHECK_MODULES(directfb, directfb, [have_directfb=yes], [have_directfb=no])
+AC_SUBST([directfb_CFLAGS])
+AC_SUBST([directfb_LIBS])
 
 PKG_CHECK_MODULES(libmpg123, libmpg123, [have_libmpg123=yes], [have_libmpg123=no])
 AC_SUBST([libmpg123_CFLAGS])

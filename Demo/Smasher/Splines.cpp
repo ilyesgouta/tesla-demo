@@ -64,8 +64,9 @@ void CSplineTrail::Render( float fTime )
 
     cCam.Inverse();
 
-    CVector& cX = cCam.m_.sMatrix.stBaseX;
-    CVector& cY = cCam.m_.sMatrix.stBaseY;
+    CVector cX = CVector(cCam.m_.sMatrix.stBaseX.fX, cCam.m_.sMatrix.stBaseX.fY, cCam.m_.sMatrix.stBaseX.fZ);
+    CVector cY = CVector(cCam.m_.sMatrix.stBaseY.fX, cCam.m_.sMatrix.stBaseY.fY, cCam.m_.sMatrix.stBaseY.fZ);
+
     CVector cPos;
 
     glBlendFunc(GL_SRC_COLOR, GL_ONE);

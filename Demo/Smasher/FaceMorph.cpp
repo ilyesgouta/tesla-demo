@@ -251,7 +251,11 @@ void CFaceMorph::Do( float fTime, float fTimeStart )
     glRotatef( 180, 0, 1, 0 );
 
     glGetFloatv( GL_MODELVIEW_MATRIX, cCam.m_.aMatrix );
-    cCam.m_.sMatrix.stBaseW = CBase(0, 0, 0, 1);
+
+    cCam.m_.sMatrix.stBaseW.fX = 0;
+    cCam.m_.sMatrix.stBaseW.fY = 0;
+    cCam.m_.sMatrix.stBaseW.fZ = 0;
+    cCam.m_.sMatrix.stBaseW.fW = 1;
 
     glEnable( GL_TEXTURE_2D );
     glEnable( GL_BLEND );

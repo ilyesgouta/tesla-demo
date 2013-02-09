@@ -28,7 +28,8 @@
 #ifdef WIN32
 #include <windows.h>
 #else
-#include <X11/X.h>
+#include <directfb.h>
+
 #include <EGL/egl.h>
 
 #include <GLES/gl.h>
@@ -53,7 +54,7 @@ public:
 #ifdef WIN32
         bool CreateGLContext( HWND hWindow, int iBitsPerPixel, int iZDepthBits );
 #else
-        bool CreateGLContext( Display* display, int iBitsPerPixel, int iZDepthBits );
+        bool CreateGLContext( int iBitsPerPixel, int iZDepthBits );
 #endif
         void DestroyGLContext();
 
@@ -79,8 +80,10 @@ protected:
         HGLRC m_hGLRC;
 #else
         EGLContext m_hGLRC;
-        Display *m_display;
-        Window m_window;
+
+        IDirectFB* g_pDFBMain;
+        IDirectFBSurface *pPrimarySurface;
+
         EGLSurface m_surface;
         EGLDisplay m_eglDisplay;
 #endif

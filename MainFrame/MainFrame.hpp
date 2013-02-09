@@ -114,7 +114,7 @@ public:
         virtual void SetWindowHandle( HWND hWnd );
         virtual HWND GetWindowHandle() const;
 #else
-        virtual Display* GetDisplay() const { return m_display; }
+        //virtual Display* GetDisplay() const { return m_display; }
 #endif
 
         void SetWindowName( char* pszWindowName ) {
@@ -164,8 +164,8 @@ protected:
         HINSTANCE m_hInstance; // app instance
         HWND m_hWnd; // main window handle
 #else
-        Display *m_display;
-        Window m_window;
+        //Display *m_display;
+        //Window m_window;
 #endif
         bool m_bWindowActive;
         bool m_bFullScreen;

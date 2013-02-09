@@ -135,34 +135,34 @@ int main(int argc, char** argv)
     }
 
     bool m_render = true;
-    XEvent ev;
+    //XEvent ev;
 
-    Display *display = g_pMainFrame->GetDisplay();
+    //Display *display = g_pMainFrame->GetDisplay();
 
     g_cMpg123.LoadMP3( "tournesol.mp3" );
     g_cMpg123.PlayMP3();
 
     while (m_render)
     {
-        if (XPending(display))
+        /*if (XPending(display))
         {
             XNextEvent(display, &ev);
 
             switch(ev.type) {
-            /*case ConfigureNotify:
+            case ConfigureNotify:
                 if (width != ev.xconfigure.width
                         || height != ev.xconfigure.height) {
                     width = ev.xconfigure.width;
                     height = ev.xconfigure.height;
                 }
-                break;*/
+                break;
             case ButtonPress:
                 m_render = false;
                 break;
             default:
                 break;
             }
-        }
+        }*/
 
         if (!g_pMainFrame->OnPaint())
             break;
@@ -172,7 +172,7 @@ int main(int argc, char** argv)
 
     g_cMpg123.StopMP3();
 
-    XCloseDisplay(display);
+    //XCloseDisplay(display);
 
     delete g_pMainFrame;
     g_pMainFrame = 0;

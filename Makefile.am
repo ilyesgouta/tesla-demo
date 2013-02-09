@@ -15,10 +15,10 @@ include_HEADERS = \
 AM_CFLAGS =
 AM_CXXFLAGS =
 
-tesla_demo_CFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(lib3ds_CFLAGS) $(libpng_CFLAGS) $(libmpg123_CFLAGS) $(alsa_CFLAGS)
-tesla_demo_CXXFLAGS = -g3 -O0 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(X11_CFLAGS) $(lib3ds_CFLAGS) $(libpng_CFLAGS) $(libmpg123_CFLAGS) $(alsa_CFLAGS)
+tesla_demo_CFLAGS = -g3 -O2 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(directfb_CFLAGS) $(lib3ds_CFLAGS) $(libpng_CFLAGS) $(libmpg123_CFLAGS) $(alsa_CFLAGS)
+tesla_demo_CXXFLAGS = -g3 -O2 -std=c++0x $(EGL_CFLAGS) $(GLESV1_CM_CFLAGS) $(directfb_CFLAGS) $(lib3ds_CFLAGS) $(libpng_CFLAGS) $(libmpg123_CFLAGS) $(alsa_CFLAGS)
 
-tesla_demo_LDADD = $(EGL_LIBS) $(GLESV1_CM_LIBS) $(X11_LIBS) $(libpng_LIBS) $(jpeg_LIBS) $(libmpg123_LIBS) $(alsa_LIBS) $(lib3ds_LIBS) -lrt -lpthread
+tesla_demo_LDADD = $(EGL_LIBS) $(GLESV1_CM_LIBS) $(directfb_LIBS) $(libpng_LIBS) $(jpeg_LIBS) $(lib3ds_LIBS) $(libmpg123_LIBS) $(alsa_LIBS) -lrt -lpthread
 
 tesla_demo_SOURCES = \
     3dlib/Quater.c \
